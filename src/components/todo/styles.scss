@@ -1,0 +1,33 @@
+.todo {
+  margin-top: 14px;
+
+  .ant-checkbox + span {
+    padding-left: 16px;
+  }
+
+  &__item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    svg {
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+  }
+
+  .paragrapgh--400 {
+    font-weight: 500;
+  }
+
+  &__close-icon {
+    font-size: 0;
+
+    cursor: pointer;
+    transition: all 0.3s;
+
+    &:focus {
+      outline: none;
+    }
+  }
+}
