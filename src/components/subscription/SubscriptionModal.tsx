@@ -10,6 +10,7 @@ import {
   MinusIcon,
   Title,
   Feedback,
+  Spinner,
 } from '../shared';
 
 import './styles.scss';
@@ -19,15 +20,19 @@ import { useWidth } from '../../util/useWidth';
 
 interface IOwnProps {
   onCancel: () => void;
+  onSubscribe: (qty: number) => void;
   visible: boolean;
   title: string;
   textButton: string;
+  disabled?: boolean;
 }
 const SubscriptionModal: FC<IOwnProps> = ({
   textButton,
   title,
   onCancel,
+  onSubscribe,
   visible,
+  disabled,
 }) => {
   const width = useWidth();
   const [value, setValue] = useState('0');
@@ -49,7 +54,7 @@ const SubscriptionModal: FC<IOwnProps> = ({
   const clearState = () => {
     setIsCoupon(false);
     setIsSuccessApply(false);
-    setValue('0');
+    setValue(farmsData.length.toString());
     setCouponValue('');
   };
 
@@ -58,9 +63,9 @@ const SubscriptionModal: FC<IOwnProps> = ({
     onCancel();
   };
 
-  const handleOnConfirm = () => {
+  const handleOnConfirm = async () => {
+    await onSubscribe(Number(value));
     clearState();
-    onCancel();
   };
 
   return (
@@ -71,6 +76,7 @@ const SubscriptionModal: FC<IOwnProps> = ({
       type='confirm'
       confirmNameBtn={textButton}
       onConfirm={handleOnConfirm}
+      disabled={disabled}
     >
       <Feedback
         className='mt-8 mb-16'
@@ -242,6 +248,7 @@ const SubscriptionModal: FC<IOwnProps> = ({
           </Paragrapgh>
         </div>
       </div>
+      {disabled && <Spinner />}
     </InputModal>
   );
 };

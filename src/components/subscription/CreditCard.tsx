@@ -9,14 +9,15 @@ import {
   VisaIcon,
 } from '../shared';
 import { useWidth } from '../../util/useWidth';
-
+import { ICardDetails } from '../../store/subscription/subscription.type';
 import './styles.scss';
 
 interface IOwnProps {
   onChangeCard: () => void;
+  card: ICardDetails;
 }
 
-const CreditCard: FC<IOwnProps> = ({ onChangeCard }) => {
+const CreditCard: FC<IOwnProps> = ({ onChangeCard, card }) => {
   const width = useWidth();
   const [isVisible, setIsVisible] = useState(false);
   return (
@@ -37,7 +38,7 @@ const CreditCard: FC<IOwnProps> = ({ onChangeCard }) => {
               align='default'
               fontWeight={500}
             >
-              3282
+              {card.number.slice(-4)}
             </Paragrapgh>
           </div>
           <Paragrapgh
@@ -47,7 +48,7 @@ const CreditCard: FC<IOwnProps> = ({ onChangeCard }) => {
             align='default'
             fontWeight={400}
           >
-            John Doe - Expired 12/23
+            {card.holder} - Expired {card.date}
           </Paragrapgh>
           <Paragrapgh size={2} color='black-2' align='default' fontWeight={400}>
             Next billing:{' '}

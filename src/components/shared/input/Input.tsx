@@ -1,5 +1,6 @@
 import React, { FC, ReactNode, ChangeEvent, useEffect, useState } from 'react';
 import classNames from 'classnames';
+import NumberFormat from 'react-number-format';
 
 import CalendarIcon from '../CalendarIcon';
 import Paragrapgh from '../paragrapgh/Paragrapgh';
@@ -19,6 +20,7 @@ interface IOwnProps {
     event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
     data?: string,
   ) => void;
+  onValChange?: (data: string) => void;
   required?: boolean;
   onValidate?: (e: boolean, data?: string) => void;
   dataType?: string;
@@ -39,6 +41,7 @@ const Input: FC<IOwnProps> = ({
   value,
   unit,
   onChange,
+  onValChange,
   required,
   readonly,
   onValidate,
@@ -204,7 +207,48 @@ const Input: FC<IOwnProps> = ({
         </div>
       )}
       <div className={unit ? 'd-flex' : 'pos-relative'}>
-        {type === 'textarea' ? (
+        {type === 'cardnumber' && (
+          <NumberFormat
+            format='#### #### #### ####'
+            mask='_'
+            onValueChange={values => onValChange && onValChange(values.value)}
+            disabled={disabled}
+            className={inputClasses}
+            placeholder={placeholder}
+            value={value}
+            data-type={dataType}
+            name={name}
+          />
+        )}
+        {type === 'expiration' && (
+          <NumberFormat
+            format='##/##'
+            mask={['M', 'M', 'Y', 'Y']}
+            onValueChange={values =>
+              onValChange && onValChange(values.formattedValue)
+            }
+            disabled={disabled}
+            className={inputClasses}
+            placeholder={placeholder}
+            value={value}
+            data-type={dataType}
+            name={name}
+          />
+        )}
+        {type === 'cvv' && (
+          <NumberFormat
+            format='###'
+            onValueChange={values => onValChange && onValChange(values.value)}
+            type='password'
+            disabled={disabled}
+            className={inputClasses}
+            placeholder={placeholder}
+            value={value}
+            data-type={dataType}
+            name={name}
+          />
+        )}
+        {type === 'textarea' && (
           <textarea
             onChange={onChange}
             disabled={disabled}
@@ -214,19 +258,23 @@ const Input: FC<IOwnProps> = ({
             data-type={dataType}
             name={name}
           />
-        ) : (
-          <input
-            type={type}
-            onChange={handleOnChange}
-            disabled={disabled}
-            className={inputClasses}
-            placeholder={placeholder}
-            value={value}
-            readOnly={readonly}
-            data-type={dataType}
-            name={name}
-          />
         )}
+        {type !== 'textarea' &&
+          type !== 'cardnumber' &&
+          type !== 'expiration' &&
+          type !== 'cvv' && (
+            <input
+              type={type}
+              onChange={handleOnChange}
+              disabled={disabled}
+              className={inputClasses}
+              placeholder={placeholder}
+              value={value}
+              readOnly={readonly}
+              data-type={dataType}
+              name={name}
+            />
+          )}
         {type === 'date' && disabled && (
           <span className='input__icon'>
             <CalendarIcon color='#C0C0C0' />

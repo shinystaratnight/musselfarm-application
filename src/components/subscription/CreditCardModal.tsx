@@ -1,12 +1,13 @@
 import React, { ChangeEvent, FC, useState } from 'react';
 
-import { InputModal, Input, Title } from '../shared';
+import { InputModal, Input, Title, Feedback } from '../shared';
 
 import './styles.scss';
 import { useWidth } from '../../util/useWidth';
 
 interface IOwnProps {
   onCancel: () => void;
+  onAdd: (data: any) => void;
   visible: boolean;
   title: string;
   textButton: string;
@@ -14,13 +15,15 @@ interface IOwnProps {
 const CreditCardModal: FC<IOwnProps> = ({
   textButton,
   title,
+  onAdd,
   onCancel,
   visible,
 }) => {
   const width = useWidth();
   const [email, setEmail] = useState('');
   const [cardNumber, setCardNumber] = useState('');
-  const [cvc, setCVC] = useState('');
+  const [validInput, setValidInput] = useState(true);
+  const [cvv, setCVV] = useState('');
   const [date, setDate] = useState('');
   const [cardHolder, setCardHolder] = useState('');
 
@@ -42,11 +45,17 @@ const CreditCardModal: FC<IOwnProps> = ({
     setCardNumber(e);
   };
 
-  const handleOnCVC = (e: string) => {
-    setCVC(e);
+  const handleOnCVV = (e: string) => {
+    setCVV(e);
   };
 
-  const clearState = () => {};
+  const clearState = () => {
+    setCVV('');
+    setDate('');
+    setCardNumber('');
+    setCardHolder('');
+    setEmail('');
+  };
 
   const handleOnCancel = () => {
     clearState();
@@ -54,8 +63,24 @@ const CreditCardModal: FC<IOwnProps> = ({
   };
 
   const handleOnConfirm = () => {
-    clearState();
-    onCancel();
+    if (
+      cvv.length === 3 &&
+      date.length === 5 &&
+      cardNumber.length === 16 &&
+      email &&
+      cardHolder
+    ) {
+      clearState();
+      onAdd({
+        cvv: cvv,
+        date: date,
+        number: cardNumber,
+        email: email,
+        holder: cardHolder
+      });
+    } else {
+      setValidInput(false);
+    }
   };
 
   return (
@@ -74,8 +99,8 @@ const CreditCardModal: FC<IOwnProps> = ({
       >
         <div className='addCard credit-card'>
           <Input
-            onChange={e => handleOnCardNumber(e.target.value)}
-            type='text'
+            onValChange={e => handleOnCardNumber(e)}
+            type='cardnumber'
             className='mb-20 addCard__cardNumber'
             value={cardNumber}
             label='Card number'
@@ -96,8 +121,8 @@ const CreditCardModal: FC<IOwnProps> = ({
             <div className='addCard__date'>
               <Input
                 className='addCard__expiration'
-                onChange={e => handleOnDate(e.target.value)}
-                type='text'
+                onValChange={e => handleOnDate(e)}
+                type='expiration'
                 value={date}
                 label='Expiration'
                 placeholder='MM / YY'
@@ -106,9 +131,9 @@ const CreditCardModal: FC<IOwnProps> = ({
               {width < 596 && (
                 <Input
                   className='addCard__cvc'
-                  onChange={e => handleOnCVC(e.target.value)}
-                  type='password'
-                  value={cvc}
+                  onValChange={e => handleOnCVV(e)}
+                  type='cvv'
+                  value={cvv}
                   label='CVV'
                   placeholder='***'
                   required
@@ -123,9 +148,9 @@ const CreditCardModal: FC<IOwnProps> = ({
             <div className='d-flex cvc justify-content-end'>
               <Input
                 className='addCard__cvc mr-20'
-                onChange={e => handleOnCVC(e.target.value)}
-                type='password'
-                value={cvc}
+                onValChange={e => handleOnCVV(e)}
+                type='cvv'
+                value={cvv}
                 label='CVV'
                 placeholder='***'
                 required
@@ -142,6 +167,16 @@ const CreditCardModal: FC<IOwnProps> = ({
         label='Email'
         placeholder='email'
       />
+      {!validInput && (
+        <Feedback
+          isWithoutClosable
+          isIcon
+          theme='light'
+          className='mb-24'
+          message='Fill all the fields'
+          type='warning'
+        />
+      )}
     </InputModal>
   );
 };

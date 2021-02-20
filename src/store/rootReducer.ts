@@ -6,6 +6,7 @@ import profileReducer from './profile/profile.reducer';
 import uiReducer from './ui/ui.reducer';
 import usersReducer from './users/users.reducer';
 import budgetReducer from './budget/budget.reducer';
+import subscriptReducer from './subscription/subscription.reducer';
 
 const rootReducer = combineReducers({
   auth: authReducer,
@@ -14,6 +15,7 @@ const rootReducer = combineReducers({
   ui: uiReducer,
   users: usersReducer,
   budget: budgetReducer,
+  subscription: subscriptReducer,
 });
 
 export default rootReducer;

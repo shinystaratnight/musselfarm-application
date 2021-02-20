@@ -6,9 +6,10 @@ import { useWidth } from '../../util/useWidth';
 
 interface IOwnProps {
   onSubscription: () => void;
+  info: any;
 }
 
-const Plan: FC<IOwnProps> = ({ onSubscription }) => {
+const Plan: FC<IOwnProps> = ({ onSubscription, info }) => {
   const width = useWidth();
 
   return (
@@ -36,7 +37,7 @@ const Plan: FC<IOwnProps> = ({ onSubscription }) => {
             align='default'
             fontWeight={400}
           >
-            10 Farms
+            {info ? 10 : '--'} Farms
           </Subtitle>
         </div>
         <div>
@@ -56,7 +57,7 @@ const Plan: FC<IOwnProps> = ({ onSubscription }) => {
               align='default'
               fontWeight={400}
             >
-              8
+              {info ? 10 : '--'}
             </Subtitle>
             <Paragrapgh
               className='pl-8'
@@ -65,7 +66,7 @@ const Plan: FC<IOwnProps> = ({ onSubscription }) => {
               align='default'
               fontWeight={400}
             >
-              of 8
+              of {info ? 10 : '--'}
             </Paragrapgh>
           </div>
         </div>
@@ -85,7 +86,7 @@ const Plan: FC<IOwnProps> = ({ onSubscription }) => {
             align='default'
             fontWeight={400}
           >
-            May 01, 2021
+            {info ? 'May 01, 2021' : '-- / -- ----'}
           </Subtitle>
         </div>
       </div>

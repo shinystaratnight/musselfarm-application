@@ -37,6 +37,13 @@ export interface ILink {
   isExact?: boolean;
 }
 
+export interface IAlertInfo {
+  type: string;
+  title: string;
+  text: string;
+  buttonText?: string;
+}
+
 export interface INotification {
   title: string;
   text: string;

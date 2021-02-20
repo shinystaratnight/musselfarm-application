@@ -21,6 +21,7 @@ export const sendRequest = async (
     const req = {
       headers: {
         ...Authorization,
+        Accept: '*',
       },
       method,
       url: `${process.env.REACT_APP_API_URL}${url}`,
