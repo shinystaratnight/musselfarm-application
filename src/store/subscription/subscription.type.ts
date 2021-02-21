@@ -1,8 +1,19 @@
 import { SET_SUBSCRIPTION_STATUS } from './subscription.constants';
 
+export interface IInvoice {
+  total: string;
+  date: string;
+  id: string;
+}
+
+export interface IPlan {
+  expire_at: string;
+  quantity: number;
+}
+
 export interface ISubscriptionState {
   status: string;
-  active_data?: any;
+  plan_data?: any;
   history?: any;
   payment_method?: any;
 }
@@ -11,8 +22,9 @@ export interface ICardDetails {
   cvv: string;
   date: string;
   number: string;
-  email: string;
-  holder: string;
+  email?: string;
+  holder?: string;
+  brand?: string;
 }
 
 export interface ISubscriptAction {

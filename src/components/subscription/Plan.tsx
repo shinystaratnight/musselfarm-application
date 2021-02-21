@@ -6,10 +6,21 @@ import { useWidth } from '../../util/useWidth';
 
 interface IOwnProps {
   onSubscription: () => void;
+  onCancelSubscription: () => void;
+  onResumeSubscription: () => void;
   info: any;
+  status: string;
+  farmsCount: number;
 }
 
-const Plan: FC<IOwnProps> = ({ onSubscription, info }) => {
+const Plan: FC<IOwnProps> = ({
+  onSubscription,
+  onCancelSubscription,
+  onResumeSubscription,
+  info,
+  status,
+  farmsCount,
+}) => {
   const width = useWidth();
 
   return (
@@ -37,7 +48,7 @@ const Plan: FC<IOwnProps> = ({ onSubscription, info }) => {
             align='default'
             fontWeight={400}
           >
-            {info ? 10 : '--'} Farms
+            {info ? info.quantity : '--'} Farms
           </Subtitle>
         </div>
         <div>
@@ -57,7 +68,7 @@ const Plan: FC<IOwnProps> = ({ onSubscription, info }) => {
               align='default'
               fontWeight={400}
             >
-              {info ? 10 : '--'}
+              {info ? farmsCount : '--'}
             </Subtitle>
             <Paragrapgh
               className='pl-8'
@@ -66,7 +77,7 @@ const Plan: FC<IOwnProps> = ({ onSubscription, info }) => {
               align='default'
               fontWeight={400}
             >
-              of {info ? 10 : '--'}
+              of {info ? info.quantity : '--'}
             </Paragrapgh>
           </div>
         </div>
@@ -78,7 +89,7 @@ const Plan: FC<IOwnProps> = ({ onSubscription, info }) => {
             align='default'
             fontWeight={500}
           >
-            Expired
+            Expires
           </Paragrapgh>
           <Subtitle
             size={width > 520 ? 1 : 4}
@@ -86,21 +97,40 @@ const Plan: FC<IOwnProps> = ({ onSubscription, info }) => {
             align='default'
             fontWeight={400}
           >
-            {info ? 'May 01, 2021' : '-- / -- ----'}
+            {info ? info.expire_at : '-- / -- ----'}
           </Subtitle>
         </div>
       </div>
-      <div className={width > 520 ? 'mt-16 ml-24' : 'mb-8 pl-12 pr-12'}>
-        <Button
-          color='blue'
-          size={1}
-          width={width > 520 ? 'normal' : 'wide'}
-          type='bordered'
-          onClick={onSubscription}
-        >
-          Start Subscription
-        </Button>
-      </div>
+      {!info && (
+        <div className={width > 520 ? 'mt-16 ml-24' : 'mb-8 pl-12 pr-12'}>
+          <Button
+            color='blue'
+            size={1}
+            width={width > 520 ? 'normal' : 'wide'}
+            type='bordered'
+            onClick={onSubscription}
+          >
+            Start Subscription
+          </Button>
+        </div>
+      )}
+      {info && (
+        <div className={width > 520 ? 'mt-16 ml-24' : 'mb-8 pl-12 pr-12'}>
+          <Button
+            color='blue'
+            size={1}
+            width={width > 520 ? 'normal' : 'wide'}
+            type='bordered'
+            onClick={() => {
+              status === 'grace'
+                ? onResumeSubscription()
+                : onCancelSubscription();
+            }}
+          >
+            {status === 'grace' ? 'Resume Subscription' : 'Cancel Subscription'}
+          </Button>
+        </div>
+      )}
     </div>
   );
 };

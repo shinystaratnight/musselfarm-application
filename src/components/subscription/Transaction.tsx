@@ -6,19 +6,31 @@ interface IOwnProps {
   price: string;
   status: string;
   className?: string;
+  invoiceId: string;
+  downloadInvoice: (id: string) => void;
 }
 
-const Transaction: FC<IOwnProps> = ({ date, price, status, className }) => {
+const Transaction: FC<IOwnProps> = ({
+  date,
+  price,
+  status,
+  className,
+  invoiceId,
+  downloadInvoice
+}) => {
+  const invoiceUrl = `${process.env.REACT_APP_API_URL}api/subscription/invoices/download/${invoiceId}`;
   return (
     <div className={className ? `${className} transaction` : 'transaction'}>
       <Paragrapgh size={1} color='black' align='default' fontWeight={500}>
         {date}
       </Paragrapgh>
       <Paragrapgh size={1} color='black' align='default' fontWeight={400}>
-        ${price}
+        {price}
       </Paragrapgh>
       <TagComponent color='green'>{status}</TagComponent>
-      <DownloadIcon />
+      <a href="#" onClick={() => downloadInvoice(invoiceId)}>
+        <DownloadIcon />
+      </a>
     </div>
   );
 };

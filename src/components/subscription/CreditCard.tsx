@@ -9,15 +9,19 @@ import {
   VisaIcon,
 } from '../shared';
 import { useWidth } from '../../util/useWidth';
-import { ICardDetails } from '../../store/subscription/subscription.type';
+import {
+  ICardDetails,
+  IPlan,
+} from '../../store/subscription/subscription.type';
 import './styles.scss';
 
 interface IOwnProps {
   onChangeCard: () => void;
   card: ICardDetails;
+  planData?: IPlan | null;
 }
 
-const CreditCard: FC<IOwnProps> = ({ onChangeCard, card }) => {
+const CreditCard: FC<IOwnProps> = ({ onChangeCard, card, planData }) => {
   const width = useWidth();
   const [isVisible, setIsVisible] = useState(false);
   return (
@@ -25,8 +29,8 @@ const CreditCard: FC<IOwnProps> = ({ onChangeCard, card }) => {
       <div className={width > 520 ? 'pb-20 line-bottom' : 'pb-24'}>
         <div className={width > 520 ? 'ml-24 mr-24' : 'ml-12 mr-12'}>
           <div className='card-type'>
-            <VisaIcon />
-            <MasterCardIcon />
+            {card.brand === 'visa' && <VisaIcon />}
+            {card.brand !== 'visa' && <MasterCardIcon />}
           </div>
           <div className='card-number mb-8 mt-12 d-flex align-items-center justify-content-between'>
             <CardDots />
@@ -50,10 +54,19 @@ const CreditCard: FC<IOwnProps> = ({ onChangeCard, card }) => {
           >
             {card.holder} - Expired {card.date}
           </Paragrapgh>
-          <Paragrapgh size={2} color='black-2' align='default' fontWeight={400}>
-            Next billing:{' '}
-            <span className='font-weight-500'>$990 on March 01, 2021</span>
-          </Paragrapgh>
+          {planData && (
+            <Paragrapgh
+              size={2}
+              color='black-2'
+              align='default'
+              fontWeight={400}
+            >
+              Next billing:
+              <span className='font-weight-500'>{` $${
+                planData.quantity * 99
+              } on ${planData.expire_at}`}</span>
+            </Paragrapgh>
+          )}
         </div>
       </div>
       <div className={width > 520 ? 'd-flex mt-16 ml-24' : 'pl-12 pr-12'}>

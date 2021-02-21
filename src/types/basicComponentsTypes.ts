@@ -42,6 +42,7 @@ export interface IAlertInfo {
   title: string;
   text: string;
   buttonText?: string;
+  hideCancelBtn?: boolean;
 }
 
 export interface INotification {

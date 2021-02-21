@@ -17,6 +17,7 @@ interface IOwnProps {
   onCancel: () => void;
   onConfirm?: () => void;
   className?: string;
+  hideCancelBtn?: boolean;
   text: string;
   title: string;
   visible: boolean;
@@ -29,6 +30,7 @@ const ModalComponent: FC<IOwnProps> = ({
   visible,
   onCancel,
   onConfirm,
+  hideCancelBtn,
   title,
   text,
   type,
@@ -78,7 +80,7 @@ const ModalComponent: FC<IOwnProps> = ({
         />
       )}
       <div className='modal-button d-flex justify-content-end align-items-center'>
-        {type && (
+        {type && !hideCancelBtn && (
           <Button
             width={width < 769 ? 'wide' : 'small'}
             size={2}

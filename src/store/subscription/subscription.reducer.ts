@@ -3,7 +3,7 @@ import { SET_SUBSCRIPTION_STATUS } from './subscription.constants';
 
 const initialState: ISubscriptionState = {
   status: 'not_subscribe',
-  active_data: null,
+  plan_data: null,
   history: null,
   payment_method: null,
 };
