@@ -17,11 +17,17 @@ import './styles.scss';
 
 interface IOwnProps {
   onChangeCard: () => void;
+  removeCard: () => void;
   card: ICardDetails;
   planData?: IPlan | null;
 }
 
-const CreditCard: FC<IOwnProps> = ({ onChangeCard, card, planData }) => {
+const CreditCard: FC<IOwnProps> = ({
+  onChangeCard,
+  card,
+  planData,
+  removeCard,
+}) => {
   const width = useWidth();
   const [isVisible, setIsVisible] = useState(false);
   return (
@@ -97,7 +103,7 @@ const CreditCard: FC<IOwnProps> = ({ onChangeCard, card, planData }) => {
         type='warning'
         title='Are you sure?'
         text='If you delete the payment method, you will not be able to renew your subscription and you will lose access to your data. Are you sure you want to delete a payment method?'
-        onConfirm={() => console.log('onConfirm')}
+        onConfirm={removeCard}
       />
     </div>
   );

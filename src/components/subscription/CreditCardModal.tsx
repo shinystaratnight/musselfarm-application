@@ -72,11 +72,11 @@ const CreditCardModal: FC<IOwnProps> = ({
     ) {
       clearState();
       onAdd({
-        cvv: cvv,
-        date: date,
         number: cardNumber,
-        email: email,
-        holder: cardHolder
+        holder: cardHolder,
+        email,
+        cvv,
+        date,
       });
     } else {
       setValidInput(false);

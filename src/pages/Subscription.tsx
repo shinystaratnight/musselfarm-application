@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, FC } from 'react';
+import { useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link, useParams, useHistory } from 'react-router-dom';
 import {
   Button,
   Feedback,
@@ -10,14 +10,15 @@ import {
   Spinner,
 } from '../components/shared';
 import Plan from '../components/subscription/Plan';
-import SubscriptionModal from '../components/subscription/SubscriptionModal';
-import CreditCardModal from '../components/subscription/CreditCardModal';
-import Transaction from '../components/subscription/Transaction';
 import CreditCard from '../components/subscription/CreditCard';
-import { IRootState } from '../store/rootReducer';
-import { AuthState } from '../store/auth/auth.type';
+import Transaction from '../components/subscription/Transaction';
+import CreditCardModal from '../components/subscription/CreditCardModal';
+import SubscriptionModal from '../components/subscription/SubscriptionModal';
+
 import { composeApi } from '../apis/compose';
 import { downloadInvoice } from '../apis/index';
+import { IRootState } from '../store/rootReducer';
+import { AuthState } from '../store/auth/auth.type';
 import { IAlertInfo } from '../types/basicComponentsTypes';
 import {
   ICardDetails,
@@ -28,15 +29,17 @@ import { setSubscriptionStatus } from '../store/subscription/subscription.action
 
 const APPLY_SUBSCRIBE = 'Please Add Payment Method';
 const CANCEL_SUBSCRIBE = 'Are you really going to unsubscribe?';
-const Subscription = () => {
+
+const Subscription: FC = () => {
   const dispatch = useDispatch();
   const history = useHistory();
 
+  const [isLoaded, setIsLoaded] = useState(false);
   const [isSubModal, setIsSubModal] = useState(false);
   const [isCardModal, setIsCardModal] = useState(false);
   const [isAlertModal, setIsAlertModal] = useState(false);
   const [isSubscribing, setIsSubscribing] = useState(false);
-  const [isLoaded, setIsLoaded] = useState(false);
+  const [subscriptionType, setSubscriptionType] = useState('start');
   const [alertInfo, setAlertInfo] = useState<IAlertInfo>({
     type: '',
     title: '',
@@ -139,6 +142,52 @@ const Subscription = () => {
     );
     if (responseData?.message === 'Successfully subscribed') {
       await getSubscriptionStats();
+    } else if (responseData?.message) {
+      setAlertInfo({
+        type: 'info',
+        title: 'Note',
+        buttonText: 'OK',
+        hideCancelBtn: true,
+        text: responseData.message,
+      });
+      setIsAlertModal(true);
+    }
+    setIsSubscribing(false);
+    setIsSubModal(false);
+  };
+
+  const onTrialSubscribe = async (qty: number) => {
+    setIsSubscribing(true);
+    const responseData = await composeApi(
+      {
+        data: {
+          card_number: cardDetails?.number,
+          cvc: cardDetails?.cvv,
+          plan_id: '1',
+          expiration_month: cardDetails?.date.slice(0, 2),
+          expiration_year: cardDetails?.date.slice(-2),
+          quantity: qty,
+          trial: 1,
+        },
+        method: 'POST',
+        url: 'api/subscription/subscription',
+        requireAuth: true,
+      },
+      dispatch,
+      authStore,
+      history,
+    );
+    if (responseData?.message === 'Successfully subscribed') {
+      await getSubscriptionStats();
+    } else if (responseData?.message) {
+      setAlertInfo({
+        type: 'info',
+        title: 'Note',
+        buttonText: 'OK',
+        hideCancelBtn: true,
+        text: responseData.message,
+      });
+      setIsAlertModal(true);
     }
     setIsSubscribing(false);
     setIsSubModal(false);
@@ -191,6 +240,68 @@ const Subscription = () => {
     setIsLoaded(true);
   };
 
+  const onUpdateCard = async (card: ICardDetails) => {
+    setIsCardModal(false);
+    setIsLoaded(false);
+    const responseData = await composeApi(
+      {
+        data: {
+          card_number: card?.number,
+          cvc: card?.cvv,
+          expiration_month: card?.date.slice(0, 2),
+          expiration_year: card?.date.slice(-2),
+        },
+        method: 'POST',
+        url: 'api/subscription/update-card',
+        requireAuth: true,
+      },
+      dispatch,
+      authStore,
+      history,
+    );
+    if (responseData?.status === 1) {
+      await getSubscriptionStats();
+    } else if (responseData?.message) {
+      setAlertInfo({
+        type: 'info',
+        title: 'Note',
+        buttonText: 'OK',
+        hideCancelBtn: true,
+        text: responseData.message,
+      });
+      setIsAlertModal(true);
+      setIsLoaded(true);
+    }
+  };
+
+  const onRemoveCard = async () => {
+    setIsLoaded(false);
+    const responseData = await composeApi(
+      {
+        data: {},
+        method: 'POST',
+        url: 'api/subscription/delete-card',
+        requireAuth: true,
+      },
+      dispatch,
+      authStore,
+      history,
+    );
+    if (responseData?.status === 1) {
+      await getSubscriptionStats();
+    } else if (responseData?.message) {
+      setAlertInfo({
+        type: 'info',
+        title: 'Note',
+        buttonText: 'OK',
+        hideCancelBtn: true,
+        text: responseData.message,
+      });
+      setIsAlertModal(true);
+      setIsLoaded(true);
+    }
+  };
+
   const getMessage = () => {
     switch (subscriptionStatus?.status) {
       case 'not_subscribe':
@@ -203,7 +314,7 @@ const Subscription = () => {
       case 'grace':
         return (
           <>
-            You cancelled subscription and you are in grace period until
+            You cancelled subscription and you are on grace period until
             <span className='font-weight-500'>
               {` ${subscriptionStatus?.plan_data.expire_at}. `}
             </span>
@@ -221,6 +332,15 @@ const Subscription = () => {
         return (
           <>
             You are subscribed until
+            <span className='font-weight-500'>
+              {` ${subscriptionStatus?.plan_data.expire_at}.`}
+            </span>
+          </>
+        );
+      case 'trial':
+        return (
+          <>
+            You are on trial period until
             <span className='font-weight-500'>
               {` ${subscriptionStatus?.plan_data.expire_at}.`}
             </span>
@@ -284,11 +404,20 @@ const Subscription = () => {
               info={subscriptionStatus?.plan_data}
               status={subscriptionStatus?.status}
               farmsCount={farmsCount}
-              onSubscription={() =>
-                cardDetails ? setIsSubModal(true) : showAlertModal('input_card')
-              }
+              onSubscription={() => {
+                if (cardDetails) {
+                  setSubscriptionType('start');
+                  setIsSubModal(true);
+                } else showAlertModal('input_card');
+              }}
               onCancelSubscription={onCancelSubscribe}
               onResumeSubscription={onResumeSubscribe}
+              onTrialSubscription={() => {
+                if (cardDetails) {
+                  setIsSubModal(true);
+                  setSubscriptionType('trial');
+                } else showAlertModal('input_card');
+              }}
             />
           </div>
           <div className='sub-min-height'>
@@ -318,6 +447,7 @@ const Subscription = () => {
                 card={cardDetails}
                 planData={subscriptionStatus?.plan_data}
                 onChangeCard={() => setIsCardModal(true)}
+                removeCard={onRemoveCard}
               />
             )}
           </div>
@@ -361,21 +491,28 @@ const Subscription = () => {
       )}
       <SubscriptionModal
         textButton='Subscribe'
-        onSubscribe={onSubscribe}
+        onSubscribe={qty => {
+          if (subscriptionType === 'trial') onTrialSubscribe(qty);
+          else onSubscribe(qty);
+        }}
         onCancel={() => setIsSubModal(false)}
         visible={isSubModal}
         disabled={isSubscribing}
         title='Subscription'
       />
       <CreditCardModal
-        textButton='Add card'
+        textButton={cardDetails ? 'Update card' : 'Add card'}
         onCancel={() => setIsCardModal(false)}
         onAdd={card => {
-          setCardDetails(card);
-          setIsCardModal(false);
+          if (subscriptionStatus.status !== 'not_subscribe') {
+            onUpdateCard(card);
+          } else {
+            setCardDetails(card);
+            setIsCardModal(false);
+          }
         }}
         visible={isCardModal}
-        title='Add credit card'
+        title={cardDetails ? 'Update credit card' : 'Add credit card'}
       />
       <ModalComponent
         type={alertInfo?.type}

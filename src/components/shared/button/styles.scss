@@ -63,18 +63,22 @@
 
     &.button--1 {
       padding: 11px 16px;
+      margin: 3px 5px;
     }
 
     &.button--2 {
       padding: 9px 16px;
+      margin: 3px 5px;
     }
 
     &.button--3 {
       padding: 7px 16px;
+      margin: 3px 5px;
     }
 
     &.button--4 {
       padding: 11px 24px;
+      margin: 3px 5px;
     }
 
     &.button--blue {
@@ -127,6 +131,7 @@
     &.button--orange {
       background-color: $white;
       border: 1px solid $orange-3;
+      color: $orange-3;
 
       &:hover {
         background-color: $orange-4;

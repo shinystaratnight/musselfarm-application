@@ -8,6 +8,7 @@ interface IOwnProps {
   onSubscription: () => void;
   onCancelSubscription: () => void;
   onResumeSubscription: () => void;
+  onTrialSubscription: () => void;
   info: any;
   status: string;
   farmsCount: number;
@@ -17,6 +18,7 @@ const Plan: FC<IOwnProps> = ({
   onSubscription,
   onCancelSubscription,
   onResumeSubscription,
+  onTrialSubscription,
   info,
   status,
   farmsCount,
@@ -101,8 +103,8 @@ const Plan: FC<IOwnProps> = ({
           </Subtitle>
         </div>
       </div>
-      {!info && (
-        <div className={width > 520 ? 'mt-16 ml-24' : 'mb-8 pl-12 pr-12'}>
+      <div className={width > 520 ? 'mt-16 ml-24' : 'mb-8 pl-12 pr-12'}>
+        {!info && (
           <Button
             color='blue'
             size={1}
@@ -112,25 +114,33 @@ const Plan: FC<IOwnProps> = ({
           >
             Start Subscription
           </Button>
-        </div>
-      )}
-      {info && (
-        <div className={width > 520 ? 'mt-16 ml-24' : 'mb-8 pl-12 pr-12'}>
+        )}
+        {info && status !== 'trial' && (
           <Button
             color='blue'
             size={1}
             width={width > 520 ? 'normal' : 'wide'}
             type='bordered'
             onClick={() => {
-              status === 'grace'
-                ? onResumeSubscription()
-                : onCancelSubscription();
+              if (status === 'grace') onResumeSubscription();
+              else onCancelSubscription();
             }}
           >
             {status === 'grace' ? 'Resume Subscription' : 'Cancel Subscription'}
           </Button>
-        </div>
-      )}
+        )}
+        {status === 'not_subscribe' && (
+          <Button
+            color='orange'
+            size={1}
+            width={width > 520 ? 'normal' : 'wide'}
+            type='bordered'
+            onClick={onTrialSubscription}
+          >
+            Try Trial
+          </Button>
+        )}
+      </div>
     </div>
   );
 };
