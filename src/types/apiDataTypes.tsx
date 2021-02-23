@@ -15,6 +15,7 @@ export interface IRegistration {
   name?: string;
   remember?: boolean;
   token?: string;
+  coupon?: string;
 }
 
 export interface IUpdateBudget {

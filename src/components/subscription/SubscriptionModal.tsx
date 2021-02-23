@@ -20,7 +20,8 @@ import { useWidth } from '../../util/useWidth';
 
 interface IOwnProps {
   onCancel: () => void;
-  onSubscribe: (qty: number) => void;
+  onSubscribe: (qty: number, coupon: string) => void;
+  subscriptionStatus: any;
   visible: boolean;
   title: string;
   textButton: string;
@@ -33,6 +34,7 @@ const SubscriptionModal: FC<IOwnProps> = ({
   onSubscribe,
   visible,
   disabled,
+  subscriptionStatus,
 }) => {
   const width = useWidth();
   const [value, setValue] = useState('0');
@@ -64,7 +66,7 @@ const SubscriptionModal: FC<IOwnProps> = ({
   };
 
   const handleOnConfirm = async () => {
-    await onSubscribe(Number(value));
+    await onSubscribe(Number(value), isSuccessApply ? couponValue : 'none');
     clearState();
   };
 
@@ -84,8 +86,11 @@ const SubscriptionModal: FC<IOwnProps> = ({
         theme='light'
         message={
           <>
-            The plan will switch immediately, but no fees will be required until{' '}
-            <span className='font-weight-500'> May 01, 2020</span>
+            The plan will switch immediately, but no fees will be required until
+            <span className='font-weight-500'>
+              {' '}
+              {subscriptionStatus.plan_data?.expire_at}
+            </span>
           </>
         }
         type='info'
@@ -149,81 +154,90 @@ const SubscriptionModal: FC<IOwnProps> = ({
           </Button>
         </div>
       </div>
-      {!isCoupon ? (
-        <div className='line-bottom d-flex pb-20 pt-18 justify-content-center'>
-          <Paragrapgh size={1} fontWeight={500} color='default' align='default'>
-            Have a coupon?{' '}
-            <span
-              className='pointer focus-none tx-color-2 font-weight-400'
-              onKeyDown={() => undefined}
-              onClick={() => setIsCoupon(true)}
-              role='button'
-              tabIndex={0}
-            >
-              Enter
-            </span>
-          </Paragrapgh>
-        </div>
-      ) : (
-        <div className='line-bottom pb-20 pt-18'>
-          <div
-            className={
-              width > 520
-                ? 'd-flex align-items-center justify-content-between'
-                : ''
-            }
-          >
+      {subscriptionStatus?.status === 'trial' &&
+        !subscriptionStatus.plan_data?.coupon_used &&
+        !isCoupon && (
+          <div className='line-bottom d-flex pb-20 pt-18 justify-content-center'>
             <Paragrapgh
-              className={width > 520 ? '' : 'pb-4'}
               size={1}
-              color='black'
+              fontWeight={500}
+              color='default'
               align='default'
-              fontWeight={400}
             >
-              Coupon
-            </Paragrapgh>
-            <div className={width > 520 ? 'd-flex' : ''}>
-              <Input
-                onChange={e => setCouponValue(e.target.value)}
-                type='text'
-                className='coupon-input'
-                value={couponValue}
-                label=''
-                placeholder=''
-                required
-                readonly={isSuccessApply}
-              />
-              <Button
-                className={width > 520 ? 'ml-8' : 'mt-8'}
-                color='blue'
-                size={1}
-                width={width > 520 ? 'small' : 'wide'}
-                type='bordered'
-                onClick={handleOnApply}
-                disabled={isSuccessApply || couponValue === ''}
+              Have a coupon?{' '}
+              <span
+                className='pointer focus-none tx-color-2 font-weight-400'
+                onKeyDown={() => undefined}
+                onClick={() => setIsCoupon(true)}
+                role='button'
+                tabIndex={0}
               >
-                Apply
-              </Button>
-            </div>
+                Enter
+              </span>
+            </Paragrapgh>
           </div>
-          {isSuccessApply && (
-            <Feedback
-              className='mt-12'
-              isWithoutClosable
-              theme='light'
-              message={
-                <>
-                  You have activated a coupon for 3 free months. The coupon is
-                  valid from the next month and will be valid until{' '}
-                  <span className='font-weight-500'> August 01, 2021</span>
-                </>
+        )}
+      {subscriptionStatus?.status === 'trial' &&
+        !subscriptionStatus.plan_data?.coupon_used &&
+        isCoupon && (
+          <div className='line-bottom pb-20 pt-18'>
+            <div
+              className={
+                width > 520
+                  ? 'd-flex align-items-center justify-content-between'
+                  : ''
               }
-              type='success'
-            />
-          )}
-        </div>
-      )}
-
+            >
+              <Paragrapgh
+                className={width > 520 ? '' : 'pb-4'}
+                size={1}
+                color='black'
+                align='default'
+                fontWeight={400}
+              >
+                Coupon
+              </Paragrapgh>
+              <div className={width > 520 ? 'd-flex' : ''}>
+                <Input
+                  onChange={e => setCouponValue(e.target.value)}
+                  type='text'
+                  className='coupon-input'
+                  value={couponValue}
+                  label=''
+                  placeholder=''
+                  required
+                  readonly={isSuccessApply}
+                />
+                <Button
+                  className={width > 520 ? 'ml-8' : 'mt-8'}
+                  color='blue'
+                  size={1}
+                  width={width > 520 ? 'small' : 'wide'}
+                  type='bordered'
+                  onClick={handleOnApply}
+                  disabled={isSuccessApply || couponValue === ''}
+                >
+                  Apply
+                </Button>
+              </div>
+            </div>
+            {/* {isSuccessApply && (
+              <Feedback
+                className='mt-12'
+                isWithoutClosable
+                theme='light'
+                message={
+                  <>
+                    You have activated a coupon for 3 free months. The coupon is
+                    valid from the next month and will be valid until{' '}
+                    <span className='font-weight-500'> August 01, 2021</span>
+                  </>
+                }
+                type='success'
+              />
+            )} */}
+          </div>
+        )}
       <div className='d-flex mb-24 mt-18 justify-content-between'>
         <Paragrapgh size={1} fontWeight={400} color='default' align='default'>
           Total:

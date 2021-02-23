@@ -8,7 +8,7 @@ interface IOwnProps {
   onSubscription: () => void;
   onCancelSubscription: () => void;
   onResumeSubscription: () => void;
-  onTrialSubscription: () => void;
+  onTrialUpdate: () => void;
   info: any;
   status: string;
   farmsCount: number;
@@ -18,7 +18,7 @@ const Plan: FC<IOwnProps> = ({
   onSubscription,
   onCancelSubscription,
   onResumeSubscription,
-  onTrialSubscription,
+  onTrialUpdate,
   info,
   status,
   farmsCount,
@@ -104,6 +104,17 @@ const Plan: FC<IOwnProps> = ({
         </div>
       </div>
       <div className={width > 520 ? 'mt-16 ml-24' : 'mb-8 pl-12 pr-12'}>
+        {status === 'trial' && (
+          <Button
+            color='blue'
+            size={1}
+            width={width > 520 ? 'normal' : 'wide'}
+            type='bordered'
+            onClick={onTrialUpdate}
+          >
+            Update Plan
+          </Button>
+        )}
         {!info && (
           <Button
             color='blue'
@@ -127,17 +138,6 @@ const Plan: FC<IOwnProps> = ({
             }}
           >
             {status === 'grace' ? 'Resume Subscription' : 'Cancel Subscription'}
-          </Button>
-        )}
-        {status === 'not_subscribe' && (
-          <Button
-            color='orange'
-            size={1}
-            width={width > 520 ? 'normal' : 'wide'}
-            type='bordered'
-            onClick={onTrialSubscription}
-          >
-            Try Trial
           </Button>
         )}
       </div>

@@ -16,7 +16,7 @@ const Transaction: FC<IOwnProps> = ({
   status,
   className,
   invoiceId,
-  downloadInvoice
+  downloadInvoice,
 }) => {
   const invoiceUrl = `${process.env.REACT_APP_API_URL}api/subscription/invoices/download/${invoiceId}`;
   return (
@@ -28,9 +28,12 @@ const Transaction: FC<IOwnProps> = ({
         {price}
       </Paragrapgh>
       <TagComponent color='green'>{status}</TagComponent>
-      <a href="#" onClick={() => downloadInvoice(invoiceId)}>
+      <button
+        style={{ border: 'none', background: 'none' }}
+        onClick={() => downloadInvoice(invoiceId)}
+      >
         <DownloadIcon />
-      </a>
+      </button>
     </div>
   );
 };

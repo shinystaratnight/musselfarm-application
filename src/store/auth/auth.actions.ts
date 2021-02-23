@@ -2,6 +2,7 @@ import { LOGOUT, NEXT_VIEW, SIGN_IN, UPDATE_TOKEN } from './auth.constants';
 import { ILoginData, INextView, ISignInPayload } from './auth.type';
 import { IThunkType } from '../rootReducer';
 import { refreshTokenAPI, sendRequest } from '../../apis';
+import { IRegistration } from '../../types/apiDataTypes';
 
 export const singIn = (payloadIn: ISignInPayload) => {
   return {
@@ -37,11 +38,11 @@ export const nextView = (value: INextView) => {
   };
 };
 
-export const signUp = (data: INextView, type: string) => {
+export const signUp = (data: IRegistration, type: string) => {
   return async (dispatch: IThunkType) => {
     let res;
     if (type === 'signUp') {
-      res = await sendRequest(data, 'POST', 'api/auth/signup/');
+      res = await sendRequest(data, 'POST', 'api/auth/signup');
     }
     if (type === 'invite') {
       res = await sendRequest(data, 'POST', 'api/auth/signup-by-invitation');

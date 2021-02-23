@@ -2,7 +2,7 @@ import React, { FC, useState, FormEvent, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useLocation, useHistory } from 'react-router-dom';
 
-import { Button, Input, Title, Paragrapgh } from '../shared';
+import { Button, Input, Title, Paragrapgh, CheckboxButton } from '../shared';
 
 import { logOut, signUp } from '../../store/auth/auth.actions';
 import { IRegistration } from '../../types/apiDataTypes';
@@ -14,6 +14,7 @@ const SignUpMain: FC = () => {
   const dispatch = useDispatch();
   const width = useWidth();
   const [disabled, setDisabled] = useState(false);
+  const [hasCoupon, setHasCoupon] = useState(false);
   const authStore = useSelector<IRootState, AuthState['auth']>(
     state => state.auth.auth,
   );
@@ -22,6 +23,7 @@ const SignUpMain: FC = () => {
   );
   const query = new URLSearchParams(useLocation().search);
   const [isValidFields, setIsValidFields] = useState<boolean>();
+  const [coupon, setCoupon] = useState('');
   const [fields, setFields] = useState([
     {
       name: 'fullName',
@@ -125,8 +127,12 @@ const SignUpMain: FC = () => {
         password_confirmation: fields[1].value,
         name: fields[0].value,
         remember: true,
+        coupon: 'none',
       };
 
+      if (hasCoupon) {
+        data.coupon = coupon;
+      }
       if (isValidFields) {
         await dispatch(signUp(data, 'signUp'));
       }
@@ -207,6 +213,33 @@ const SignUpMain: FC = () => {
               onValidate={(e, data) => handleOnValidFields(e, data)}
               placeholder='password'
             />
+            <div className='w-100 mb-20 d-flex align-items-center justify-content-between'>
+              <CheckboxButton
+                label='Have coupon?'
+                checked={hasCoupon}
+                onChange={e => setHasCoupon(e.target.checked)}
+              />
+              <Link to='/recover-password/email'>
+                <Paragrapgh
+                  size={2}
+                  fontWeight={400}
+                  color='blue-1'
+                  align='default'
+                >
+                  Forgot Password?
+                </Paragrapgh>
+              </Link>
+            </div>
+            {hasCoupon && (
+              <Input
+                onChange={(e, data) => setCoupon(e.target.value)}
+                type='text'
+                value={coupon}
+                label='Coupon Code'
+                className='mb-16'
+                placeholder='coupon code'
+              />
+            )}
             <div className='card-bottom'>
               <Button
                 color='blue'

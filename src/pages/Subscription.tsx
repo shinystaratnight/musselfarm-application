@@ -39,7 +39,6 @@ const Subscription: FC = () => {
   const [isCardModal, setIsCardModal] = useState(false);
   const [isAlertModal, setIsAlertModal] = useState(false);
   const [isSubscribing, setIsSubscribing] = useState(false);
-  const [subscriptionType, setSubscriptionType] = useState('start');
   const [alertInfo, setAlertInfo] = useState<IAlertInfo>({
     type: '',
     title: '',
@@ -156,32 +155,27 @@ const Subscription: FC = () => {
     setIsSubModal(false);
   };
 
-  const onTrialSubscribe = async (qty: number) => {
+  const onTrialSubscribe = async (qty: number, coupon: string) => {
     setIsSubscribing(true);
     const responseData = await composeApi(
       {
         data: {
-          card_number: cardDetails?.number,
-          cvc: cardDetails?.cvv,
-          plan_id: '1',
-          expiration_month: cardDetails?.date.slice(0, 2),
-          expiration_year: cardDetails?.date.slice(-2),
           quantity: qty,
-          trial: 1,
+          coupon,
         },
         method: 'POST',
-        url: 'api/subscription/subscription',
+        url: 'api/subscription/update-trial',
         requireAuth: true,
       },
       dispatch,
       authStore,
       history,
     );
-    if (responseData?.message === 'Successfully subscribed') {
+    if (responseData?.status === 1) {
       await getSubscriptionStats();
     } else if (responseData?.message) {
       setAlertInfo({
-        type: 'info',
+        type: 'warning',
         title: 'Note',
         buttonText: 'OK',
         hideCancelBtn: true,
@@ -316,7 +310,7 @@ const Subscription: FC = () => {
           <>
             You cancelled subscription and you are on grace period until
             <span className='font-weight-500'>
-              {` ${subscriptionStatus?.plan_data.expire_at}. `}
+              {` ${subscriptionStatus?.plan_data?.expire_at}. `}
             </span>
             Please resume subscription to continue using the platform.
           </>
@@ -333,7 +327,7 @@ const Subscription: FC = () => {
           <>
             You are subscribed until
             <span className='font-weight-500'>
-              {` ${subscriptionStatus?.plan_data.expire_at}.`}
+              {` ${subscriptionStatus?.plan_data?.expire_at}.`}
             </span>
           </>
         );
@@ -342,7 +336,7 @@ const Subscription: FC = () => {
           <>
             You are on trial period until
             <span className='font-weight-500'>
-              {` ${subscriptionStatus?.plan_data.expire_at}.`}
+              {` ${subscriptionStatus?.plan_data?.expire_at}.`}
             </span>
           </>
         );
@@ -406,98 +400,100 @@ const Subscription: FC = () => {
               farmsCount={farmsCount}
               onSubscription={() => {
                 if (cardDetails) {
-                  setSubscriptionType('start');
                   setIsSubModal(true);
                 } else showAlertModal('input_card');
               }}
               onCancelSubscription={onCancelSubscribe}
               onResumeSubscription={onResumeSubscribe}
-              onTrialSubscription={() => {
-                if (cardDetails) {
-                  setIsSubModal(true);
-                  setSubscriptionType('trial');
-                } else showAlertModal('input_card');
+              onTrialUpdate={() => {
+                setIsSubModal(true);
               }}
             />
           </div>
-          <div className='sub-min-height'>
-            <Title
-              className='mb-16'
-              size={6}
-              color='black-3'
-              align='default'
-              fontWeight={500}
-            >
-              Payment method
-            </Title>
-            {!cardDetails && (
-              <Button
-                className='mb-16'
-                color='blue'
-                size={2}
-                width='default'
-                type='fill'
-                onClick={() => setIsCardModal(true)}
-              >
-                Add Payment method
-              </Button>
-            )}
-            {cardDetails && (
-              <CreditCard
-                card={cardDetails}
-                planData={subscriptionStatus?.plan_data}
-                onChangeCard={() => setIsCardModal(true)}
-                removeCard={onRemoveCard}
-              />
-            )}
-          </div>
-          <div>
-            <Title
-              className='mb-16'
-              size={6}
-              color='black-3'
-              align='default'
-              fontWeight={500}
-            >
-              Last tansactions
-            </Title>
-            {subscriptionStatus?.history?.length ? (
-              subscriptionStatus.history.map((e: IInvoice) => (
-                <Transaction
-                  className='mb-8'
-                  date={e.date}
-                  price={e.total}
-                  invoiceId={e.id}
-                  downloadInvoice={downloadInvoiceFromId}
-                  status='Paid'
-                  key={e.id}
-                />
-              ))
-            ) : (
-              <Subtitle
-                className='mb-10'
-                size={1}
-                color='black-3'
-                align='default'
-                fontWeight={400}
-              >
-                No Transactions yet
-              </Subtitle>
-            )}
-          </div>
+          {subscriptionStatus.status !== 'trial' && (
+            <>
+              <div className='sub-min-height'>
+                <Title
+                  className='mb-16'
+                  size={6}
+                  color='black-3'
+                  align='default'
+                  fontWeight={500}
+                >
+                  Payment method
+                </Title>
+                {!cardDetails && (
+                  <Button
+                    className='mb-16'
+                    color='blue'
+                    size={2}
+                    width='default'
+                    type='fill'
+                    onClick={() => setIsCardModal(true)}
+                  >
+                    Add Payment method
+                  </Button>
+                )}
+                {cardDetails && (
+                  <CreditCard
+                    card={cardDetails}
+                    planData={subscriptionStatus?.plan_data}
+                    onChangeCard={() => setIsCardModal(true)}
+                    removeCard={onRemoveCard}
+                  />
+                )}
+              </div>
+              <div>
+                <Title
+                  className='mb-16'
+                  size={6}
+                  color='black-3'
+                  align='default'
+                  fontWeight={500}
+                >
+                  Last tansactions
+                </Title>
+                {subscriptionStatus?.history?.length ? (
+                  subscriptionStatus.history.map((e: IInvoice) => (
+                    <Transaction
+                      className='mb-8'
+                      date={e.date}
+                      price={e.total}
+                      invoiceId={e.id}
+                      downloadInvoice={downloadInvoiceFromId}
+                      status='Paid'
+                      key={e.id}
+                    />
+                  ))
+                ) : (
+                  <Subtitle
+                    className='mb-10'
+                    size={1}
+                    color='black-3'
+                    align='default'
+                    fontWeight={400}
+                  >
+                    No Transactions yet
+                  </Subtitle>
+                )}
+              </div>
+            </>
+          )}
         </>
       ) : (
         <Spinner />
       )}
       <SubscriptionModal
         textButton='Subscribe'
-        onSubscribe={qty => {
-          if (subscriptionType === 'trial') onTrialSubscribe(qty);
+        onSubscribe={(qty, coupon) => {
+          if (subscriptionStatus.status === 'trial')
+            onTrialSubscribe(qty, coupon);
           else onSubscribe(qty);
         }}
         onCancel={() => setIsSubModal(false)}
         visible={isSubModal}
         disabled={isSubscribing}
+        subscriptionStatus={subscriptionStatus}
         title='Subscription'
       />
       <CreditCardModal
