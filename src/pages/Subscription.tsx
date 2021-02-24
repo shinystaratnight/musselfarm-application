@@ -129,7 +129,6 @@ const Subscription: FC = () => {
           expiration_month: cardDetails?.date.slice(0, 2),
           expiration_year: cardDetails?.date.slice(-2),
           quantity: qty,
-          trial: 0,
         },
         method: 'POST',
         url: 'api/subscription/subscription',
@@ -140,6 +139,38 @@ const Subscription: FC = () => {
       history,
     );
     if (responseData?.message === 'Successfully subscribed') {
+      await getSubscriptionStats();
+    } else if (responseData?.message) {
+      setAlertInfo({
+        type: 'info',
+        title: 'Note',
+        buttonText: 'OK',
+        hideCancelBtn: true,
+        text: responseData.message,
+      });
+      setIsAlertModal(true);
+    }
+    setIsSubscribing(false);
+    setIsSubModal(false);
+  };
+
+  const onUpdateSubscription = async (qty: number) => {
+    setIsSubscribing(true);
+    const responseData = await composeApi(
+      {
+        data: {
+          plan_id: '1',
+          quantity: qty,
+        },
+        method: 'POST',
+        url: 'api/subscription/update-subscription',
+        requireAuth: true,
+      },
+      dispatch,
+      authStore,
+      history,
+    );
+    if (responseData?.status === 1) {
       await getSubscriptionStats();
     } else if (responseData?.message) {
       setAlertInfo({
@@ -269,6 +300,10 @@ const Subscription: FC = () => {
   };
 
   const onRemoveCard = async () => {
+    if (subscriptionStatus.status === 'not_subscribe') {
+      setCardDetails(null);
+      return;
+    }
     setIsLoaded(false);
     const responseData = await composeApi(
       {
@@ -301,8 +336,8 @@ const Subscription: FC = () => {
       case 'not_subscribe':
         return (
           <>
-            You are not subcribed yet. You need to subscribe to continue using
-            the platform.
+            Your trial has expired and you are not subcribed yet. You need to
+            subscribe to continue using the platform.
           </>
         );
       case 'grace':
@@ -405,6 +440,9 @@ const Subscription: FC = () => {
               }}
               onCancelSubscription={onCancelSubscribe}
               onResumeSubscription={onResumeSubscribe}
+              onSubscriptionUpdate={() => {
+                setIsSubModal(true);
+              }}
               onTrialUpdate={() => {
                 setIsSubModal(true);
               }}
@@ -438,8 +476,9 @@ const Subscription: FC = () => {
                   <CreditCard
                     card={cardDetails}
                     planData={subscriptionStatus?.plan_data}
+                    status={subscriptionStatus?.status}
                     onChangeCard={() => setIsCardModal(true)}
-                    removeCard={onRemoveCard}
+                    onRemoveCard={onRemoveCard}
                   />
                 )}
               </div>
@@ -488,6 +527,7 @@ const Subscription: FC = () => {
         onSubscribe={(qty, coupon) => {
           if (subscriptionStatus.status === 'trial')
             onTrialSubscribe(qty, coupon);
+          if (subscriptionStatus.status === 'active') onUpdateSubscription(qty);
           else onSubscribe(qty);
         }}
         onCancel={() => setIsSubModal(false)}

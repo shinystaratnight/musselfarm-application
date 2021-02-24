@@ -17,16 +17,18 @@ import './styles.scss';
 
 interface IOwnProps {
   onChangeCard: () => void;
-  removeCard: () => void;
+  onRemoveCard: () => void;
   card: ICardDetails;
   planData?: IPlan | null;
+  status: string;
 }
 
 const CreditCard: FC<IOwnProps> = ({
   onChangeCard,
   card,
   planData,
-  removeCard,
+  status,
+  onRemoveCard,
 }) => {
   const width = useWidth();
   const [isVisible, setIsVisible] = useState(false);
@@ -60,7 +62,7 @@ const CreditCard: FC<IOwnProps> = ({
           >
             {card.holder} - Expired {card.date}
           </Paragrapgh>
-          {planData && (
+          {planData?.expire_at && (
             <Paragrapgh
               size={2}
               color='black-2'
@@ -86,15 +88,17 @@ const CreditCard: FC<IOwnProps> = ({
         >
           Change card
         </Button>
-        <Button
-          color='blue'
-          size={1}
-          width={width > 520 ? 'normal' : 'wide'}
-          type='transparent'
-          onClick={() => setIsVisible(true)}
-        >
-          Remove
-        </Button>
+        {status !== 'active' && (
+          <Button
+            color='blue'
+            size={1}
+            width={width > 520 ? 'normal' : 'wide'}
+            type='transparent'
+            onClick={() => setIsVisible(true)}
+          >
+            Remove
+          </Button>
+        )}
       </div>
       <ModalComponent
         visible={isVisible}
@@ -103,7 +107,7 @@ const CreditCard: FC<IOwnProps> = ({
         type='warning'
         title='Are you sure?'
         text='If you delete the payment method, you will not be able to renew your subscription and you will lose access to your data. Are you sure you want to delete a payment method?'
-        onConfirm={removeCard}
+        onConfirm={onRemoveCard}
       />
     </div>
   );

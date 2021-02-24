@@ -37,6 +37,7 @@ export const sendRequest = async (
 
     return false;
   } catch (e) {
+    console.log(e);
     return e?.response?.data;
   }
 };

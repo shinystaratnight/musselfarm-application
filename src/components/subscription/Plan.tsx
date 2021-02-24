@@ -8,6 +8,7 @@ interface IOwnProps {
   onSubscription: () => void;
   onCancelSubscription: () => void;
   onResumeSubscription: () => void;
+  onSubscriptionUpdate: () => void;
   onTrialUpdate: () => void;
   info: any;
   status: string;
@@ -18,6 +19,7 @@ const Plan: FC<IOwnProps> = ({
   onSubscription,
   onCancelSubscription,
   onResumeSubscription,
+  onSubscriptionUpdate,
   onTrialUpdate,
   info,
   status,
@@ -50,7 +52,7 @@ const Plan: FC<IOwnProps> = ({
             align='default'
             fontWeight={400}
           >
-            {info ? info.quantity : '--'} Farms
+            {info ? info?.quantity : '--'} Farms
           </Subtitle>
         </div>
         <div>
@@ -70,7 +72,7 @@ const Plan: FC<IOwnProps> = ({
               align='default'
               fontWeight={400}
             >
-              {info ? farmsCount : '--'}
+              {farmsCount}
             </Subtitle>
             <Paragrapgh
               className='pl-8'
@@ -79,7 +81,7 @@ const Plan: FC<IOwnProps> = ({
               align='default'
               fontWeight={400}
             >
-              of {info ? info.quantity : '--'}
+              of {info ? info?.quantity : '--'}
             </Paragrapgh>
           </div>
         </div>
@@ -99,7 +101,7 @@ const Plan: FC<IOwnProps> = ({
             align='default'
             fontWeight={400}
           >
-            {info ? info.expire_at : '-- / -- ----'}
+            {info?.expire_at ? info.expire_at : '-- / -- ----'}
           </Subtitle>
         </div>
       </div>
@@ -115,7 +117,7 @@ const Plan: FC<IOwnProps> = ({
             Update Plan
           </Button>
         )}
-        {!info && (
+        {(status === 'not_subscribe' || status === 'cancelled') && (
           <Button
             color='blue'
             size={1}
@@ -126,18 +128,37 @@ const Plan: FC<IOwnProps> = ({
             Start Subscription
           </Button>
         )}
-        {info && status !== 'trial' && (
+        {status === 'active' && (
+          <>
+            <Button
+              color='blue'
+              size={1}
+              width={width > 520 ? 'normal' : 'wide'}
+              type='bordered'
+              onClick={onSubscriptionUpdate}
+            >
+              Update Subscription
+            </Button>
+            <Button
+              color='orange'
+              size={1}
+              width={width > 520 ? 'normal' : 'wide'}
+              type='bordered'
+              onClick={onCancelSubscription}
+            >
+              Cancel Subscription
+            </Button>
+          </>
+        )}
+        {status === 'grace' && (
           <Button
             color='blue'
             size={1}
             width={width > 520 ? 'normal' : 'wide'}
             type='bordered'
-            onClick={() => {
-              if (status === 'grace') onResumeSubscription();
-              else onCancelSubscription();
-            }}
+            onClick={onResumeSubscription}
           >
-            {status === 'grace' ? 'Resume Subscription' : 'Cancel Subscription'}
+            Resume Subscription
           </Button>
         )}
       </div>
