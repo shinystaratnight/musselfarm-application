@@ -29,6 +29,8 @@ import { setSubscriptionStatus } from '../store/subscription/subscription.action
 
 const APPLY_SUBSCRIBE = 'Please Add Payment Method';
 const CANCEL_SUBSCRIBE = 'Are you really going to unsubscribe?';
+const PAYMENT_INACTIVE =
+  'The payment attempt failed because additional action is required before it can be completed.';
 
 const Subscription: FC = () => {
   const dispatch = useDispatch();
@@ -39,6 +41,7 @@ const Subscription: FC = () => {
   const [isCardModal, setIsCardModal] = useState(false);
   const [isAlertModal, setIsAlertModal] = useState(false);
   const [isSubscribing, setIsSubscribing] = useState(false);
+  const [paymentInActive, setPaymentInActive] = useState(false);
   const [alertInfo, setAlertInfo] = useState<IAlertInfo>({
     type: '',
     title: '',
@@ -82,6 +85,12 @@ const Subscription: FC = () => {
       });
     } else {
       setCardDetails(null);
+    }
+    if (responseData?.status === 'incomplete_payment') {
+      setIsLoaded(false);
+      setPaymentInActive(true);
+      setTimeout(() => window.location.replace(responseData.url!), 3000);
+      return;
     }
     dispatch(setSubscriptionStatus(responseData));
     setIsLoaded(true);
@@ -139,6 +148,12 @@ const Subscription: FC = () => {
       history,
     );
     if (responseData?.message === 'Successfully subscribed') {
+      await getSubscriptionStats();
+    } else if (responseData?.message === PAYMENT_INACTIVE) {
+      setIsLoaded(false);
+      setPaymentInActive(true);
+      setIsSubscribing(false);
+      setIsSubModal(false);
       await getSubscriptionStats();
     } else if (responseData?.message) {
       setAlertInfo({
@@ -520,7 +535,20 @@ const Subscription: FC = () => {
           )}
         </>
       ) : (
-        <Spinner />
+        <>
+          <div style={{ marginBottom: 30 }}>
+            <Spinner />
+          </div>
+          {paymentInActive && (
+            <Feedback
+              className='mb-32'
+              isWithoutClosable
+              theme='light'
+              message={PAYMENT_INACTIVE}
+              type='warning'
+            />
+          )}
+        </>
       )}
       <SubscriptionModal
         textButton='Subscribe'

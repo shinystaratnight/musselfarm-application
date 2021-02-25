@@ -16,6 +16,7 @@ export interface ISubscriptionState {
   plan_data?: any;
   history?: any;
   payment_method?: any;
+  url?: string;
 }
 
 export interface ICardDetails {
