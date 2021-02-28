@@ -67,7 +67,7 @@ const SecondRecoverPassword: FC = () => {
     if (message === 'Success') {
       setTimeout(() => {
         history.push(`/`);
-      }, 2000);
+      }, 3000);
     }
     dispatch(
       nextView({
@@ -157,7 +157,7 @@ const SecondRecoverPassword: FC = () => {
       {message && (
         <Feedback
           className='mt-4'
-          message={message}
+          message={message === 'Success' ? 'You successfully changed your password' : message}
           type={message === 'Success' ? 'success' : 'error'}
           theme='light'
           isGlobal
