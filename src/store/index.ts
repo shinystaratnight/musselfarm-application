@@ -1,14 +1,25 @@
 import { createStore, applyMiddleware, compose } from 'redux';
-import thunk from 'redux-thunk';
+import { persistStore, persistReducer } from 'redux-persist';
+import storage from 'redux-persist/lib/storage';
 import { composeWithDevTools } from 'redux-devtools-extension';
+import thunk from 'redux-thunk';
 
 import rootReducers from './rootReducer';
 
-import { createStorageListener } from '../util/storage-listener';
+// import { createStorageListener } from '../util/storage-listener';
+
+const persistConfig = {
+  key: 'root',
+  storage,
+};
+
+const persistedReducer = persistReducer(persistConfig, rootReducers);
 
 export const store = createStore(
-  rootReducers,
+  persistedReducer,
   composeWithDevTools(applyMiddleware(thunk)),
 );
 
-window.addEventListener('storage', createStorageListener(store));
+export const persistor = persistStore(store);
+
+// window.addEventListener('storage', createStorageListener(store));

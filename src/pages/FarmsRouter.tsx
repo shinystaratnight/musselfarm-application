@@ -45,9 +45,6 @@ const FarmsRouter = () => {
   return (
     <div>
       <Switch>
-        <Route exact path='/farms'>
-          <Farms />
-        </Route>
         <Route exact path='/farms/farm-:id/:idFarm?'>
           <FarmsForm />
         </Route>
@@ -59,6 +56,9 @@ const FarmsRouter = () => {
         </Route>
         <Route exact path='/farms/:idFarm/:idLine'>
           <FarmLine />
+        </Route>
+        <Route exact path='/farms'>
+          <Farms />
         </Route>
       </Switch>
       <ModalComponent
