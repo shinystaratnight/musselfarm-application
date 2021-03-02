@@ -1,4 +1,11 @@
-import React, { FC, ReactNode, ChangeEvent, useEffect, useState } from 'react';
+import React, {
+  FC,
+  ReactNode,
+  ChangeEvent,
+  FocusEvent,
+  useEffect,
+  useState,
+} from 'react';
 import classNames from 'classnames';
 import NumberFormat from 'react-number-format';
 
@@ -147,6 +154,10 @@ const Input: FC<IOwnProps> = ({
     }
   };
 
+  const handleOnFocus = (e: FocusEvent<HTMLInputElement>) => {
+    checkInputh(e.target.value, true);
+  };
+
   useEffect(() => {
     if (isClear) {
       if (isSuccess) {
@@ -266,6 +277,7 @@ const Input: FC<IOwnProps> = ({
             <input
               type={type}
               onChange={handleOnChange}
+              // onFocus={handleOnFocus}
               disabled={disabled}
               className={inputClasses}
               placeholder={placeholder}

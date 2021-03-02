@@ -1,4 +1,4 @@
-import { IBudgetPayload, IRowPayload } from '../store/budget/budget.type';
+import { IBudgetPayload } from '../store/budget/budget.type';
 import { getInterest } from './getInterest';
 
 export const getBudgetMain = (data: any) => {

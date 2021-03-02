@@ -1,8 +1,8 @@
 import React, { useState, useEffect, FC, ReactElement } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { Link, useHistory } from 'react-router-dom';
 
-import { IFarmData, IFarmState } from '../../store/farms/farms.type';
+import { IFarmData } from '../../store/farms/farms.type';
 import {
   addFarm,
   editFarm,
@@ -16,11 +16,9 @@ import {
   PlusIcon,
   PercentIcon,
   Title,
-  Feedback,
 } from '../shared';
 import './styles.scss';
 import randomKey from '../../util/randomKey';
-import { IRootState } from '../../store/rootReducer';
 import { useWidth } from '../../util/useWidth';
 import validationForZeroMinus from '../../util/validationForZeroMinus';
 
@@ -359,6 +357,7 @@ const FarmForm: FC<IFarmForm> = ({
           const location = { lat: fields.lat, lng: validValue };
 
           if (location.lat && location.lng) {
+            // console.log(location);
             onPosition(location);
           }
           return {
@@ -511,7 +510,11 @@ const FarmForm: FC<IFarmForm> = ({
 
     const valid = fields.owners.filter(
       line =>
-        line.owner === '' || line.percent === '' || Number(line.percent) <= 0,
+        line.title === '' ||
+        line.title === undefined ||
+        line.percent === '' ||
+        line.percent === undefined ||
+        Number(line.percent) <= 0,
     );
 
     if (!fields.owners.length || valid.length) {
@@ -522,7 +525,6 @@ const FarmForm: FC<IFarmForm> = ({
           message: 'Field owners filled in incorrectly',
         }),
       );
-
       return null;
     }
 
