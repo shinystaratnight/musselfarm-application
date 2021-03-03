@@ -16,6 +16,7 @@ import Feedback from '../shared/feedback/Feedback';
 
 import './styles.scss';
 import validationForZeroMinus from '../../util/validationForZeroMinus';
+import validationForMinus from '../../util/validationForMinus';
 
 type IAssessmentModal = {
   data: any;
@@ -98,7 +99,7 @@ const AssessmentModal: FC<IAssessmentModal> = ({
         }
 
         if (type === 'blues') {
-          const validValue = validationForZeroMinus(value);
+          const validValue = validationForMinus(value);
 
           return { ...prev, [isType]: validValue };
         }
