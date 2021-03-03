@@ -65,6 +65,7 @@ const TablesCard: FC<IOwnProps> = ({ type, data }) => {
                 {info?.date
                   ? moment(Number(info?.date) * 1000).format('DD.MM.YYYY')
                   : info.value}
+                {info?.unit}
               </Paragrapgh>
             </div>
           ))}

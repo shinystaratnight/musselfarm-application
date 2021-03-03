@@ -67,6 +67,7 @@ export interface IFarmCard {
   value?: number;
   name?: string;
   interest?: IInterest;
+  unit?: string;
 }
 
 export interface IApiFarmCard {

@@ -58,7 +58,7 @@ const MapWithMarkers: FC<any> = ({
       center={state || defaultCenter.current}
       onClick={handleSetPosition}
     >
-      {/* {state && (
+      {state && (
         <Marker
           position={state}
           icon={{
@@ -72,7 +72,7 @@ const MapWithMarkers: FC<any> = ({
             </div>
           </InfoWindow>
         </Marker>
-      )} */}
+      )}
     </GoogleMap>
   );
 };
