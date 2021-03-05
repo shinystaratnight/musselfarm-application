@@ -1,9 +1,12 @@
 import React, { FC, useState, useEffect, useRef } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
+import { IRootState } from '../../store/rootReducer';
 import { IBudget } from '../../store/farms/farms.type';
 import { addLine, showFeedback } from '../../store/farms/farms.actions';
+import { IUtilState, IUtilData } from '../../store/utils/utils.type';
+import { getUtilData } from '../../store/utils/utils.actions';
 import { IMainList } from '../../types/basicComponentsTypes';
 import { ILineData, IBudgetLocal } from '../../types/farmTypes';
 import { useWidth } from '../../util/useWidth';
@@ -43,10 +46,24 @@ const LineBudget: FC<ILineBudget> = ({
   const [disabled, setDisabled] = useState(false);
   const isSkip = useRef(false);
 
+  const seedData = useSelector<IRootState, IUtilState['seeds']>(
+    state => state.utils.seeds,
+  );
+
+  const maintenanceData = useSelector<IRootState, IUtilState['maintenances']>(
+    state => state.utils.maintenances,
+  );
+
+  useEffect(() => {
+    dispatch(getUtilData('all', history));
+  }, []);
+
   const [budget, setBudget] = useState<IBudgetLocal>({
-    seedingCosts: [{ name: '', price: '', id: randomKey() }],
+    seedingCosts: [{ name: '', price: '', id: randomKey(), type: 'select' }],
     seedingCostsTotal: '0',
-    maintenanceCosts: [{ name: '', price: '', id: randomKey() }],
+    maintenanceCosts: [
+      { name: '', price: '', id: randomKey(), type: 'select' },
+    ],
     maintenanceCostsTotal: '0',
     totalExpenses: 0,
     harvestTonnes: '',
@@ -58,11 +75,6 @@ const LineBudget: FC<ILineBudget> = ({
       isSkip.current = true;
     }
   };
-
-  const items: IMainList[] = [
-    { value: 'spat', label: 'Spat', id: randomKey() },
-    { value: 'spat2', label: 'Spat2', id: randomKey() },
-  ];
 
   const handleOnSelectType = (value: string, type: number, id: string) => {
     handleSkip();
@@ -103,7 +115,7 @@ const LineBudget: FC<ILineBudget> = ({
         ...prev,
         seedingCosts: [
           ...prev.seedingCosts,
-          { name: '', price: '', id: randomKey() },
+          { name: '', price: '', id: randomKey(), type: 'select' },
         ],
       }));
     }
@@ -112,7 +124,31 @@ const LineBudget: FC<ILineBudget> = ({
         ...prev,
         maintenanceCosts: [
           ...prev.maintenanceCosts,
-          { name: '', price: '', id: randomKey() },
+          { name: '', price: '', id: randomKey(), type: 'select' },
+        ],
+      }));
+    }
+  };
+
+  const handleOnAddCustomLine = (type: number) => {
+    if (!isSkip.current) {
+      handleSkip();
+    }
+    if (type === 1) {
+      setBudget(prev => ({
+        ...prev,
+        seedingCosts: [
+          ...prev.seedingCosts,
+          { name: '', price: '', id: randomKey(), type: 'text' },
+        ],
+      }));
+    }
+    if (type === 2) {
+      setBudget(prev => ({
+        ...prev,
+        maintenanceCosts: [
+          ...prev.maintenanceCosts,
+          { name: '', price: '', id: randomKey(), type: 'text' },
         ],
       }));
     }
@@ -392,16 +428,39 @@ const LineBudget: FC<ILineBudget> = ({
               key={seedingCost.id}
             >
               <div className='budget__wrapper'>
-                <Dropdown
-                  className='mr-16 w-100'
-                  placeholder='seed name'
-                  onChange={(value, event) =>
-                    handleOnSelectType(value, 1, seedingCost.id)
-                  }
-                  label='Seed name'
-                  options={items}
-                  defaultValue={seedingCost.name ? seedingCost.name : undefined}
-                />
+                {seedingCost.type === 'select' && (
+                  <Dropdown
+                    className='mr-16 w-100'
+                    placeholder='seed name'
+                    onChange={(value, event) =>
+                      handleOnSelectType(value, 1, seedingCost.id)
+                    }
+                    label='Seed name'
+                    options={seedData.map(
+                      (seed: IUtilData) =>
+                        ({
+                          value: seed.name,
+                          label: seed.name,
+                          id: seed.id,
+                        } as IMainList),
+                    )}
+                    defaultValue={
+                      seedingCost.name ? seedingCost.name : undefined
+                    }
+                  />
+                )}
+                {seedingCost.type === 'text' && (
+                  <Input
+                    type='text'
+                    onChange={e =>
+                      handleOnSelectType(e.target.value, 1, seedingCost.id)
+                    }
+                    className='mr-16 w-100'
+                    value={seedingCost.name}
+                    label='Seed name'
+                    placeholder='seed name'
+                  />
+                )}
               </div>
               <div className='budget__price-wrapper pl-16'>
                 <Input
@@ -427,21 +486,38 @@ const LineBudget: FC<ILineBudget> = ({
             </div>
           ))}
         </div>
-        <Button
-          className='pt-7 pb-7'
-          color='blue'
-          size={0}
-          width={width < 768 ? 'wide' : 'default'}
-          type='bordered'
-          isNoneBorder={width > 767}
-          iconLeft
-          onClick={() => handleOnAddLine(1)}
-        >
-          <span className='mr-4 ml-6 font-size-0'>
-            <PlusIcon />
-          </span>
-          <span className='mr-6'>Add</span>
-        </Button>
+        <div className='d-flex'>
+          <Button
+            className='pt-7 pb-7 pl-10 pr-10'
+            color='blue'
+            size={0}
+            width={width < 768 ? 'wide' : 'default'}
+            type='bordered'
+            isNoneBorder={width > 767}
+            iconLeft
+            onClick={() => handleOnAddLine(1)}
+          >
+            <span className='mr-4 ml-6 font-size-0'>
+              <PlusIcon />
+            </span>
+            <span className='mr-6'>Add</span>
+          </Button>
+          <Button
+            className='pt-7 pb-7 pl-10 pr-10'
+            color='blue'
+            size={0}
+            width={width < 768 ? 'wide' : 'default'}
+            type='bordered'
+            isNoneBorder={width > 767}
+            iconLeft
+            onClick={() => handleOnAddCustomLine(1)}
+          >
+            <span className='mr-4 ml-6 font-size-0'>
+              <PlusIcon />
+            </span>
+            <span className='mr-6'>Add Custom</span>
+          </Button>
+        </div>
         <div className='mb-12 pt-16 line-bottom' />
         <Paragrapgh
           className='mb-12 '
@@ -459,16 +535,39 @@ const LineBudget: FC<ILineBudget> = ({
               key={maintenanceCost.id}
             >
               <div className='budget__wrapper'>
-                <Input
-                  className='mr-16'
-                  type='text'
-                  value={maintenanceCost.name}
-                  placeholder='new maintenance'
-                  onChange={e =>
-                    handleOnSelectType(e.target.value, 2, maintenanceCost.id)
-                  }
-                  label='Maintenance name'
-                />
+                {maintenanceCost.type === 'select' && (
+                  <Dropdown
+                    className='mr-16 w-100'
+                    placeholder='maintenance name'
+                    onChange={(value, event) =>
+                      handleOnSelectType(value, 2, maintenanceCost.id)
+                    }
+                    label='Maintenance name'
+                    options={maintenanceData.map(
+                      (maintenance: IUtilData) =>
+                        ({
+                          value: maintenance.name,
+                          label: maintenance.name,
+                          id: maintenance.id,
+                        } as IMainList),
+                    )}
+                    defaultValue={
+                      maintenanceCost.name ? maintenanceCost.name : undefined
+                    }
+                  />
+                )}
+                {maintenanceCost.type === 'text' && (
+                  <Input
+                    className='mr-16'
+                    type='text'
+                    value={maintenanceCost.name}
+                    placeholder='new maintenance'
+                    onChange={e =>
+                      handleOnSelectType(e.target.value, 2, maintenanceCost.id)
+                    }
+                    label='Maintenance name'
+                  />
+                )}
               </div>
               <div className='budget__price-wrapper pl-16'>
                 <Input
@@ -494,21 +593,38 @@ const LineBudget: FC<ILineBudget> = ({
             </div>
           ))}
         </div>
-        <Button
-          className='pt-7 pb-7'
-          color='blue'
-          size={0}
-          width={width < 768 ? 'wide' : 'default'}
-          type='bordered'
-          isNoneBorder={width > 767}
-          iconLeft
-          onClick={() => handleOnAddLine(2)}
-        >
-          <span className='mr-4 ml-6 font-size-0'>
-            <PlusIcon />
-          </span>
-          <span className='mr-6'>Add</span>
-        </Button>
+        <div className='d-flex'>
+          <Button
+            className='pt-7 pb-7'
+            color='blue'
+            size={0}
+            width={width < 768 ? 'wide' : 'default'}
+            type='bordered'
+            isNoneBorder={width > 767}
+            iconLeft
+            onClick={() => handleOnAddLine(2)}
+          >
+            <span className='mr-4 ml-6 font-size-0'>
+              <PlusIcon />
+            </span>
+            <span className='mr-6'>Add</span>
+          </Button>
+          <Button
+            className='pt-7 pb-7'
+            color='blue'
+            size={0}
+            width={width < 768 ? 'wide' : 'default'}
+            type='bordered'
+            isNoneBorder={width > 767}
+            iconLeft
+            onClick={() => handleOnAddCustomLine(2)}
+          >
+            <span className='mr-4 ml-6 font-size-0'>
+              <PlusIcon />
+            </span>
+            <span className='mr-6'>Add Custom</span>
+          </Button>
+        </div>
         <div className='mb-18 pt-16 line-bottom' />
         <div className='pb-16 mb-28 line-bottom d-flex align-items-center justify-content-between'>
           <Paragrapgh size={1} color='default' align='left' fontWeight={400}>

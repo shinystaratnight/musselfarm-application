@@ -30,9 +30,11 @@ const AddLines = () => {
   });
 
   const [budget, setBudget] = useState<IBudgetLocal>({
-    seedingCosts: [{ name: '', price: '', id: randomKey() }],
+    seedingCosts: [{ name: '', price: '', id: randomKey(), type: 'select' }],
     seedingCostsTotal: '0',
-    maintenanceCosts: [{ name: '', price: '', id: randomKey() }],
+    maintenanceCosts: [
+      { name: '', price: '', id: randomKey(), type: 'select' },
+    ],
     maintenanceCostsTotal: '0',
     totalExpenses: 0,
     harvestTonnes: '',

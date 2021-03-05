@@ -1,11 +1,10 @@
 import { IRootState, IThunkType } from '../rootReducer';
 import { UtilsTypes, IUtilsData, IUtilData } from './utils.type';
-import { SET_SEED_DATA } from './utils.constants';
+import { SET_SEED_DATA, SET_MAINTENANCE_DATA } from './utils.constants';
 
-import { isModal, isSpinner } from '../ui/ui.actions';
+import { isSpinner } from '../ui/ui.actions';
 import { composeApi } from '../../apis/compose';
-import randomKey from '../../util/randomKey';
-import { transformSeed } from '../../util/farmUtil';
+import { transformUtil } from '../../util/farmUtil';
 
 export const setSeedData = (data: IUtilsData): UtilsTypes => {
   return {
@@ -14,7 +13,14 @@ export const setSeedData = (data: IUtilsData): UtilsTypes => {
   };
 };
 
-export const getSeedData = (history: any): IRootState => {
+export const setMaintenance = (data: IUtilsData): UtilsTypes => {
+  return {
+    type: SET_MAINTENANCE_DATA,
+    payload: data,
+  };
+};
+
+export const getUtilData = (category: string, history: any): IRootState => {
   return async (dispatch: IThunkType, getState: () => IRootState) => {
     dispatch(isSpinner(true));
 
@@ -32,11 +38,27 @@ export const getSeedData = (history: any): IRootState => {
 
     if (responseData?.data) {
       if (responseData?.data?.length) {
-        const dataWithKey = transformSeed(responseData?.data);
+        const dataWithKey = transformUtil(category, responseData?.data);
 
-        dispatch(setSeedData(dataWithKey));
+        if (category.toLowerCase() === 'seed')
+          dispatch(setSeedData(dataWithKey));
+        else if (category.toLowerCase() === 'maintenance')
+          dispatch(setMaintenance(dataWithKey));
+        else if (category.toLowerCase() === 'all') {
+          const seeds = transformUtil('seed', responseData?.data);
+          const maintenances = transformUtil('maintenance', responseData?.data);
+          dispatch(setSeedData(seeds));
+          dispatch(setMaintenance(maintenances));
+        }
       } else {
-        dispatch(setSeedData(responseData?.data));
+        if (category.toLowerCase() === 'seed')
+          dispatch(setSeedData(responseData?.data));
+        else if (category.toLowerCase() === 'maintenance')
+          dispatch(setMaintenance(responseData?.data));
+        else if (category.toLowerCase() === 'all') {
+          dispatch(setSeedData(responseData?.data));
+          dispatch(setMaintenance(responseData?.data));
+        }
       }
     } else {
       // dispatch(
@@ -73,7 +95,7 @@ export const updateUtil = (newUtil: IUtilData, history: any): IRootState => {
     );
 
     if (responseData?.status === 'success') {
-      dispatch(getSeedData(history));
+      dispatch(getUtilData(newUtil.type, history));
     } else {
       // dispatch(
       //   showFeedback({
@@ -90,6 +112,7 @@ export const updateUtil = (newUtil: IUtilData, history: any): IRootState => {
 
 export const removeUtil = (
   utilId: string | number,
+  utilType: string,
   history: any,
 ): IRootState => {
   return async (dispatch: IThunkType, getState: () => IRootState) => {
@@ -110,7 +133,7 @@ export const removeUtil = (
     );
 
     if (responseData?.status === 'success') {
-      dispatch(getSeedData(history));
+      dispatch(getUtilData(utilType, history));
     } else {
       // dispatch(
       //   showFeedback({
@@ -149,7 +172,7 @@ export const addUtil = (
     );
 
     if (responseData?.status === 'success') {
-      dispatch(getSeedData(history));
+      dispatch(getUtilData(type, history));
     } else {
       // dispatch(
       //   showFeedback({
