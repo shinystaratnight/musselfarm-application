@@ -24,6 +24,4 @@ export interface IUtilData {
   type: string;
 }
 
-export type UtilsTypes =
-  | ISetSeedData
-  | ISetMaintenanceData
+export type UtilsTypes = ISetSeedData | ISetMaintenanceData;

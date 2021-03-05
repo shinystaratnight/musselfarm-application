@@ -8,7 +8,7 @@ export interface ICost {
   name: string;
   price: string;
   id: string;
-  type: string; 
+  type: string;
 }
 
 export interface IBudgetLocal {

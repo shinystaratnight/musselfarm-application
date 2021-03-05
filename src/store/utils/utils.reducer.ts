@@ -11,7 +11,7 @@ const utilsReducer = (state = initialState, action: UtilsTypes): IUtilState => {
     case SET_SEED_DATA:
       return { ...state, seeds: action.payload };
     case SET_MAINTENANCE_DATA:
-      return { ...state, maintenances: action.payload};
+      return { ...state, maintenances: action.payload };
     default:
       return state;
   }

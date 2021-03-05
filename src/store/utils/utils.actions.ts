@@ -50,15 +50,13 @@ export const getUtilData = (category: string, history: any): IRootState => {
           dispatch(setSeedData(seeds));
           dispatch(setMaintenance(maintenances));
         }
-      } else {
-        if (category.toLowerCase() === 'seed')
-          dispatch(setSeedData(responseData?.data));
-        else if (category.toLowerCase() === 'maintenance')
-          dispatch(setMaintenance(responseData?.data));
-        else if (category.toLowerCase() === 'all') {
-          dispatch(setSeedData(responseData?.data));
-          dispatch(setMaintenance(responseData?.data));
-        }
+      } else if (category.toLowerCase() === 'seed')
+        dispatch(setSeedData(responseData?.data));
+      else if (category.toLowerCase() === 'maintenance')
+        dispatch(setMaintenance(responseData?.data));
+      else if (category.toLowerCase() === 'all') {
+        dispatch(setSeedData(responseData?.data));
+        dispatch(setMaintenance(responseData?.data));
       }
     } else {
       // dispatch(
