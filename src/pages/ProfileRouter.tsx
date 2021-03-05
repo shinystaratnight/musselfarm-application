@@ -9,9 +9,11 @@ import {
   KeyIcon,
   Navbar,
   UserIcon,
+  SettingIcon,
 } from '../components/shared';
 import Profile from './Profile';
 import Security from './Security';
+import Setting from './Setting';
 import { IMainList, INavbar } from '../types/basicComponentsTypes';
 import Subscription from './Subscription';
 import { IRootState } from '../store/rootReducer';
@@ -76,6 +78,15 @@ const ProfileRouter = () => {
       ),
       id: '/profile/subscription',
     },
+    {
+      value: '/profile/setting',
+      label: (
+        <p className='d-flex align-items-center mb-0'>
+          <SettingIcon /> <span className='ml-16'> User Setting </span>
+        </p>
+      ),
+      id: '/profile/subscription',
+    },
   ];
 
   const navbarItems: INavbar[] = [
@@ -96,6 +107,12 @@ const ProfileRouter = () => {
       icon: <CreditCardIcon />,
       link: '/profile/subscription',
       id: '/profile/subscription',
+    },
+    {
+      title: 'Setting',
+      icon: <SettingIcon />,
+      link: '/profile/setting',
+      id: '/profile/setting',
     },
   ];
 
@@ -135,6 +152,9 @@ const ProfileRouter = () => {
             </Route>
             <Route path='/profile/subscription'>
               <Subscription />
+            </Route>
+            <Route path='/profile/setting'>
+              <Setting />
             </Route>
           </Switch>
         </div>

@@ -6,6 +6,7 @@ import profileReducer from './profile/profile.reducer';
 import uiReducer from './ui/ui.reducer';
 import usersReducer from './users/users.reducer';
 import budgetReducer from './budget/budget.reducer';
+import utilsReducer from './utils/utils.reducer';
 import subscriptReducer from './subscription/subscription.reducer';
 
 const rootReducer = combineReducers({
@@ -16,6 +17,7 @@ const rootReducer = combineReducers({
   users: usersReducer,
   budget: budgetReducer,
   subscription: subscriptReducer,
+  utils: utilsReducer,
 });
 
 export default rootReducer;

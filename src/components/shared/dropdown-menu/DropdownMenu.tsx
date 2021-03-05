@@ -11,7 +11,7 @@ import './styles.scss';
 
 interface IDropdownMenu {
   data: any;
-  type?: 'farms' | 'todo' | 'isModal' | 'isRedirect';
+  type?: 'farms' | 'todo' | 'isModal' | 'isRedirect' | 'utils';
   icon?: ReactNode;
   column?: string;
   onEdit?: (data: any, col?: string | undefined) => void | undefined;
@@ -91,6 +91,10 @@ const DropdownMenu: FC<IDropdownMenu> = ({
       onEdit(dataRow, column);
     }
 
+    if (column === 'isUtil' && onEdit) {
+      onEdit(dataRow, column);
+    }
+
     if (type === 'isModal' && onEdit) {
       onEdit(dataRow);
     }
@@ -119,7 +123,12 @@ const DropdownMenu: FC<IDropdownMenu> = ({
       onActivateUser(rowData.current);
     }
 
-    if (key === 'delete' && column !== 'isUsers' && column !== 'isBudgetLog') {
+    if (
+      key === 'delete' &&
+      column !== 'isUsers' &&
+      column !== 'isBudgetLog' &&
+      column !== 'isUtil'
+    ) {
       let redirect;
       if (column === 'isFarms') {
         redirect = isRedirect;
@@ -136,7 +145,7 @@ const DropdownMenu: FC<IDropdownMenu> = ({
     if (
       key === 'delete' &&
       onDeleteRow &&
-      (column === 'isUsers' || column === 'isBudgetLog')
+      (column === 'isUsers' || column === 'isBudgetLog' || column === 'isUtil')
     ) {
       onDeleteRow(rowData.current);
     }

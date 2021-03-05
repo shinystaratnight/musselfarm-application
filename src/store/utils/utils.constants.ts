@@ -1,0 +1,1 @@
+export const SET_SEED_DATA = 'UTILS/SET_SEED_DATA';

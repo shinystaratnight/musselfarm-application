@@ -54,3 +54,12 @@ export const transformFarmWithKey = (data: any = []): any => {
 
   return dataWithKey;
 };
+
+export const transformSeed = (data: any = []): any => {
+  const seedData = data.filter((util: any) => {
+    return util.type === 'seed';
+  });
+
+  const seedDataWithKey = seedData.map((seed: any, i: number) => ({...seed, key: i + 1}));
+  return seedDataWithKey;
+};

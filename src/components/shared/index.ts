@@ -25,6 +25,7 @@ export { default as BreadcrumbComponent } from './breadcrumb/Breadcrumb';
 export { default as StepsComponent } from './steps/Steps';
 export { default as Navbar } from './navbar/Navbar';
 export { default as UserIcon } from './UserIcon';
+export { default as SettingIcon } from './SettingIcon';
 export { default as Tooltip } from './tooltip/Tooltip';
 export { default as TagComponent } from './tag/Tag';
 export { default as Datepicker } from './datepicker/Datepicker';
