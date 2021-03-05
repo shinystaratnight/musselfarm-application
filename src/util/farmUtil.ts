@@ -60,6 +60,10 @@ export const transformSeed = (data: any = []): any => {
     return util.type === 'seed';
   });
 
-  const seedDataWithKey = seedData.map((seed: any, i: number) => ({...seed, key: i + 1}));
+  const seedDataWithKey = seedData.map((seed: any, i: number) => ({
+    ...seed,
+    key: i + 1,
+  }));
+
   return seedDataWithKey;
 };
