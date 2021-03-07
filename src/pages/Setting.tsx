@@ -22,6 +22,8 @@ const Profile = () => {
         )}
         <UtilsTable category='Seed' />
         <UtilsTable category='Maintenance' />
+        <UtilsTable category='Color' />
+        <UtilsTable category='Seedtype' />
       </div>
     </>
   );

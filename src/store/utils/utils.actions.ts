@@ -1,6 +1,11 @@
 import { IRootState, IThunkType } from '../rootReducer';
 import { UtilsTypes, IUtilsData, IUtilData } from './utils.type';
-import { SET_SEED_DATA, SET_MAINTENANCE_DATA } from './utils.constants';
+import {
+  SET_SEED_DATA,
+  SET_MAINTENANCE_DATA,
+  SET_COLOR_DATA,
+  SET_SEEDTYPE_DATA,
+} from './utils.constants';
 
 import { isSpinner } from '../ui/ui.actions';
 import { composeApi } from '../../apis/compose';
@@ -16,6 +21,20 @@ export const setSeedData = (data: IUtilsData): UtilsTypes => {
 export const setMaintenance = (data: IUtilsData): UtilsTypes => {
   return {
     type: SET_MAINTENANCE_DATA,
+    payload: data,
+  };
+};
+
+export const setColorData = (data: IUtilsData): UtilsTypes => {
+  return {
+    type: SET_COLOR_DATA,
+    payload: data,
+  };
+};
+
+export const setSeedTypeData = (data: IUtilsData): UtilsTypes => {
+  return {
+    type: SET_SEEDTYPE_DATA,
     payload: data,
   };
 };
@@ -44,6 +63,10 @@ export const getUtilData = (category: string, history: any): IRootState => {
           dispatch(setSeedData(dataWithKey));
         else if (category.toLowerCase() === 'maintenance')
           dispatch(setMaintenance(dataWithKey));
+        else if (category.toLowerCase() === 'color')
+          dispatch(setColorData(dataWithKey));
+        else if (category.toLowerCase() === 'seedtype')
+          dispatch(setSeedTypeData(dataWithKey));
         else if (category.toLowerCase() === 'all') {
           const seeds = transformUtil('seed', responseData?.data);
           const maintenances = transformUtil('maintenance', responseData?.data);
@@ -54,6 +77,10 @@ export const getUtilData = (category: string, history: any): IRootState => {
         dispatch(setSeedData(responseData?.data));
       else if (category.toLowerCase() === 'maintenance')
         dispatch(setMaintenance(responseData?.data));
+      else if (category.toLowerCase() === 'color')
+        dispatch(setColorData(responseData?.data));
+      else if (category.toLowerCase() === 'seedtype')
+        dispatch(setSeedTypeData(responseData?.data));
       else if (category.toLowerCase() === 'all') {
         dispatch(setSeedData(responseData?.data));
         dispatch(setMaintenance(responseData?.data));

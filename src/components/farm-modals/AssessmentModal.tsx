@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useRef, FC } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 import moment from 'moment';
 
 import { IRootState } from '../../store/rootReducer';
 import { IFarmState } from '../../store/farms/farms.type';
+import { IUtilState, IUtilData } from '../../store/utils/utils.type';
+import { getUtilData } from '../../store/utils/utils.actions';
 import { IMainList } from '../../types/basicComponentsTypes';
 import { hideFeedback, showFeedback } from '../../store/farms/farms.actions';
-import randomKey from '../../util/randomKey';
 import toggleSecondMillisecond from '../../util/toggleSecondMillisecond';
 
 import Datepicker from '../shared/datepicker/Datepicker';
@@ -31,11 +33,16 @@ const AssessmentModal: FC<IAssessmentModal> = ({
   trigger,
   dataLine,
 }) => {
+  const history = useHistory();
   const dispatch = useDispatch();
   const initTrigger = useRef(false);
 
   const allFeedback = useSelector<IRootState, IFarmState['allFeedback']>(
     state => state.farms.allFeedback,
+  );
+
+  const colorData = useSelector<IRootState, IUtilState['colors']>(
+    state => state.utils.colors,
   );
 
   const [state, setState] = useState({
@@ -115,11 +122,6 @@ const AssessmentModal: FC<IAssessmentModal> = ({
     });
   };
 
-  const items: IMainList[] = [
-    { value: 'fair', label: 'Fair', id: randomKey() },
-    { value: 'good', label: 'Good', id: randomKey() },
-  ];
-
   const handleOnSelectType = (value: string) => {
     setState(prev => ({ ...prev, color: value }));
   };
@@ -170,6 +172,7 @@ const AssessmentModal: FC<IAssessmentModal> = ({
           ...allData,
           condition_min: conditionMin,
           condition_max: conditionMax,
+          condition_average: conditionAverage,
           planned_date_harvest: toggleSecondMillisecond(dateAssessment),
         };
         onConfirm(validData);
@@ -209,9 +212,13 @@ const AssessmentModal: FC<IAssessmentModal> = ({
     }
   }, [data]);
 
+  useEffect(() => {
+    dispatch(getUtilData('color', history));
+  }, []);
+
   return (
     <div className='assessment-modal'>
-      {allFeedback.map((feedback: any, i: number) => {
+      {allFeedback.map((feedback: any) => {
         if (feedback.isMessageModal) {
           return (
             <Feedback
@@ -230,7 +237,14 @@ const AssessmentModal: FC<IAssessmentModal> = ({
         placeholder='color'
         onChange={(value, event) => handleOnSelectType(value)}
         label='Color'
-        options={items}
+        options={colorData.map(
+          (color: IUtilData) =>
+            ({
+              value: color.name,
+              label: color.name,
+              id: color.id,
+            } as IMainList),
+        )}
         defaultValue={state.color ? state.color : undefined}
       />
       <div className='assessment-modal__condition d-flex justify-content-between'>
@@ -262,7 +276,6 @@ const AssessmentModal: FC<IAssessmentModal> = ({
             dataType='conditionAverage'
             value={state.conditionAverage.toString()}
             onChange={handleChangeInput}
-            disabled
           />
         </div>
       </div>
