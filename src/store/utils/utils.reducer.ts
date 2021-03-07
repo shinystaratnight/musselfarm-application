@@ -22,7 +22,7 @@ const utilsReducer = (state = initialState, action: UtilsTypes): IUtilState => {
     case SET_COLOR_DATA:
       return { ...state, colors: action.payload };
     case SET_SEEDTYPE_DATA:
-      return {...state, seedtypes: action.payload };
+      return { ...state, seedtypes: action.payload };
     default:
       return state;
   }

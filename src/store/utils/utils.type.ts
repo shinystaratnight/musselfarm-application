@@ -42,7 +42,7 @@ export interface IUtilData {
 }
 
 export type UtilsTypes =
-  ISetSeedData |
-  ISetMaintenanceData |
-  ISetColorData |
-  ISetSeedTypeData;
+  | ISetSeedData
+  | ISetMaintenanceData
+  | ISetColorData
+  | ISetSeedTypeData;
