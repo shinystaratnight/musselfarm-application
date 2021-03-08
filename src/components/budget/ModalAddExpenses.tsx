@@ -184,7 +184,7 @@ const ModalAddExpenses: FC<IOwnProps> = ({
             key={expense.id}
           >
             <div className='budget__wrapper mr-16'>
-              {expense.type === 'select' && (
+              {type === 'seed' && expense.type === 'select' && (
                 <Dropdown
                   className='mr-16 w-100'
                   placeholder='seed name'
@@ -203,7 +203,7 @@ const ModalAddExpenses: FC<IOwnProps> = ({
                   }
                 />
               )}
-              {expense.type === 'text' && (
+              {type === 'seed' && expense.type === 'text' && (
                 <Input
                   type='text'
                   onChange={e => handleOnName(e.target.value, expense.id)}
