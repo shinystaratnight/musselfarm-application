@@ -1,6 +1,10 @@
-import React, { FC, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import React, { FC, useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
+
+import { IRootState } from '../../store/rootReducer';
+import { IUtilState, IUtilData } from '../../store/utils/utils.type';
+import { getUtilData } from '../../store/utils/utils.actions';
 
 import {
   Button,
@@ -32,7 +36,6 @@ const ModalAddExpenses: FC<IOwnProps> = ({
   className,
   onConfirm,
   paramId,
-  options,
 }) => {
   const [expenses, setExpenses] = useState<IModalBudget[]>([
     {
@@ -40,12 +43,25 @@ const ModalAddExpenses: FC<IOwnProps> = ({
       expenses_name: '',
       price_budget: '',
       line_budget_id: paramId,
+      type: 'select',
     },
   ]);
   const [disabled, setDisabled] = useState(true);
   const width = useWidth();
   const dispatch = useDispatch();
   const history = useHistory();
+
+  const seedData = useSelector<IRootState, IUtilState['seeds']>(
+    state => state.utils.seeds,
+  );
+
+  const maintenanceData = useSelector<IRootState, IUtilState['maintenances']>(
+    state => state.utils.maintenances,
+  );
+
+  useEffect(() => {
+    dispatch(getUtilData('all', history));
+  }, []);
 
   const handleOnConfirm = async () => {
     const newExpenses = expenses.map(item => {
@@ -67,6 +83,7 @@ const ModalAddExpenses: FC<IOwnProps> = ({
         expenses_name: '',
         price_budget: '',
         line_budget_id: paramId,
+        type: 'select',
       },
     ]);
   };
@@ -80,6 +97,22 @@ const ModalAddExpenses: FC<IOwnProps> = ({
         expenses_name: '',
         price_budget: '',
         line_budget_id: paramId,
+        type: 'select',
+      },
+    ]);
+    setDisabled(true);
+  };
+
+  const handleOnAddLineCustom = () => {
+    const defaultId = expenses.length + 1;
+    setExpenses([
+      ...expenses,
+      {
+        id: defaultId.toString(),
+        expenses_name: '',
+        price_budget: '',
+        line_budget_id: paramId,
+        type: 'text',
       },
     ]);
     setDisabled(true);
@@ -122,6 +155,7 @@ const ModalAddExpenses: FC<IOwnProps> = ({
         expenses_name: '',
         price_budget: '',
         line_budget_id: paramId,
+        type: 'select',
       },
     ]);
     onCancel(defaultType);
@@ -150,15 +184,55 @@ const ModalAddExpenses: FC<IOwnProps> = ({
             key={expense.id}
           >
             <div className='budget__wrapper mr-16'>
-              {type === 'seed' ? (
+              {expense.type === 'select' && (
                 <Dropdown
                   className='mr-16 w-100'
+                  placeholder='seed name'
                   onChange={(value, event) => handleOnName(value, expense.id)}
                   label='Seed name'
-                  options={options as IMainList[]}
+                  options={seedData.map(
+                    (seed: IUtilData) =>
+                      ({
+                        value: seed.name,
+                        label: seed.name,
+                        id: seed.id,
+                      } as IMainList),
+                  )}
+                  defaultValue={
+                    expense.expenses_name ? expense.expenses_name : undefined
+                  }
+                />
+              )}
+              {expense.type === 'text' && (
+                <Input
+                  type='text'
+                  onChange={e => handleOnName(e.target.value, expense.id)}
+                  className='mr-16 w-100'
+                  value={expense.expenses_name}
+                  label='Seed name'
                   placeholder='seed name'
                 />
-              ) : (
+              )}
+              {type !== 'seed' && expense.type === 'select' && (
+                <Dropdown
+                  className='mr-16 w-100'
+                  placeholder='maintenance name'
+                  onChange={(value, event) => handleOnName(value, expense.id)}
+                  label='Maintenance name'
+                  options={maintenanceData.map(
+                    (maintenance: IUtilData) =>
+                      ({
+                        value: maintenance.name,
+                        label: maintenance.name,
+                        id: maintenance.id,
+                      } as IMainList),
+                  )}
+                  defaultValue={
+                    expense.expenses_name ? expense.expenses_name : undefined
+                  }
+                />
+              )}
+              {type !== 'seed' && expense.type === 'text' && (
                 <Input
                   className='mr-16'
                   type='text'
@@ -191,21 +265,38 @@ const ModalAddExpenses: FC<IOwnProps> = ({
           </div>
         ))}
       </div>
-      <Button
-        className={width > 768 ? '' : 'mb-24'}
-        color='blue'
-        size={width > 768 ? 0 : 2}
-        width={width > 768 ? 'default' : 'wide'}
-        type='bordered'
-        isNoneBorder={width > 768}
-        iconLeft
-        onClick={handleOnAddLine}
-      >
-        <span className='mr-4 ml-6 font-size-0'>
-          <PlusIcon />
-        </span>
-        <span>Add</span>
-      </Button>
+      <div className='d-flex'>
+        <Button
+          className={width > 768 ? '' : 'mb-24'}
+          color='blue'
+          size={width > 768 ? 0 : 2}
+          width={width > 768 ? 'default' : 'wide'}
+          type='bordered'
+          isNoneBorder={width > 768}
+          iconLeft
+          onClick={handleOnAddLine}
+        >
+          <span className='mr-4 ml-6 font-size-0'>
+            <PlusIcon />
+          </span>
+          <span>Add</span>
+        </Button>
+        <Button
+          className={width > 768 ? '' : 'mb-24'}
+          color='blue'
+          size={width > 768 ? 0 : 2}
+          width={width > 768 ? 'default' : 'wide'}
+          type='bordered'
+          isNoneBorder={width > 768}
+          iconLeft
+          onClick={handleOnAddLineCustom}
+        >
+          <span className='mr-4 ml-6 font-size-0'>
+            <PlusIcon />
+          </span>
+          <span>Add Custom</span>
+        </Button>
+      </div>
     </InputModal>
   );
 };

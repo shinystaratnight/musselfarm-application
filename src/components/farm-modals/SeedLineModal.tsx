@@ -1,11 +1,15 @@
 import React, { useState, useEffect, useRef, FC } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 import moment from 'moment';
 
 import { hideFeedback, showFeedback } from '../../store/farms/farms.actions';
 import { IMainList } from '../../types/basicComponentsTypes';
 import { IRootState } from '../../store/rootReducer';
 import { IFarmState } from '../../store/farms/farms.type';
+import { IUtilState, IUtilData } from '../../store/utils/utils.type';
+import { getUtilData } from '../../store/utils/utils.actions';
+
 import randomKey from '../../util/randomKey';
 import toggleSecondMillisecond from '../../util/toggleSecondMillisecond';
 
@@ -18,11 +22,16 @@ interface ITablesModal {
 }
 
 const SeedLineModal: FC<ITablesModal> = ({ data, onConfirm, trigger }) => {
+  const history = useHistory();
   const dispatch = useDispatch();
   const initTrigger = useRef(false);
 
   const allFeedback = useSelector<IRootState, IFarmState['allFeedback']>(
     state => state.farms.allFeedback,
+  );
+
+  const seedtypeData = useSelector<IRootState, IUtilState['seedtypes']>(
+    state => state.utils.seedtypes,
   );
 
   const [fieldData, setFieldData] = useState({
@@ -31,11 +40,6 @@ const SeedLineModal: FC<ITablesModal> = ({ data, onConfirm, trigger }) => {
     seed_id: '',
     name: '',
   });
-
-  const items: IMainList[] = [
-    { value: '1', label: 'K', id: randomKey() },
-    { value: '2', label: 'D', id: randomKey() },
-  ];
 
   const handleOnSelectType = (value: string): void => {
     setFieldData(prev => ({ ...prev, seed_id: value }));
@@ -79,6 +83,10 @@ const SeedLineModal: FC<ITablesModal> = ({ data, onConfirm, trigger }) => {
 
     return true;
   };
+
+  useEffect(() => {
+    dispatch(getUtilData('seedtype', history));
+  }, []);
 
   useEffect(() => {
     if (initTrigger.current) {
@@ -170,7 +178,14 @@ const SeedLineModal: FC<ITablesModal> = ({ data, onConfirm, trigger }) => {
         placeholder='Seed type'
         onChange={(value, event) => handleOnSelectType(value)}
         label='Seed Type'
-        options={items}
+        options={seedtypeData.map(
+          (seedtype: IUtilData) =>
+            ({
+              value: seedtype.id,
+              label: seedtype.name,
+              id: seedtype.id,
+            } as IMainList),
+        )}
         defaultValue={fieldData.seed_id ? fieldData.seed_id : undefined}
       />
     </div>

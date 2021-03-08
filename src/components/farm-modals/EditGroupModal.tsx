@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, FC } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 import moment from 'moment';
 
 import { IMainList } from '../../types/basicComponentsTypes';
@@ -7,6 +8,8 @@ import randomKey from '../../util/randomKey';
 import { hideFeedback, showFeedback } from '../../store/farms/farms.actions';
 import { IRootState } from '../../store/rootReducer';
 import { IFarmState } from '../../store/farms/farms.type';
+import { IUtilState, IUtilData } from '../../store/utils/utils.type';
+import { getUtilData } from '../../store/utils/utils.actions';
 
 import { Datepicker, Dropdown, Input, Feedback } from '../shared';
 import toggleSecondMillisecond from '../../util/toggleSecondMillisecond';
@@ -17,26 +20,34 @@ interface IEditGroupModal {
   trigger: boolean;
 }
 
+interface IFieldData {
+  planned_date: number;
+  planned_date_harvest: number;
+  seed_id: string;
+  name: string;
+  id: string;
+}
+
 const EditGroupModal: FC<IEditGroupModal> = ({ data, onConfirm, trigger }) => {
+  const history = useHistory();
   const dispatch = useDispatch();
   const initTrigger = useRef(false);
+
+  const seedtypeData = useSelector<IRootState, IUtilState['seedtypes']>(
+    state => state.utils.seedtypes,
+  );
 
   const allFeedback = useSelector<IRootState, IFarmState['allFeedback']>(
     state => state.farms.allFeedback,
   );
 
-  const [fieldData, setFieldData] = useState({
+  const [fieldData, setFieldData] = useState<IFieldData>({
     planned_date: moment().toDate().getTime(),
     planned_date_harvest: moment().toDate().getTime(),
     seed_id: '',
     name: '',
     id: '',
   });
-
-  const items: IMainList[] = [
-    { value: '1', label: 'K', id: randomKey() },
-    { value: '2', label: 'D', id: randomKey() },
-  ];
 
   const handleOnSelectType = (value: string): void => {
     setFieldData(prev => ({ ...prev, seed_id: value }));
@@ -86,18 +97,22 @@ const EditGroupModal: FC<IEditGroupModal> = ({ data, onConfirm, trigger }) => {
   }, [trigger]);
 
   useEffect(() => {
-    const isSeed = items.filter(item => item.label === data?.seed);
+    const isSeed = seedtypeData.filter(item => item.name === data?.seed);
     const newData = {
       name: data?.name,
       planned_date: toggleSecondMillisecond(data?.planned_date),
       planned_date_harvest: data?.assessments?.length
         ? toggleSecondMillisecond(data?.planned_date_harvest)
         : toggleSecondMillisecond(data?.planned_date_harvest_original),
-      seed_id: isSeed[0]?.value,
+      seed_id: isSeed.length ? `${isSeed[0].id}` : '',
       id: data?.id,
     };
     setFieldData(newData);
-  }, [data]);
+  }, [data, seedtypeData]);
+
+  useEffect(() => {
+    dispatch(getUtilData('seedtype', history));
+  }, []);
 
   return (
     <div>
@@ -168,7 +183,14 @@ const EditGroupModal: FC<IEditGroupModal> = ({ data, onConfirm, trigger }) => {
         placeholder='seed Type'
         onChange={(value, event) => handleOnSelectType(value)}
         label='Seed Type'
-        options={items}
+        options={seedtypeData.map(
+          (seedtype: IUtilData) =>
+            ({
+              value: `${seedtype.id}`,
+              label: seedtype.name,
+              id: seedtype.id,
+            } as IMainList),
+        )}
         defaultValue={fieldData.seed_id ? fieldData.seed_id : undefined}
       />
     </div>

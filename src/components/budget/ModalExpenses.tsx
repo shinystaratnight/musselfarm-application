@@ -29,7 +29,6 @@ const ModalExpenses: FC<IOwnProps> = ({
   );
   const [type, setType] = useState('');
   const [addVisible, setAddVisible] = useState(false);
-  const [options, setOptions] = useState<IMainList[]>([]);
 
   const handleOnAdd = (selectedType: string) => {
     setType(selectedType);
@@ -40,24 +39,6 @@ const ModalExpenses: FC<IOwnProps> = ({
     setAddVisible(false);
     onConfirm();
   };
-
-  useEffect(() => {
-    if (visible) {
-      const dropdownItem = [];
-      const spat = budgetInfoStore.find(item => item.name === 'spat');
-
-      if (!spat) {
-        dropdownItem.push({ value: 'spat', label: 'Spat', id: randomKey() });
-      }
-      const spat2 = budgetInfoStore.find(item => item.name === 'spat2');
-
-      if (!spat2) {
-        dropdownItem.push({ value: 'spat2', label: 'Spat2', id: randomKey() });
-      }
-
-      setOptions(dropdownItem);
-    }
-  }, [visible]);
 
   return (
     <Modal
@@ -87,17 +68,15 @@ const ModalExpenses: FC<IOwnProps> = ({
         >
           {width > 460 ? 'Maintenance expenses' : 'Add maintenance expenses'}
         </Button>
-        {options.length !== 0 && (
-          <Button
-            width={width > 460 ? 'small' : 'wide'}
-            size={1}
-            type='bordered'
-            color='blue'
-            onClick={() => handleOnAdd('seed')}
-          >
-            {width > 460 ? 'Seeding expenses' : 'Add seeding expenses'}
-          </Button>
-        )}
+        <Button
+          width={width > 460 ? 'small' : 'wide'}
+          size={1}
+          type='bordered'
+          color='blue'
+          onClick={() => handleOnAdd('seed')}
+        >
+          {width > 460 ? 'Seeding expenses' : 'Add seeding expenses'}
+        </Button>
       </div>
       <ModalAddExpenses
         paramId={
@@ -106,7 +85,6 @@ const ModalExpenses: FC<IOwnProps> = ({
         className='budget-modal'
         onConfirm={handleOnConfirm}
         type={type}
-        options={options}
         visible={addVisible}
         onCancel={() => setAddVisible(false)}
       />
