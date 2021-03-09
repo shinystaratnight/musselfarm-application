@@ -25,6 +25,7 @@ interface IFieldData {
   planned_date_harvest: number;
   seed_id: string;
   name: string;
+  season_name: string;
   id: string;
 }
 
@@ -47,6 +48,7 @@ const EditGroupModal: FC<IEditGroupModal> = ({ data, onConfirm, trigger }) => {
     seed_id: '',
     name: '',
     id: '',
+    season_name: '',
   });
 
   const handleOnSelectType = (value: string): void => {
@@ -78,6 +80,10 @@ const EditGroupModal: FC<IEditGroupModal> = ({ data, onConfirm, trigger }) => {
   };
 
   useEffect(() => {
+    dispatch(getUtilData('seedtype', history));
+  }, []);
+
+  useEffect(() => {
     if (initTrigger.current) {
       const valid = fieldValid();
       if (valid) {
@@ -106,13 +112,10 @@ const EditGroupModal: FC<IEditGroupModal> = ({ data, onConfirm, trigger }) => {
         : toggleSecondMillisecond(data?.planned_date_harvest_original),
       seed_id: isSeed.length ? `${isSeed[0].id}` : '',
       id: data?.id,
+      season_name: data?.season_name,
     };
     setFieldData(newData);
   }, [data, seedtypeData]);
-
-  useEffect(() => {
-    dispatch(getUtilData('seedtype', history));
-  }, []);
 
   return (
     <div>
@@ -135,9 +138,10 @@ const EditGroupModal: FC<IEditGroupModal> = ({ data, onConfirm, trigger }) => {
         className='mb-16'
         type='text'
         onChange={handleChangeName}
-        value={fieldData.name}
+        value={fieldData.season_name}
         label='Name'
         placeholder='Name'
+        disabled
       />
       <Datepicker
         className='mb-16 mt-16'

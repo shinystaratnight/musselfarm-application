@@ -429,7 +429,7 @@ const FarmLine: FC = (): ReactElement => {
         <InputModal
           visible={editGoupModal}
           onCancel={showEditGoupModal}
-          title='Edit group'
+          title='Select Season'
           type='confirm'
           onConfirm={() => setTriggerEdit(!triggerEdit)}
         >

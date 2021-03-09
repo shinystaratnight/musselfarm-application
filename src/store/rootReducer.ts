@@ -8,6 +8,7 @@ import usersReducer from './users/users.reducer';
 import budgetReducer from './budget/budget.reducer';
 import utilsReducer from './utils/utils.reducer';
 import subscriptReducer from './subscription/subscription.reducer';
+import seasonReducer from './seasons/seasons.reducer';
 
 const rootReducer = combineReducers({
   auth: authReducer,
@@ -18,6 +19,7 @@ const rootReducer = combineReducers({
   budget: budgetReducer,
   subscription: subscriptReducer,
   utils: utilsReducer,
+  seasons: seasonReducer,
 });
 
 export default rootReducer;

@@ -157,6 +157,10 @@ const AssessmentModal: FC<IAssessmentModal> = ({
   };
 
   useEffect(() => {
+    dispatch(getUtilData('color', history));
+  }, []);
+
+  useEffect(() => {
     if (initTrigger.current) {
       const valid = fieldValid();
       if (valid) {
@@ -211,10 +215,6 @@ const AssessmentModal: FC<IAssessmentModal> = ({
       setState(prev => ({ ...prev, ...validData }));
     }
   }, [data]);
-
-  useEffect(() => {
-    dispatch(getUtilData('color', history));
-  }, []);
 
   return (
     <div className='assessment-modal'>

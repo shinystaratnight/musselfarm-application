@@ -76,7 +76,7 @@ const FarmLineTemplateDesktop: FC<IFarmLineTemplateDesktop> = ({
               disabled={!isActiveHarvest || currentGroup?.name === undefined}
             >
               {isActiveHarvest || currentGroup?.name !== undefined
-                ? currentGroup?.name
+                ? currentGroup?.season_name
                 : 'Empty'}
             </Subtitle>
             <Button

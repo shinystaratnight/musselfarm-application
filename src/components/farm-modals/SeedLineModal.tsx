@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef, FC } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import moment from 'moment';
+import { Radio, Collapse } from 'antd';
+import { RadioChangeEvent } from 'antd/lib/radio';
 
 import { hideFeedback, showFeedback } from '../../store/farms/farms.actions';
 import { IMainList } from '../../types/basicComponentsTypes';
@@ -9,11 +11,18 @@ import { IRootState } from '../../store/rootReducer';
 import { IFarmState } from '../../store/farms/farms.type';
 import { IUtilState, IUtilData } from '../../store/utils/utils.type';
 import { getUtilData } from '../../store/utils/utils.actions';
+import {
+  ISeasonData,
+  ISeasonsData,
+  ISeasonState,
+} from '../../store/seasons/seasons.type';
+import { getSeasonData } from '../../store/seasons/seasons.actions';
+import { AuthState } from '../../store/auth/auth.type';
 
-import randomKey from '../../util/randomKey';
+import { composeApi } from '../../apis/compose';
 import toggleSecondMillisecond from '../../util/toggleSecondMillisecond';
 
-import { Datepicker, Dropdown, Input, Feedback } from '../shared';
+import { Datepicker, Dropdown, Input, Feedback, RadioButton } from '../shared';
 
 interface ITablesModal {
   data: any;
@@ -26,12 +35,23 @@ const SeedLineModal: FC<ITablesModal> = ({ data, onConfirm, trigger }) => {
   const dispatch = useDispatch();
   const initTrigger = useRef(false);
 
+  const [isSeasonNew, setIsSeasionNew] = useState('old');
+  const [newSeasonName, setNewSeasonName] = useState('');
+
   const allFeedback = useSelector<IRootState, IFarmState['allFeedback']>(
     state => state.farms.allFeedback,
   );
 
   const seedtypeData = useSelector<IRootState, IUtilState['seedtypes']>(
     state => state.utils.seedtypes,
+  );
+
+  const seasonData = useSelector<IRootState, ISeasonState['seasons']>(
+    state => state.seasons.seasons,
+  );
+
+  const auth = useSelector<IRootState, AuthState['auth']>(
+    state => state.auth.auth,
   );
 
   const [fieldData, setFieldData] = useState({
@@ -46,7 +66,10 @@ const SeedLineModal: FC<ITablesModal> = ({ data, onConfirm, trigger }) => {
   };
 
   const fieldValid = () => {
-    if (!fieldData.name) {
+    if (
+      (!fieldData.name && isSeasonNew === 'old') ||
+      (!newSeasonName && isSeasonNew === 'new')
+    ) {
       dispatch(
         showFeedback({
           isMessageModal: true,
@@ -84,8 +107,13 @@ const SeedLineModal: FC<ITablesModal> = ({ data, onConfirm, trigger }) => {
     return true;
   };
 
+  const onSeasonType = (e: RadioChangeEvent) => {
+    setIsSeasionNew(e.target.value);
+  };
+
   useEffect(() => {
     dispatch(getUtilData('seedtype', history));
+    dispatch(getSeasonData(history));
   }, []);
 
   useEffect(() => {
@@ -100,7 +128,26 @@ const SeedLineModal: FC<ITablesModal> = ({ data, onConfirm, trigger }) => {
           ),
         };
 
-        onConfirm(validData);
+        if (isSeasonNew === 'new') {
+          composeApi(
+            {
+              data: {
+                name: newSeasonName,
+              },
+              method: 'POST',
+              url: 'api/season/seasons',
+              requireAuth: true,
+            },
+            dispatch,
+            auth,
+            history,
+          ).then(responseData => {
+            if (responseData.status === 'success') {
+              validData.name = responseData.id;
+              onConfirm(validData);
+            }
+          });
+        } else onConfirm(validData);
       }
     } else {
       initTrigger.current = true;
@@ -124,16 +171,41 @@ const SeedLineModal: FC<ITablesModal> = ({ data, onConfirm, trigger }) => {
 
         return '';
       })}
-      <Input
-        type='text'
-        className='mb-16'
-        value={fieldData.name}
-        label='Name'
-        placeholder='Name'
-        onChange={e =>
-          setFieldData(prev => ({ ...prev, name: e.target.value }))
-        }
-      />
+      <Radio.Group
+        className='d-flex mt-14 mb-32'
+        onChange={onSeasonType}
+        value={isSeasonNew}
+      >
+        <RadioButton label='Existing season' value='old' />
+        <RadioButton className='ml-34' label='New season' value='new' />
+      </Radio.Group>
+      {isSeasonNew === 'old' && (
+        <Dropdown
+          className='mr-16 w-100'
+          placeholder='Choose Season'
+          onChange={value => setFieldData(prev => ({ ...prev, name: value }))}
+          label='Season name'
+          options={seasonData.map(
+            (season: ISeasonData) =>
+              ({
+                value: season.id,
+                label: season.season_name,
+                id: season.id,
+              } as IMainList),
+          )}
+          defaultValue={undefined}
+        />
+      )}
+      {isSeasonNew === 'new' && (
+        <Input
+          type='text'
+          className='mb-16'
+          value={newSeasonName}
+          label='New Season'
+          placeholder='season name'
+          onChange={e => setNewSeasonName(e.target.value)}
+        />
+      )}
       <Datepicker
         className='mb-16 mt-16'
         label='Planned date seeded'
