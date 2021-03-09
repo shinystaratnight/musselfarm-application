@@ -18,5 +18,4 @@ export interface ISeasonData {
   season_name: string;
 }
 
-export type SeasonsTypes =
-  | ISetSeasonData
+export type SeasonsTypes = ISetSeasonData;
