@@ -17,6 +17,7 @@ const LineDetails: FC<ILineDetails> = ({ onNext, lineData }) => {
   const dispatch = useDispatch();
   const [fieldData, setFieldData] = useState({
     length: '',
+    line_name: lineData.line_name,
   });
 
   const handleChangeField = (
@@ -24,6 +25,10 @@ const LineDetails: FC<ILineDetails> = ({ onNext, lineData }) => {
   ): void => {
     const { value, name } = event.target;
 
+    if (name === 'line_name') {
+      setFieldData(prev => ({ ...prev, [name]: value }));
+      return;
+    }
     const newValue = value.toString().split('');
 
     const validValue = newValue
@@ -40,6 +45,16 @@ const LineDetails: FC<ILineDetails> = ({ onNext, lineData }) => {
   };
 
   const onNextHandler = (): null => {
+    if (!fieldData.line_name) {
+      dispatch(
+        showFeedback({
+          isMessage: true,
+          type: 'error',
+          message: `Fill in the field name`,
+        }),
+      );
+      return null;
+    }
     if (!fieldData.length) {
       dispatch(
         showFeedback({
@@ -73,10 +88,11 @@ const LineDetails: FC<ILineDetails> = ({ onNext, lineData }) => {
       <Input
         type='text'
         className='mb-16'
-        value={lineData.line_name}
-        label='Line Number'
-        placeholder='line Number'
-        disabled
+        value={fieldData.line_name}
+        label='Line Name'
+        placeholder='line name'
+        name='line_name'
+        onChange={handleChangeField}
       />
       <Input
         unit='m'
