@@ -69,6 +69,7 @@ export interface IFarmData {
   area: string;
   owners: Array<IOwners>;
   lines: Array<ILineData>;
+  farm_number: string;
 }
 
 export interface ILineData {

@@ -26,8 +26,7 @@ const useColumns = (column: string) => {
           <div>
             <p>{data?.name}</p>
             <div>
-              <span className='pr-6'>{data?.location?.lat}</span>
-              <span>{data?.location?.lng}</span>
+              <span className='pr-6'>{data?.farm_number}</span>
             </div>
           </div>
         ),

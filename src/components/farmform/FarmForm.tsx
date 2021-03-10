@@ -618,11 +618,11 @@ const FarmForm: FC<IFarmForm> = ({
           onChange={handleChangeFields}
         />
       </div>
-      <div className='pb-17 farm-form__area'>
+      <div className='pb-17 farm-form__row'>
         <Input
           type='text'
           value={fields.farm_number}
-          label='Number'
+          label='Farm Number'
           dataType='farm_number'
           onChange={handleChangeFields}
         />
