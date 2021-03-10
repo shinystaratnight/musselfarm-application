@@ -174,9 +174,8 @@ const Farm: FC = (): ReactElement => {
                 </Title>
                 <Subtitle size={4} color='black' align='left' fontWeight={400}>
                   <span className='pr-6'>
-                    {currentFarm?.current?.location?.lat}
+                    {currentFarm?.current?.farm_number}
                   </span>
-                  <span>{currentFarm?.current?.location?.lng}</span>
                 </Subtitle>
               </div>
               {width <= 768 && (

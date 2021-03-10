@@ -42,6 +42,7 @@ interface IFields {
   lat: number | string;
   lng: number | string;
   area: string;
+  farm_number: string;
   owners: Array<IOwners>;
 }
 
@@ -75,6 +76,7 @@ const FarmForm: FC<IFarmForm> = ({
     lng: '',
     area: '',
     owners: [{ title: '', percent: '', id: randomKey() }],
+    farm_number: '',
   });
   const [isDisableOwner, setIsDisableOwner] = useState(false);
 
@@ -371,6 +373,9 @@ const FarmForm: FC<IFarmForm> = ({
           return { ...prev, [objIng]: validValue };
         }
 
+        if (type === 'farm_number') {
+          return { ...prev, [objIng]: value.slice(0, 16) };
+        }
         return { ...prev, [objIng]: value };
       }
       return { ...prev };
@@ -539,6 +544,7 @@ const FarmForm: FC<IFarmForm> = ({
       lat: lat ? lat.toString() : fields.lat,
       area: Number(fields.area),
       owner: filterOwners,
+      farm_number: fields.farm_number,
     };
 
     if (typeOf === 'add') {
@@ -609,6 +615,15 @@ const FarmForm: FC<IFarmForm> = ({
           label='Farm Name'
           dataType='name'
           required
+          onChange={handleChangeFields}
+        />
+      </div>
+      <div className='pb-17 farm-form__area'>
+        <Input
+          type='text'
+          value={fields.farm_number}
+          label='Number'
+          dataType='farm_number'
           onChange={handleChangeFields}
         />
       </div>
