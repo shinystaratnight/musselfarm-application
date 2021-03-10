@@ -52,7 +52,9 @@ const AssessmentModal: FC<IAssessmentModal> = ({
     conditionAverage: '',
     blues: '',
     tones: '',
-    dateAssessment: moment().toDate().getTime(),
+    dateAssessment: toggleSecondMillisecond(
+      Number(dataLine?.planned_date_harvest),
+    ),
     comment: '',
   });
 

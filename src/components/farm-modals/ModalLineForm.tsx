@@ -95,13 +95,11 @@ const ModalLineForm: FC<IModalLineForm> = ({ data, onConfirm, trigger }) => {
         return '';
       })}
       <Input
-        type='number'
-        placeholder='0'
+        type='text'
         label='Line number'
-        dataType='line'
+        dataType='line_name'
         value={state.line_name}
         onChange={handleChangeInput}
-        disabled
       />
       <div className='pt-17 pb-24'>
         <Input
