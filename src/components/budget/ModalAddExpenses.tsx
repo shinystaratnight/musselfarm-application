@@ -1,6 +1,8 @@
 import React, { FC, useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
+import { Radio, Collapse } from 'antd';
+import { RadioChangeEvent } from 'antd/lib/radio';
 
 import { IRootState } from '../../store/rootReducer';
 import { IUtilState, IUtilData } from '../../store/utils/utils.type';
@@ -14,6 +16,7 @@ import {
   Input,
   InputModal,
   PlusIcon,
+  RadioButton,
 } from '../shared';
 import { IMainList, IModalBudget } from '../../types/basicComponentsTypes';
 import { createBudget } from '../../store/budget/budget.action';
@@ -44,6 +47,7 @@ const ModalAddExpenses: FC<IOwnProps> = ({
       price_budget: '',
       line_budget_id: paramId,
       type: 'select',
+      budget_type: 'a',
     },
   ]);
   const [disabled, setDisabled] = useState(true);
@@ -67,10 +71,11 @@ const ModalAddExpenses: FC<IOwnProps> = ({
     const newExpenses = expenses.map(item => {
       return {
         expenses_name: item.expenses_name,
-        price_budget: Number(item.price_budget),
         line_budget_id: Number(item.line_budget_id),
         type: type === 'seed' ? 's' : 'm',
-        price_actual: 0,
+        price_actual: item.budget_type === 'a' ? Number(item.price_budget) : 0,
+        price_budget: item.budget_type === 'b' ? Number(item.price_budget) : 0,
+        budget_type: item.budget_type,
       };
     });
 
@@ -84,6 +89,7 @@ const ModalAddExpenses: FC<IOwnProps> = ({
         price_budget: '',
         line_budget_id: paramId,
         type: 'select',
+        budget_type: 'a',
       },
     ]);
   };
@@ -98,6 +104,7 @@ const ModalAddExpenses: FC<IOwnProps> = ({
         price_budget: '',
         line_budget_id: paramId,
         type: 'select',
+        budget_type: 'a',
       },
     ]);
     setDisabled(true);
@@ -113,6 +120,7 @@ const ModalAddExpenses: FC<IOwnProps> = ({
         price_budget: '',
         line_budget_id: paramId,
         type: 'text',
+        budget_type: 'a',
       },
     ]);
     setDisabled(true);
@@ -124,6 +132,14 @@ const ModalAddExpenses: FC<IOwnProps> = ({
         item.id === id
           ? { ...item, price_budget: Number(value) > -1 ? value : '0' }
           : { ...item },
+      ),
+    );
+  };
+
+  const handleOnBudgetType = (value: string, id: string) => {
+    setExpenses(
+      expenses.map(item =>
+        item.id === id ? { ...item, budget_type: value } : { ...item },
       ),
     );
   };
@@ -156,6 +172,7 @@ const ModalAddExpenses: FC<IOwnProps> = ({
         price_budget: '',
         line_budget_id: paramId,
         type: 'select',
+        budget_type: 'a',
       },
     ]);
     onCancel(defaultType);
@@ -176,9 +193,10 @@ const ModalAddExpenses: FC<IOwnProps> = ({
       onConfirm={handleOnConfirm}
       className={className}
       disabled={disabled}
+      modalWidth={920}
     >
       <div>
-        {expenses.map(expense => (
+        {expenses.map((expense, index) => (
           <div
             className='mb-12 budget__maintenance budget__maintenance--modal pos-relative d-flex align-items-center justify-content-between'
             key={expense.id}
@@ -243,7 +261,7 @@ const ModalAddExpenses: FC<IOwnProps> = ({
                 />
               )}
             </div>
-            <div className='budget__price-wrapper'>
+            <div className='budget__price-wrapper mr-16'>
               <Input
                 type='number'
                 onChange={e => handleOnPrice(e.target.value, expense.id)}
@@ -252,6 +270,16 @@ const ModalAddExpenses: FC<IOwnProps> = ({
                 label='Price'
                 placeholder='0'
               />
+            </div>
+            <div className={index ? '' : 'pt-20'}>
+              <Radio.Group
+                className='d-flex'
+                onChange={e => handleOnBudgetType(e.target.value, expense.id)}
+                value={expense.budget_type}
+              >
+                <RadioButton label='Budgeted' value='b' />
+                <RadioButton className='ml-34' label='Actual' value='a' />
+              </Radio.Group>
             </div>
             <span
               className='budget__close-icon budget__close-icon--modal'

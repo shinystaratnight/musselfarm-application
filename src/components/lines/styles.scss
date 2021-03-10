@@ -39,6 +39,13 @@
     }
   }
 
+  &__seeding, &__maintenance {
+    .ant-radio-group .paragrapgh, 
+    .ant-radio-group .dropdown__label {
+      display: block !important;
+    }
+  }
+
   &__seeding:not(:first-of-type), &__maintenance:not(:first-of-type) {
     .paragrapgh, .dropdown__label {
       display: none;

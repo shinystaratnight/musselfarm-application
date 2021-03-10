@@ -57,4 +57,5 @@ export interface IModalBudget {
   expenses_name: string;
   line_budget_id: number;
   type: string;
+  budget_type: string;
 }

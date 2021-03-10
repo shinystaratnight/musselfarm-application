@@ -1,5 +1,6 @@
 import React, { FC, ReactNode } from 'react';
 import { Modal } from 'antd';
+// import { RandomNumberGenerationSource } from 'd3-random';
 
 import Button from '../button/Button';
 import CloseIcon from '../CloseIcon';
@@ -18,6 +19,7 @@ interface IOwnProps {
   visible: boolean;
   disabled?: boolean;
   confirmNameBtn?: string | undefined;
+  modalWidth?: number | undefined;
 }
 
 const InputModal: FC<IOwnProps> = ({
@@ -30,6 +32,7 @@ const InputModal: FC<IOwnProps> = ({
   disabled,
   className,
   confirmNameBtn,
+  modalWidth,
 }) => {
   const width = useWidth();
 
@@ -41,7 +44,7 @@ const InputModal: FC<IOwnProps> = ({
       footer={null}
       closable
       closeIcon={<CloseIcon />}
-      width={600}
+      width={modalWidth !== undefined ? modalWidth : 600}
     >
       <div className='wrap'>
         <div className='d-flex align-items-center mb-16'>
