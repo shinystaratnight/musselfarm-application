@@ -190,20 +190,27 @@ const FarmLineTemplateDesktop: FC<IFarmLineTemplateDesktop> = ({
             fontWeight={400}
             className='mb-4'
           >
-            Planned date harvested
+            {currentGroup?.harvest_complete_date
+              ? 'Harvest Date'
+              : 'Planned date harvested'}
           </Subtitle>
           <Subtitle size={4} color='black' align='left' fontWeight={500}>
-            {currentGroup?.planned_date_harvest
-              ? moment(
-                  currentGroup?.assessments?.length
-                    ? toggleSecondMillisecond(
-                        currentGroup?.planned_date_harvest,
-                      )
-                    : toggleSecondMillisecond(
-                        currentGroup?.planned_date_harvest_original,
-                      ),
-                ).format('DD.MM.YYYY')
-              : '-'}
+            {currentGroup?.harvest_complete_date &&
+              moment(
+                toggleSecondMillisecond(currentGroup?.harvest_complete_date),
+              ).format('DD.MM.YYYY')}
+            {!currentGroup?.harvest_complete_date &&
+              currentGroup?.planned_date_harvest &&
+              moment(
+                currentGroup?.assessments?.length
+                  ? toggleSecondMillisecond(currentGroup?.planned_date_harvest)
+                  : toggleSecondMillisecond(
+                      currentGroup?.planned_date_harvest_original,
+                    ),
+              ).format('DD.MM.YYYY')}
+            {!currentGroup?.harvest_complete_date &&
+              !currentGroup?.planned_date_harvest &&
+              '-'}
           </Subtitle>
         </div>
         <div>

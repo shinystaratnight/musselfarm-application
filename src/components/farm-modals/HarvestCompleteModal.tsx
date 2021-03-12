@@ -3,7 +3,7 @@ import moment from 'moment';
 
 import validPrice from '../../util/validPrice';
 
-import { Input, DollarIcon, Paragrapgh } from '../shared';
+import { Input, DollarIcon, Paragrapgh, Datepicker } from '../shared';
 import toggleSecondMillisecond from '../../util/toggleSecondMillisecond';
 
 interface IHarvestCompleteModal {
@@ -22,6 +22,9 @@ const HarvestCompleteModal: FC<IHarvestCompleteModal> = ({
   const [fieldData, setFieldData] = useState({
     tonesHarvested: '',
     harvestIncome: '',
+    harvestDate: data?.assessments?.length
+      ? toggleSecondMillisecond(data?.planned_date_harvest)
+      : toggleSecondMillisecond(data?.planned_date_harvest_original),
   });
 
   const handleChangeInput = (
@@ -46,6 +49,7 @@ const HarvestCompleteModal: FC<IHarvestCompleteModal> = ({
       budgeted_harvest_income_actual: fieldData?.harvestIncome
         ? Number(fieldData?.harvestIncome)
         : 0,
+      harvest_complete_date: toggleSecondMillisecond(fieldData?.harvestDate),
     };
     return completeData;
   };
@@ -95,7 +99,7 @@ const HarvestCompleteModal: FC<IHarvestCompleteModal> = ({
         placeholder='Tones harvested'
         name='tonesHarvested'
       />
-      <div className='pb-24'>
+      <div className='mb-16'>
         <Input
           type='number'
           onChange={handleChangeInput}
@@ -104,6 +108,19 @@ const HarvestCompleteModal: FC<IHarvestCompleteModal> = ({
           label='Harvest income'
           placeholder='Harvest income'
           name='harvestIncome'
+        />
+      </div>
+      <div className='pb-24'>
+        <Datepicker
+          className='mb-17'
+          defaultValue={fieldData.harvestDate}
+          label='Harvest complete date'
+          onChange={e => {
+            setFieldData(prev => ({
+              ...prev,
+              harvestDate: e!.toDate().getTime(),
+            }));
+          }}
         />
       </div>
     </div>
