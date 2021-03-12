@@ -27,6 +27,11 @@ interface IFieldData {
   name: string;
   season_name: string;
   id: string;
+  drop: number;
+  submersion: number;
+  spacing: number;
+  density: number;
+  floats: number;
 }
 
 const EditGroupModal: FC<IEditGroupModal> = ({ data, onConfirm, trigger }) => {
@@ -49,6 +54,11 @@ const EditGroupModal: FC<IEditGroupModal> = ({ data, onConfirm, trigger }) => {
     name: '',
     id: '',
     season_name: '',
+    drop: 0,
+    submersion: 0,
+    spacing: 0,
+    density: 0,
+    floats: 0,
   });
 
   const handleOnSelectType = (value: string): void => {
@@ -113,6 +123,11 @@ const EditGroupModal: FC<IEditGroupModal> = ({ data, onConfirm, trigger }) => {
       seed_id: isSeed.length ? `${isSeed[0].id}` : '',
       id: data?.id,
       season_name: data?.season_name,
+      drop: data?.drop,
+      submersion: data?.submersion,
+      spacing: data?.spacing,
+      density: data?.density,
+      floats: data?.floats,
     };
     setFieldData(newData);
   }, [data, seedtypeData]);
@@ -197,6 +212,85 @@ const EditGroupModal: FC<IEditGroupModal> = ({ data, onConfirm, trigger }) => {
         )}
         defaultValue={fieldData.seed_id ? fieldData.seed_id : undefined}
       />
+      <div className='mb-16'>
+        <Input
+          type='number'
+          value={fieldData.drop.toString()}
+          label='Drop'
+          dataType='drop'
+          unit='m'
+          required
+          onChange={e =>
+            setFieldData(prev => ({ ...prev, drop: Number(e.target.value) }))
+          }
+        />
+      </div>
+      <div className='d-flex pb-17'>
+        <div className='mr-24 w-100'>
+          <Input
+            type='number'
+            value={fieldData.submersion.toString()}
+            label='Submersion'
+            dataType='submersion'
+            unit='m'
+            required
+            onChange={e =>
+              setFieldData(prev => ({
+                ...prev,
+                submersion: Number(e.target.value),
+              }))
+            }
+          />
+        </div>
+        <div className='w-100'>
+          <Input
+            type='number'
+            value={fieldData.spacing.toString()}
+            label='Spacing'
+            dataType='spacing'
+            unit='mm'
+            required
+            onChange={e =>
+              setFieldData(prev => ({
+                ...prev,
+                spacing: Number(e.target.value),
+              }))
+            }
+          />
+        </div>
+      </div>
+      <div className='d-flex pb-17'>
+        <div className='mr-24 w-100'>
+          <Input
+            type='number'
+            value={fieldData.density.toString()}
+            label='Density'
+            dataType='density'
+            required
+            onChange={e =>
+              setFieldData(prev => ({
+                ...prev,
+                density: Number(e.target.value),
+              }))
+            }
+          />
+        </div>
+        <div className='w-100'>
+          <Input
+            type='number'
+            value={fieldData.floats.toString()}
+            label='Floats'
+            dataType='floats'
+            required
+            onChange={e =>
+              setFieldData(prev => ({
+                ...prev,
+                floats: Number(e.target.value),
+              }))
+            }
+          />
+        </div>
+      </div>
     </div>
   );
 };
