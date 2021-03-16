@@ -13,6 +13,7 @@ import Budget from './Budget';
 import BudgetLine from './BudgetLine';
 import Header from '../components/header/Header';
 import BudgetLog from './BudgetLog';
+import Loading from './Loading';
 import NotFound from './NotFound';
 
 const Router = () => {
@@ -55,6 +56,7 @@ const Router = () => {
         />
         <PrivateRoute path='/to-do' component={ToDo} exact={false} />
         <PrivateRoute path='/notifications' component={Notifications} exact />
+        <PrivateRoute path='/loading/:type' component={Loading} exact />
         <PrivateRoute path='*' component={NotFound} exact={false} />
       </Switch>
     </div>

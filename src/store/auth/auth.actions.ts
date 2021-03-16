@@ -1,4 +1,10 @@
-import { LOGOUT, NEXT_VIEW, SIGN_IN, UPDATE_TOKEN } from './auth.constants';
+import {
+  LOGOUT,
+  NEXT_VIEW,
+  SIGN_IN,
+  UPDATE_TOKEN,
+  XERO_ACTIVE,
+} from './auth.constants';
 import { ILoginData, INextView, ISignInPayload } from './auth.type';
 import { IThunkType } from '../rootReducer';
 import { refreshTokenAPI, sendRequest } from '../../apis';
@@ -15,6 +21,13 @@ export const updateToken = (payloadIn: ISignInPayload) => {
   return {
     type: UPDATE_TOKEN,
     payload: payloadIn,
+  };
+};
+
+export const xeroActive = (payload: boolean) => {
+  return {
+    type: XERO_ACTIVE,
+    payload,
   };
 };
 
@@ -98,6 +111,7 @@ export const authLogin = (data: ILoginData) => {
           isAuth: true,
           access_token: res?.data.access_token,
           refresh_token: res?.data.refresh_token,
+          xero: res?.data.xero,
           id: res?.user_id,
         }),
       );
@@ -124,6 +138,7 @@ export const refreshToken = (data: any) => {
           isAuth: true,
           access_token: res?.data.access_token,
           refresh_token: res?.data.refresh_token,
+          xero: res?.data.xero,
           id: res?.user_id,
         }),
       );

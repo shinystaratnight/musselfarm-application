@@ -14,6 +14,7 @@ import {
 import Profile from './Profile';
 import Security from './Security';
 import Setting from './Setting';
+import Xero from './Xero';
 import { IMainList, INavbar } from '../types/basicComponentsTypes';
 import Subscription from './Subscription';
 import { IRootState } from '../store/rootReducer';
@@ -87,6 +88,15 @@ const ProfileRouter = () => {
       ),
       id: '/profile/subscription',
     },
+    {
+      value: '/profile/xero',
+      label: (
+        <p className='d-flex align-items-center mb-0'>
+          <SettingIcon /> <span className='ml-16'> Xero Integration </span>
+        </p>
+      ),
+      id: '/profile/xero',
+    },
   ];
 
   const navbarItems: INavbar[] = [
@@ -113,6 +123,12 @@ const ProfileRouter = () => {
       icon: <SettingIcon />,
       link: '/profile/setting',
       id: '/profile/setting',
+    },
+    {
+      title: 'Xero',
+      icon: <SettingIcon />,
+      link: '/profile/xero',
+      id: '/profile/xero',
     },
   ];
 
@@ -155,6 +171,9 @@ const ProfileRouter = () => {
             </Route>
             <Route path='/profile/setting'>
               <Setting />
+            </Route>
+            <Route path='/profile/xero'>
+              <Xero />
             </Route>
           </Switch>
         </div>

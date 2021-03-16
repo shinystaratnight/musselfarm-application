@@ -1,8 +1,19 @@
-import { LOGOUT, SIGN_IN, NEXT_VIEW, UPDATE_TOKEN } from './auth.constants';
+import {
+  LOGOUT,
+  SIGN_IN,
+  NEXT_VIEW,
+  UPDATE_TOKEN,
+  XERO_ACTIVE,
+} from './auth.constants';
 
 export interface AuthState {
   nextView: INextView;
   auth: ISignInPayload;
+}
+
+export interface IXeroActive {
+  type: typeof XERO_ACTIVE;
+  payload: boolean;
 }
 
 export interface ISignUpSuccess {
@@ -25,6 +36,7 @@ export interface ISignInPayload {
   isAuth?: boolean;
   access_token?: string;
   refresh_token?: string;
+  xero?: boolean;
   message?: string;
   id?: string;
 }
@@ -48,4 +60,5 @@ export type AuthTypes =
   | ISignInType
   | ISignUpSuccess
   | ILogout
+  | IXeroActive
   | IUpdateTokenType;

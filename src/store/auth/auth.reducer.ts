@@ -1,4 +1,10 @@
-import { LOGOUT, SIGN_IN, NEXT_VIEW, UPDATE_TOKEN } from './auth.constants';
+import {
+  LOGOUT,
+  SIGN_IN,
+  NEXT_VIEW,
+  UPDATE_TOKEN,
+  XERO_ACTIVE,
+} from './auth.constants';
 import { AuthState, AuthTypes } from './auth.type';
 
 const initialState: AuthState = {
@@ -9,6 +15,7 @@ const initialState: AuthState = {
   auth: {
     isAuth: false,
     access_token: '',
+    xero: false,
     id: '',
   },
 };
@@ -19,6 +26,11 @@ const authReducer = (state: AuthState = initialState, action: AuthTypes) => {
       return {
         ...state,
         auth: { ...action.payload },
+      };
+    case XERO_ACTIVE:
+      return {
+        ...state,
+        auth: { ...state.auth, xero: action.payload },
       };
     case UPDATE_TOKEN:
       return {
