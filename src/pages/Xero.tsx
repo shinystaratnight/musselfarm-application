@@ -28,31 +28,12 @@ const Xero = () => {
   );
 
   const onConnect = () => {
-    composeApi(
-      {
-        data: {
-          client_id: clientId,
-          client_secret: clientSecret,
-          redirect_url: redirectUri,
-        },
-        method: 'POST',
-        url: 'api/xero/connect',
-        requireAuth: true,
-      },
-      dispatch,
-      authStore,
-      history,
-    ).then(responseData => {
-      if (responseData?.status === 'success') {
-        window.location.replace(responseData.url!);
-      } else if (responseData?.status === 'Error') {
-        setResponseMsg(responseData.message);
-        setShowMsg(true);
-        setTimeout(() => {
-          setShowMsg(false);
-        }, 4000);
-      }
-    });
+    let url = `${process.env.REACT_APP_API_URL}xero/connect?`;
+    url += `user_id=${authStore.id}&`;
+    url += `client_id=${clientId}&`;
+    url += `client_secret=${clientSecret}&`;
+    url += `redirect_url=${redirectUri}`;
+    window.location.replace(url);
   };
 
   useEffect(() => {
@@ -60,10 +41,6 @@ const Xero = () => {
       profile.user_id!.toString(),
     )}
     `);
-    // setRedirectURI(`https://b964c13994b3.ngrok.io/xero/callback/${btoa(
-    //   profile.user_id!.toString(),
-    // )}
-    // `);
   }, []);
 
   return (
