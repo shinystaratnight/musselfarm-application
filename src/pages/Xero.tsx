@@ -56,8 +56,7 @@ const Xero = () => {
   };
 
   useEffect(() => {
-    setRedirectURI(`
-      ${process.env.REACT_APP_API_URL}xero/callback/${btoa(
+    setRedirectURI(`${process.env.REACT_APP_API_URL}xero/callback/${btoa(
       profile.user_id!.toString(),
     )}
     `);
