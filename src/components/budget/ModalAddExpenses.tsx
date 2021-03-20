@@ -1,12 +1,15 @@
 import React, { FC, useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import { Radio, Collapse } from 'antd';
-import { RadioChangeEvent } from 'antd/lib/radio';
+import { Radio } from 'antd';
+import moment from 'moment';
 
+import randomKey from '../../util/randomKey';
 import { IRootState } from '../../store/rootReducer';
 import { IUtilState, IUtilData } from '../../store/utils/utils.type';
 import { getUtilData } from '../../store/utils/utils.actions';
+import { AuthState } from '../../store/auth/auth.type';
+import { IAccountData, IContactData } from '../../types/apiDataTypes';
 
 import {
   Button,
@@ -17,10 +20,15 @@ import {
   InputModal,
   PlusIcon,
   RadioButton,
+  Spinner,
+  Datepicker,
+  CheckboxButton,
 } from '../shared';
+
 import { IMainList, IModalBudget } from '../../types/basicComponentsTypes';
 import { createBudget } from '../../store/budget/budget.action';
 import { useWidth } from '../../util/useWidth';
+import { composeApi } from '../../apis/compose';
 
 interface IOwnProps {
   onCancel: (type: string) => void;
@@ -40,20 +48,31 @@ const ModalAddExpenses: FC<IOwnProps> = ({
   onConfirm,
   paramId,
 }) => {
+  const width = useWidth();
+  const dispatch = useDispatch();
+  const history = useHistory();
+
+  const [loading, setLoading] = useState(false);
+  const [disabled, setDisabled] = useState(true);
+  const [contactData, setContactData] = useState([]);
+  const [accountData, setAccountData] = useState([]);
   const [expenses, setExpenses] = useState<IModalBudget[]>([
     {
-      id: '1',
+      id: randomKey(),
       expenses_name: '',
       price_budget: '',
       line_budget_id: paramId,
       type: 'select',
       budget_type: 'a',
+      to_xero: true,
+      date: moment().toDate().getTime(),
+      due_date: moment().toDate().getTime(),
     },
   ]);
-  const [disabled, setDisabled] = useState(true);
-  const width = useWidth();
-  const dispatch = useDispatch();
-  const history = useHistory();
+
+  const auth = useSelector<IRootState, AuthState['auth']>(
+    state => state.auth.auth,
+  );
 
   const seedData = useSelector<IRootState, IUtilState['seeds']>(
     state => state.utils.seeds,
@@ -65,6 +84,40 @@ const ModalAddExpenses: FC<IOwnProps> = ({
 
   useEffect(() => {
     dispatch(getUtilData('all', history));
+
+    composeApi(
+      {
+        data: {},
+        method: 'POST',
+        url: 'api/xero-data/contacts',
+        requireAuth: true,
+      },
+      dispatch,
+      auth,
+      history,
+    ).then(responseData => {
+      if (responseData?.message === 'success') {
+        setContactData(responseData.data);
+      }
+    });
+
+    composeApi(
+      {
+        data: {
+          scope: 'EXPENSE, ASSET, LIABILITY, EQUITY, REVENUE',
+        },
+        method: 'POST',
+        url: 'api/xero-data/accounts',
+        requireAuth: true,
+      },
+      dispatch,
+      auth,
+      history,
+    ).then(responseData => {
+      if (responseData?.message === 'success') {
+        setAccountData(responseData.data);
+      }
+    });
   }, []);
 
   const handleOnConfirm = async () => {
@@ -76,20 +129,30 @@ const ModalAddExpenses: FC<IOwnProps> = ({
         price_actual: item.budget_type === 'a' ? Number(item.price_budget) : 0,
         price_budget: item.budget_type === 'b' ? Number(item.price_budget) : 0,
         budget_type: item.budget_type,
+        from: item.budget_type === 'a' ? item.from : '',
+        date: item.budget_type === 'a' ? item.date : 0,
+        due_date: item.budget_type === 'a' ? item.due_date : 0,
+        account: item.budget_type === 'a' ? item.account : '',
+        to_xero: item.to_xero,
       };
     });
 
+    setLoading(true);
     await dispatch(createBudget({ expenses: newExpenses }, history));
 
     onConfirm();
+    setLoading(false);
     setExpenses([
       {
-        id: '1',
+        id: randomKey(),
         expenses_name: '',
         price_budget: '',
         line_budget_id: paramId,
         type: 'select',
         budget_type: 'a',
+        to_xero: true,
+        date: moment().toDate().getTime(),
+        due_date: moment().toDate().getTime(),
       },
     ]);
   };
@@ -105,6 +168,9 @@ const ModalAddExpenses: FC<IOwnProps> = ({
         line_budget_id: paramId,
         type: 'select',
         budget_type: 'a',
+        to_xero: true,
+        date: moment().toDate().getTime(),
+        due_date: moment().toDate().getTime(),
       },
     ]);
     setDisabled(true);
@@ -121,6 +187,9 @@ const ModalAddExpenses: FC<IOwnProps> = ({
         line_budget_id: paramId,
         type: 'text',
         budget_type: 'a',
+        to_xero: true,
+        date: moment().toDate().getTime(),
+        due_date: moment().toDate().getTime(),
       },
     ]);
     setDisabled(true);
@@ -136,43 +205,117 @@ const ModalAddExpenses: FC<IOwnProps> = ({
     );
   };
 
-  const handleOnBudgetType = (value: string, id: string) => {
+  const handleOnDate = (value: number, id: string) => {
     setExpenses(
       expenses.map(item =>
-        item.id === id ? { ...item, budget_type: value } : { ...item },
+        item.id === id ? { ...item, date: value } : { ...item },
       ),
     );
   };
 
-  const handleOnName = (value: string, id: string) => {
-    let counter = 0;
+  const handleOnDueDate = (value: number, id: string) => {
+    setExpenses(
+      expenses.map(item =>
+        item.id === id ? { ...item, due_date: value } : { ...item },
+      ),
+    );
+  };
+
+  const handleToXero = (value: boolean, id: string) => {
+    setExpenses(
+      expenses.map(item =>
+        item.id === id ? { ...item, to_xero: value } : { ...item },
+      ),
+    );
+  };
+
+  const handleOnFrom = (value: string, id: string) => {
+    let empty = false;
 
     const newExpenses: IModalBudget[] = expenses.map(item => {
       if (item.id === id) {
-        if (value !== '') {
-          counter += 1;
-        }
-        return { ...item, expenses_name: value };
+        if (item.budget_type === 'a' && !item.account) empty = true;
+        if (item.expenses_name === '') empty = true;
+        return { ...item, from: value };
       }
-      if (item.expenses_name !== '') {
-        counter += 1;
-      }
+      if (item.budget_type === 'a' && (!item.from || !item.account))
+        empty = true;
+      if (item.expenses_name === '') empty = true;
       return { ...item };
     });
 
-    setDisabled(counter !== expenses.length);
+    setDisabled(empty);
+    setExpenses(newExpenses);
+  };
+
+  const handleOnAccount = (value: string, id: string) => {
+    let empty = false;
+
+    const newExpenses: IModalBudget[] = expenses.map(item => {
+      if (item.id === id) {
+        if (item.budget_type === 'a' && !item.from) empty = true;
+        if (item.expenses_name === '') empty = true;
+        return { ...item, account: value };
+      }
+      if (item.budget_type === 'a' && (!item.from || !item.account))
+        empty = true;
+      if (item.expenses_name === '') empty = true;
+      return { ...item };
+    });
+
+    setDisabled(empty);
+    setExpenses(newExpenses);
+  };
+
+  const handleOnBudgetType = (value: string, id: string) => {
+    let empty = false;
+
+    const newExpenses: IModalBudget[] = expenses.map(item => {
+      if (item.id === id) {
+        if (item.expenses_name === '') empty = true;
+        if (value === 'a' && (!item.from || !item.account)) empty = true;
+        return { ...item, budget_type: value };
+      }
+      if (item.budget_type === 'a' && (!item.from || !item.account))
+        empty = true;
+      if (item.expenses_name === '') empty = true;
+      return { ...item };
+    });
+
+    setDisabled(empty);
+    setExpenses(newExpenses);
+  };
+
+  const handleOnName = (value: string, id: string) => {
+    let empty = false;
+
+    const newExpenses: IModalBudget[] = expenses.map(item => {
+      if (item.id === id) {
+        if (value === '') empty = true;
+        if (item.budget_type === 'a' && (!item.from || !item.account))
+          empty = true;
+        return { ...item, expenses_name: value };
+      }
+      if (item.budget_type === 'a' && (!item.from || !item.account))
+        empty = true;
+      if (item.expenses_name === '') empty = true;
+      return { ...item };
+    });
+
+    setDisabled(empty);
     setExpenses(newExpenses);
   };
 
   const handleOnCancel = (defaultType: string) => {
     setExpenses([
       {
-        id: '1',
+        id: randomKey(),
         expenses_name: '',
         price_budget: '',
         line_budget_id: paramId,
         type: 'select',
         budget_type: 'a',
+        to_xero: true,
       },
     ]);
     onCancel(defaultType);
@@ -183,149 +326,239 @@ const ModalAddExpenses: FC<IOwnProps> = ({
   };
 
   return (
-    <InputModal
-      visible={visible}
-      onCancel={() => handleOnCancel(type)}
-      title={
-        type === 'seed' ? 'Add seeding expenses' : 'Add maintenance expenses'
-      }
-      type='confirm'
-      onConfirm={handleOnConfirm}
-      className={className}
-      disabled={disabled}
-      modalWidth={920}
-    >
-      <div>
-        {expenses.map((expense, index) => (
-          <div
-            className='mb-12 budget__maintenance budget__maintenance--modal pos-relative d-flex align-items-center justify-content-between'
-            key={expense.id}
-          >
-            <div className='budget__wrapper mr-16'>
-              {type === 'seed' && expense.type === 'select' && (
-                <Dropdown
-                  className='mr-16 w-100'
-                  placeholder='seed name'
-                  onChange={(value, event) => handleOnName(value, expense.id)}
-                  label='Seed name'
-                  options={seedData.map(
-                    (seed: IUtilData) =>
-                      ({
-                        value: seed.name,
-                        label: seed.name,
-                        id: seed.id,
-                      } as IMainList),
-                  )}
-                  defaultValue={
-                    expense.expenses_name ? expense.expenses_name : undefined
-                  }
-                />
-              )}
-              {type === 'seed' && expense.type === 'text' && (
-                <Input
-                  type='text'
-                  onChange={e => handleOnName(e.target.value, expense.id)}
-                  className='mr-16 w-100'
-                  value={expense.expenses_name}
-                  label='Seed name'
-                  placeholder='seed name'
-                />
-              )}
-              {type !== 'seed' && expense.type === 'select' && (
-                <Dropdown
-                  className='mr-16 w-100'
-                  placeholder='maintenance name'
-                  onChange={(value, event) => handleOnName(value, expense.id)}
-                  label='Maintenance name'
-                  options={maintenanceData.map(
-                    (maintenance: IUtilData) =>
-                      ({
-                        value: maintenance.name,
-                        label: maintenance.name,
-                        id: maintenance.id,
-                      } as IMainList),
-                  )}
-                  defaultValue={
-                    expense.expenses_name ? expense.expenses_name : undefined
-                  }
-                />
-              )}
-              {type !== 'seed' && expense.type === 'text' && (
-                <Input
-                  className='mr-16'
-                  type='text'
-                  value={expense.expenses_name}
-                  placeholder='new maintenance'
-                  onChange={e => handleOnName(e.target.value, expense.id)}
-                  label='Maintenance name'
-                />
-              )}
-            </div>
-            <div className='budget__price-wrapper mr-16'>
-              <Input
-                type='number'
-                onChange={e => handleOnPrice(e.target.value, expense.id)}
-                value={expense.price_budget.toString()}
-                unit={<DollarIcon />}
-                label='Price'
-                placeholder='0'
-              />
-            </div>
-            <div className={index ? '' : 'pt-20'}>
-              <Radio.Group
-                className='d-flex'
-                onChange={e => handleOnBudgetType(e.target.value, expense.id)}
-                value={expense.budget_type}
+    <>
+      {loading && <Spinner />}
+      {!loading && (
+        <InputModal
+          visible={visible}
+          onCancel={() => handleOnCancel(type)}
+          title={
+            type === 'seed'
+              ? 'Add seeding expenses'
+              : 'Add maintenance expenses'
+          }
+          type='confirm'
+          onConfirm={handleOnConfirm}
+          className={className}
+          disabled={disabled}
+          modalWidth={920}
+        >
+          <div>
+            {expenses.map((expense, index) => (
+              <div
+                className='budget__maintenance budget__maintenance--modal pos-relative'
+                key={expense.id}
               >
-                <RadioButton label='Budgeted' value='b' />
-                <RadioButton className='ml-34' label='Actual' value='a' />
-              </Radio.Group>
-            </div>
-            <span
-              className='budget__close-icon budget__close-icon--modal'
-              onKeyDown={() => undefined}
-              onClick={() => handleOnDeleteLine(expense.id)}
-              role='button'
-              tabIndex={0}
-            >
-              <CloseIcon />
-            </span>
+                <div className='mb-12 d-flex align-items-center justify-content-between'>
+                  <div className='budget__wrapper mr-16'>
+                    {type === 'seed' && expense.type === 'select' && (
+                      <Dropdown
+                        className='mr-16 w-100'
+                        placeholder='seed name'
+                        onChange={value => handleOnName(value, expense.id)}
+                        label='Seed name'
+                        options={seedData.map(
+                          (seed: IUtilData) =>
+                            ({
+                              value: seed.name,
+                              label: seed.name,
+                              id: seed.id,
+                            } as IMainList),
+                        )}
+                        defaultValue={
+                          expense.expenses_name
+                            ? expense.expenses_name
+                            : undefined
+                        }
+                      />
+                    )}
+                    {type === 'seed' && expense.type === 'text' && (
+                      <Input
+                        type='text'
+                        onChange={e => handleOnName(e.target.value, expense.id)}
+                        className='mr-16 w-100'
+                        value={expense.expenses_name}
+                        label='Seed name'
+                        placeholder='seed name'
+                      />
+                    )}
+                    {type !== 'seed' && expense.type === 'select' && (
+                      <Dropdown
+                        className='mr-16 w-100'
+                        placeholder='maintenance name'
+                        onChange={value => handleOnName(value, expense.id)}
+                        label='Maintenance name'
+                        options={maintenanceData.map(
+                          (maintenance: IUtilData) =>
+                            ({
+                              value: maintenance.name,
+                              label: maintenance.name,
+                              id: maintenance.id,
+                            } as IMainList),
+                        )}
+                        defaultValue={
+                          expense.expenses_name
+                            ? expense.expenses_name
+                            : undefined
+                        }
+                      />
+                    )}
+                    {type !== 'seed' && expense.type === 'text' && (
+                      <Input
+                        className='mr-16'
+                        type='text'
+                        value={expense.expenses_name}
+                        placeholder='new maintenance'
+                        onChange={e => handleOnName(e.target.value, expense.id)}
+                        label='Maintenance name'
+                      />
+                    )}
+                  </div>
+                  <div className='budget__price-wrapper mr-16'>
+                    <Input
+                      type='number'
+                      onChange={e => handleOnPrice(e.target.value, expense.id)}
+                      value={expense.price_budget.toString()}
+                      unit={<DollarIcon />}
+                      label='Price'
+                      placeholder='0'
+                    />
+                  </div>
+                  <div className={index ? '' : 'pt-20'}>
+                    <Radio.Group
+                      className='d-flex'
+                      onChange={e =>
+                        handleOnBudgetType(e.target.value, expense.id)
+                      }
+                      value={expense.budget_type}
+                    >
+                      <RadioButton label='Budgeted' value='b' />
+                      <RadioButton className='ml-34' label='Actual' value='a' />
+                    </Radio.Group>
+                  </div>
+                  <span
+                    className='budget__close-icon budget__close-icon--modal'
+                    onKeyDown={() => undefined}
+                    onClick={() => handleOnDeleteLine(expense.id)}
+                    role='button'
+                    tabIndex={0}
+                  >
+                    <CloseIcon />
+                  </span>
+                </div>
+                {expense.budget_type === 'a' && (
+                  <div className='mb-12 d-flex align-items-center justify-content-between'>
+                    <Dropdown
+                      className='mr-16 w-30'
+                      placeholder='from'
+                      onChange={value => handleOnFrom(value, expense.id)}
+                      label='From'
+                      options={contactData.map(
+                        (contact: IContactData) =>
+                          ({
+                            value: contact.ContactID,
+                            label: contact.Name,
+                            id: contact.ContactID,
+                          } as IMainList),
+                      )}
+                      defaultValue={expense.from ? expense.from : undefined}
+                    />
+                    <div className='w-20 mr-16'>
+                      <Datepicker
+                        label='Date'
+                        defaultValue={expense.date}
+                        onChange={e =>
+                          handleOnDate(
+                            e
+                              ? e!.toDate().getTime()
+                              : moment().toDate().getTime(),
+                            expense.id,
+                          )
+                        }
+                        required
+                      />
+                    </div>
+                    <div className='w-20 mr-16'>
+                      <Datepicker
+                        label='Due Date'
+                        defaultValue={expense.due_date}
+                        onChange={e =>
+                          handleOnDueDate(
+                            e
+                              ? e!.toDate().getTime()
+                              : moment().toDate().getTime(),
+                            expense.id,
+                          )
+                        }
+                        required
+                      />
+                    </div>
+                    <Dropdown
+                      className='mr-16 w-30'
+                      placeholder='account'
+                      onChange={value => handleOnAccount(value, expense.id)}
+                      label='Account'
+                      options={accountData.map(
+                        (contact: IAccountData) =>
+                          ({
+                            value: contact.Code,
+                            label: contact.Name,
+                            id: contact.Code,
+                          } as IMainList),
+                      )}
+                      defaultValue={
+                        expense.account ? expense.account : undefined
+                      }
+                    />
+                  </div>
+                )}
+                {expense.budget_type === 'a' && (
+                  <div className='mb-12 d-flex align-items-center justify-content-end'>
+                    <CheckboxButton
+                      label='Send to Xero?'
+                      checked={expense.to_xero}
+                      onChange={e => handleToXero(e.target.checked, expense.id)}
+                    />
+                  </div>
+                )}
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
-      <div className='d-flex'>
-        <Button
-          className={width > 768 ? '' : 'mb-24'}
-          color='blue'
-          size={width > 768 ? 0 : 2}
-          width={width > 768 ? 'default' : 'wide'}
-          type='bordered'
-          isNoneBorder={width > 768}
-          iconLeft
-          onClick={handleOnAddLine}
-        >
-          <span className='mr-4 ml-6 font-size-0'>
-            <PlusIcon />
-          </span>
-          <span>Add</span>
-        </Button>
-        <Button
-          className={width > 768 ? '' : 'mb-24'}
-          color='blue'
-          size={width > 768 ? 0 : 2}
-          width={width > 768 ? 'default' : 'wide'}
-          type='bordered'
-          isNoneBorder={width > 768}
-          iconLeft
-          onClick={handleOnAddLineCustom}
-        >
-          <span className='mr-4 ml-6 font-size-0'>
-            <PlusIcon />
-          </span>
-          <span>Add Custom</span>
-        </Button>
-      </div>
-    </InputModal>
+          <div className='d-flex'>
+            <Button
+              className={width > 768 ? '' : 'mb-24'}
+              color='blue'
+              size={width > 768 ? 0 : 2}
+              width={width > 768 ? 'default' : 'wide'}
+              type='bordered'
+              isNoneBorder={width > 768}
+              iconLeft
+              onClick={handleOnAddLine}
+            >
+              <span className='mr-4 ml-6 font-size-0'>
+                <PlusIcon />
+              </span>
+              <span>Add</span>
+            </Button>
+            <Button
+              className={width > 768 ? '' : 'mb-24'}
+              color='blue'
+              size={width > 768 ? 0 : 2}
+              width={width > 768 ? 'default' : 'wide'}
+              type='bordered'
+              isNoneBorder={width > 768}
+              iconLeft
+              onClick={handleOnAddLineCustom}
+            >
+              <span className='mr-4 ml-6 font-size-0'>
+                <PlusIcon />
+              </span>
+              <span>Add Custom</span>
+            </Button>
+          </div>
+        </InputModal>
+      )}
+    </>
   );
 };
 

@@ -68,6 +68,7 @@ export interface IRowPayload {
   data_row?: string;
   expenses_id?: number;
   farm_id?: number;
+  rdata?: string;
 }
 
 export interface IDeleteMessage {

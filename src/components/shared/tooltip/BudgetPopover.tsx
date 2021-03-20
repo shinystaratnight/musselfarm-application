@@ -1,14 +1,22 @@
-import React, { FC, ReactNode, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import React, { FC, ReactNode, useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
 import { Popover } from 'antd';
-
-import Button from '../button/Button';
-import { Input } from '../index';
+import moment from 'moment';
 
 import './styles.scss';
+import Button from '../button/Button';
+import { Input, Dropdown, Datepicker, CheckboxButton } from '../index';
+import {
+  IUpdateBudget,
+  IAccountData,
+  IContactData,
+} from '../../../types/apiDataTypes';
+
+import { IMainList } from '../../../types/basicComponentsTypes';
+import { IRootState } from '../../../store/rootReducer';
+import { IUtilState } from '../../../store/utils/utils.type';
 import { updateBudgetValue } from '../../../store/budget/budget.action';
-import { IUpdateBudget } from '../../../types/apiDataTypes';
 
 interface IOwnProps {
   children: ReactNode;
@@ -28,9 +36,28 @@ const BudgetTooltip: FC<IOwnProps> = ({
   const query = new URLSearchParams(useLocation().search);
   const dispatch = useDispatch();
   const history = useHistory();
+
+  const oldData = data.rdata ? JSON.parse(data.rdata) : null;
+  const [from, setFrom] = useState(oldData ? oldData.from : '');
+  const [date, setDate] = useState(
+    oldData ? oldData.date : moment().toDate().getTime(),
+  );
+  const [due_date, setDueDate] = useState(
+    oldData ? oldData.due_date : moment().toDate().getTime(),
+  );
+  const [account, setAccount] = useState(oldData ? oldData.account : '');
+  const [to_xero, setToXero] = useState(true);
+
   const [count, setCount] = useState('');
   const [comment, setComment] = useState('');
   const [visible, setVisible] = useState(false);
+
+  const contactData = useSelector<IRootState, IUtilState['xero_contacts']>(
+    state => state.utils.xero_contacts,
+  );
+  const accountData = useSelector<IRootState, IUtilState['xero_accounts']>(
+    state => state.utils.xero_accounts,
+  );
 
   const onConfirm = () => {
     let sendData: IUpdateBudget = {};
@@ -46,7 +73,12 @@ const BudgetTooltip: FC<IOwnProps> = ({
         }`,
         type: `${type === 'budgeted' ? 'b' : 'a'}`,
         value: count,
+        date,
+        due_date,
         comment,
+        account,
+        from,
+        to_xero,
       };
     } else {
       sendData = {
@@ -76,59 +108,168 @@ const BudgetTooltip: FC<IOwnProps> = ({
   };
 
   return (
-    <Popover
-      visible={visible}
-      onVisibleChange={(v: boolean) => setVisible(v)}
-      overlayClassName={className}
-      placement='bottomLeft'
-      content={
-        <div>
-          <Input
-            onChange={e =>
-              setCount(Number(e.target.value) > -1 ? e.target.value : '0')
-            }
-            type='number'
-            value={count}
-            className='mb-16'
-            label='Value'
-            placeholder={value}
-          />
-          <Input
-            onChange={e => setComment(e.target.value)}
-            type='textarea'
-            value={comment}
-            label='Comment'
-            className='mb-20'
-            placeholder=''
-            isOptional
-          />
-          <div className='d-flex justify-content-end align-items-center'>
-            <Button
-              width='small'
-              size={1}
-              type='transparent'
-              color='blue'
-              onClick={() => setVisible(false)}
-            >
-              Cancel
-            </Button>
-            <Button
-              width='small'
-              size={3}
-              type='fill'
-              color='green'
-              className='ml-16'
-              onClick={onConfirm}
-            >
-              Submit
-            </Button>
-          </div>
-        </div>
-      }
-      trigger='click'
-    >
-      {children}
-    </Popover>
+    <>
+      {type === 'actual' && data.data_row === 'price' && (
+        <Popover
+          visible={visible}
+          onVisibleChange={(v: boolean) => setVisible(v)}
+          overlayClassName={className}
+          placement='bottomLeft'
+          content={
+            <div>
+              <Dropdown
+                className='mb-16 w-100'
+                placeholder='from'
+                onChange={val => setFrom(val)}
+                label='From'
+                options={contactData.map(
+                  (contact: IContactData) =>
+                    ({
+                      value: contact.ContactID,
+                      label: contact.Name,
+                      id: contact.ContactID,
+                    } as IMainList),
+                )}
+                defaultValue={from}
+              />
+              <Datepicker
+                label='Date'
+                className='mb-16'
+                defaultValue={date}
+                onChange={e => setDate(e!.toDate().getTime())}
+                required
+              />
+              <Datepicker
+                label='DueDate'
+                className='mb-16'
+                defaultValue={due_date}
+                onChange={e => setDueDate(e!.toDate().getTime())}
+                required
+              />
+              <Dropdown
+                className='mb-16 w-100'
+                placeholder='account'
+                onChange={val => setAccount(val)}
+                label='Account'
+                options={accountData.map(
+                  (act: IAccountData) =>
+                    ({
+                      value: act.Code,
+                      label: act.Name,
+                      id: act.Code,
+                    } as IMainList),
+                )}
+                defaultValue={account}
+              />
+              <Input
+                onChange={e =>
+                  setCount(Number(e.target.value) > -1 ? e.target.value : '0')
+                }
+                type='number'
+                value={count}
+                className='mb-16'
+                label='Value'
+                placeholder={value}
+              />
+              <Input
+                onChange={e => setComment(e.target.value)}
+                type='textarea'
+                value={comment}
+                label='Comment'
+                className='mb-20'
+                placeholder=''
+                isOptional
+              />
+              <CheckboxButton
+                className='mb-16'
+                label='Send to Xero?'
+                checked={to_xero}
+                onChange={e => setToXero(e.target.checked)}
+              />
+              <div className='d-flex justify-content-end align-items-center'>
+                <Button
+                  width='small'
+                  size={1}
+                  type='transparent'
+                  color='blue'
+                  onClick={() => setVisible(false)}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  width='small'
+                  size={3}
+                  type='fill'
+                  color='green'
+                  className='ml-16'
+                  onClick={onConfirm}
+                >
+                  Submit
+                </Button>
+              </div>
+            </div>
+          }
+          trigger='click'
+        >
+          {children}
+        </Popover>
+      )}
+      {(type !== 'actual' || data.data_row !== 'price') && (
+        <Popover
+          visible={visible}
+          onVisibleChange={(v: boolean) => setVisible(v)}
+          overlayClassName={className}
+          placement='bottomLeft'
+          content={
+            <div>
+              <Input
+                onChange={e =>
+                  setCount(Number(e.target.value) > -1 ? e.target.value : '0')
+                }
+                type='number'
+                value={count}
+                className='mb-16'
+                label='Value'
+                placeholder={value}
+              />
+              <Input
+                onChange={e => setComment(e.target.value)}
+                type='textarea'
+                value={comment}
+                label='Comment'
+                className='mb-20'
+                placeholder=''
+                isOptional
+              />
+              <div className='d-flex justify-content-end align-items-center'>
+                <Button
+                  width='small'
+                  size={1}
+                  type='transparent'
+                  color='blue'
+                  onClick={() => setVisible(false)}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  width='small'
+                  size={3}
+                  type='fill'
+                  color='green'
+                  className='ml-16'
+                  onClick={onConfirm}
+                >
+                  Submit
+                </Button>
+              </div>
+            </div>
+          }
+          trigger='click'
+        >
+          {children}
+        </Popover>
+      )}
+    </>
   );
 };
 

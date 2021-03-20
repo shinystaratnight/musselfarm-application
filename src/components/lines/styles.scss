@@ -40,6 +40,7 @@
   }
 
   &__seeding, &__maintenance {
+    .ant-checkbox-wrapper .paragrapgh,
     .ant-radio-group .paragrapgh, 
     .ant-radio-group .dropdown__label {
       display: block !important;

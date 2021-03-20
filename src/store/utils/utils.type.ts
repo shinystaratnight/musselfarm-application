@@ -3,6 +3,8 @@ import {
   SET_MAINTENANCE_DATA,
   SET_COLOR_DATA,
   SET_SEEDTYPE_DATA,
+  SET_XERO_ACCOUNT_DATA,
+  SET_XERO_CONTACT_DATA,
 } from './utils.constants';
 
 export type IUtilState = {
@@ -10,6 +12,8 @@ export type IUtilState = {
   maintenances: IUtilsData;
   colors: IUtilsData;
   seedtypes: IUtilsData;
+  xero_contacts: IXeroContacts;
+  xero_accounts: IXeroAccounts;
 };
 
 interface ISetSeedData {
@@ -32,8 +36,29 @@ interface ISetSeedTypeData {
   payload: IUtilsData;
 }
 
-export type IUtilsData = Array<IUtilData>;
+interface ISetXeroContactData {
+  type: typeof SET_XERO_CONTACT_DATA;
+  payload: IXeroContacts;
+}
 
+interface ISetXeroAccountData {
+  type: typeof SET_XERO_ACCOUNT_DATA;
+  payload: IXeroAccounts;
+}
+
+export type IXeroContacts = Array<IXeroContact>;
+export interface IXeroContact {
+  ContactID: string;
+  Name: string;
+}
+
+export type IXeroAccounts = Array<IXeroAccount>;
+export interface IXeroAccount {
+  Code: string;
+  Name: string;
+}
+
+export type IUtilsData = Array<IUtilData>;
 export interface IUtilData {
   key?: number;
   id: string | number;
@@ -42,6 +67,8 @@ export interface IUtilData {
 }
 
 export type UtilsTypes =
+  | ISetXeroAccountData
+  | ISetXeroContactData
   | ISetSeedData
   | ISetMaintenanceData
   | ISetColorData

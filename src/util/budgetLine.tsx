@@ -120,6 +120,7 @@ export const getBudgetByLine = (defaultData: any): IRowPayload[] => {
           data_row: 'price',
           expenses_id: expense.id,
           farm_id: defaultData?.farm_id,
+          rdata: expense.rdata,
         });
 
         allSeed.budgeted += Number(expense?.price_budget);
@@ -175,6 +176,7 @@ export const getBudgetByLine = (defaultData: any): IRowPayload[] => {
           data_row: 'price',
           expenses_id: expense.id,
           farm_id: defaultData?.farm_id,
+          rdata: expense.rdata,
         });
 
         allMain.budgeted += Number(expense?.price_budget);

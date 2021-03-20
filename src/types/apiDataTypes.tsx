@@ -28,6 +28,11 @@ export interface IUpdateBudget {
   type?: string;
   value?: string;
   comment?: string;
+  date?: string;
+  due_date?: string;
+  from?: string;
+  account?: string;
+  to_xero?: boolean;
 }
 
 export interface ILinesUser {
@@ -74,4 +79,14 @@ export interface IApiFarmCard {
   name: string;
   this_year: number;
   last_year: number;
+}
+
+export interface IContactData {
+  ContactID: string;
+  Name: string;
+}
+
+export interface IAccountData {
+  Code: string;
+  Name: string;
 }

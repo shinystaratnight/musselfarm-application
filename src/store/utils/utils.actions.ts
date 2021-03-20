@@ -1,15 +1,38 @@
 import { IRootState, IThunkType } from '../rootReducer';
-import { UtilsTypes, IUtilsData, IUtilData } from './utils.type';
+import {
+  UtilsTypes,
+  IUtilsData,
+  IUtilData,
+  IXeroAccounts,
+  IXeroContacts,
+} from './utils.type';
+
 import {
   SET_SEED_DATA,
   SET_MAINTENANCE_DATA,
   SET_COLOR_DATA,
   SET_SEEDTYPE_DATA,
+  SET_XERO_CONTACT_DATA,
+  SET_XERO_ACCOUNT_DATA,
 } from './utils.constants';
 
 import { isSpinner } from '../ui/ui.actions';
 import { composeApi } from '../../apis/compose';
 import { transformUtil } from '../../util/farmUtil';
+
+export const setXeroContactData = (data: IXeroContacts): UtilsTypes => {
+  return {
+    type: SET_XERO_CONTACT_DATA,
+    payload: data,
+  };
+};
+
+export const setXeroAccountData = (data: IXeroAccounts): UtilsTypes => {
+  return {
+    type: SET_XERO_ACCOUNT_DATA,
+    payload: data,
+  };
+};
 
 export const setSeedData = (data: IUtilsData): UtilsTypes => {
   return {
@@ -36,6 +59,54 @@ export const setSeedTypeData = (data: IUtilsData): UtilsTypes => {
   return {
     type: SET_SEEDTYPE_DATA,
     payload: data,
+  };
+};
+
+export const getXeroContacts = (history: any): IRootState => {
+  return async (dispatch: IThunkType, getState: () => IRootState) => {
+    dispatch(isSpinner(true));
+
+    const responseData = await composeApi(
+      {
+        data: {},
+        method: 'POST',
+        url: 'api/xero-data/contacts',
+        requireAuth: true,
+      },
+      dispatch,
+      getState().auth.auth,
+      history,
+    );
+
+    if (responseData?.message === 'success') {
+      dispatch(setXeroContactData(responseData.data));
+    }
+
+    dispatch(isSpinner(false));
+  };
+};
+
+export const getXeroAccounts = (history: any): IRootState => {
+  return async (dispatch: IThunkType, getState: () => IRootState) => {
+    dispatch(isSpinner(true));
+
+    const responseData = await composeApi(
+      {
+        data: {},
+        method: 'POST',
+        url: 'api/xero-data/accounts',
+        requireAuth: true,
+      },
+      dispatch,
+      getState().auth.auth,
+      history,
+    );
+
+    if (responseData?.message === 'success') {
+      dispatch(setXeroAccountData(responseData.data));
+    }
+
+    dispatch(isSpinner(false));
   };
 };
 
