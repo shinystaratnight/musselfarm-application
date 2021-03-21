@@ -129,11 +129,11 @@ const ModalAddExpenses: FC<IOwnProps> = ({
         price_actual: item.budget_type === 'a' ? Number(item.price_budget) : 0,
         price_budget: item.budget_type === 'b' ? Number(item.price_budget) : 0,
         budget_type: item.budget_type,
-        from: item.budget_type === 'a' ? item.from : '',
-        date: item.budget_type === 'a' ? item.date : 0,
-        due_date: item.budget_type === 'a' ? item.due_date : 0,
-        account: item.budget_type === 'a' ? item.account : '',
-        to_xero: item.to_xero,
+        from: item.budget_type === 'a' && auth.xero ? item.from : '',
+        date: item.budget_type === 'a' && auth.xero ? item.date : 0,
+        due_date: item.budget_type === 'a' && auth.xero ? item.due_date : 0,
+        account: item.budget_type === 'a' && auth.xero ? item.account : '',
+        to_xero: auth.xero ? item.to_xero : false,
       };
     });
 
@@ -273,10 +273,15 @@ const ModalAddExpenses: FC<IOwnProps> = ({
     const newExpenses: IModalBudget[] = expenses.map(item => {
       if (item.id === id) {
         if (item.expenses_name === '') empty = true;
-        if (value === 'a' && (!item.from || !item.account)) empty = true;
+        if (value === 'a' && (!item.from || !item.account) && auth.xero)
+          empty = true;
         return { ...item, budget_type: value };
       }
-      if (item.budget_type === 'a' && (!item.from || !item.account))
+      if (
+        item.budget_type === 'a' &&
+        (!item.from || !item.account) &&
+        auth.xero
+      )
         empty = true;
       if (item.expenses_name === '') empty = true;
       return { ...item };
@@ -292,11 +297,19 @@ const ModalAddExpenses: FC<IOwnProps> = ({
     const newExpenses: IModalBudget[] = expenses.map(item => {
       if (item.id === id) {
         if (value === '') empty = true;
-        if (item.budget_type === 'a' && (!item.from || !item.account))
+        if (
+          item.budget_type === 'a' &&
+          (!item.from || !item.account) &&
+          auth.xero
+        )
           empty = true;
         return { ...item, expenses_name: value };
       }
-      if (item.budget_type === 'a' && (!item.from || !item.account))
+      if (
+        item.budget_type === 'a' &&
+        (!item.from || !item.account) &&
+        auth.xero
+      )
         empty = true;
       if (item.expenses_name === '') empty = true;
       return { ...item };
@@ -446,7 +459,7 @@ const ModalAddExpenses: FC<IOwnProps> = ({
                     <CloseIcon />
                   </span>
                 </div>
-                {expense.budget_type === 'a' && (
+                {expense.budget_type === 'a' && auth.xero && (
                   <div className='mb-12 d-flex align-items-center justify-content-between'>
                     <Dropdown
                       className='mr-16 w-30'
@@ -512,7 +525,7 @@ const ModalAddExpenses: FC<IOwnProps> = ({
                     />
                   </div>
                 )}
-                {expense.budget_type === 'a' && (
+                {expense.budget_type === 'a' && auth.xero && (
                   <div className='mb-12 d-flex align-items-center justify-content-end'>
                     <CheckboxButton
                       label='Send to Xero?'

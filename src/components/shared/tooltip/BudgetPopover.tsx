@@ -16,6 +16,7 @@ import {
 import { IMainList } from '../../../types/basicComponentsTypes';
 import { IRootState } from '../../../store/rootReducer';
 import { IUtilState } from '../../../store/utils/utils.type';
+import { AuthState } from '../../../store/auth/auth.type';
 import { updateBudgetValue } from '../../../store/budget/budget.action';
 
 interface IOwnProps {
@@ -52,6 +53,9 @@ const BudgetTooltip: FC<IOwnProps> = ({
   const [comment, setComment] = useState('');
   const [visible, setVisible] = useState(false);
 
+  const auth = useSelector<IRootState, AuthState['auth']>(
+    state => state.auth.auth,
+  );
   const contactData = useSelector<IRootState, IUtilState['xero_contacts']>(
     state => state.utils.xero_contacts,
   );
@@ -73,12 +77,12 @@ const BudgetTooltip: FC<IOwnProps> = ({
         }`,
         type: `${type === 'budgeted' ? 'b' : 'a'}`,
         value: count,
-        date,
-        due_date,
         comment,
-        account,
-        from,
-        to_xero,
+        date: auth.xero ? date : 0,
+        due_date: auth.xero ? due_date : 0,
+        account: auth.xero ? account : '',
+        from: auth.xero ? from : '',
+        to_xero: auth.xero ? to_xero : false,
       };
     } else {
       sendData = {
@@ -109,7 +113,7 @@ const BudgetTooltip: FC<IOwnProps> = ({
 
   return (
     <>
-      {type === 'actual' && data.data_row === 'price' && (
+      {type === 'actual' && data.data_row === 'price' && auth.xero && (
         <Popover
           visible={visible}
           onVisibleChange={(v: boolean) => setVisible(v)}
@@ -122,7 +126,7 @@ const BudgetTooltip: FC<IOwnProps> = ({
                 placeholder='from'
                 onChange={val => setFrom(val)}
                 label='From'
-                options={contactData.map(
+                options={contactData?.map(
                   (contact: IContactData) =>
                     ({
                       value: contact.ContactID,
@@ -151,7 +155,7 @@ const BudgetTooltip: FC<IOwnProps> = ({
                 placeholder='account'
                 onChange={val => setAccount(val)}
                 label='Account'
-                options={accountData.map(
+                options={accountData?.map(
                   (act: IAccountData) =>
                     ({
                       value: act.Code,
@@ -185,6 +189,61 @@ const BudgetTooltip: FC<IOwnProps> = ({
                 label='Send to Xero?'
                 checked={to_xero}
                 onChange={e => setToXero(e.target.checked)}
+              />
+              <div className='d-flex justify-content-end align-items-center'>
+                <Button
+                  width='small'
+                  size={1}
+                  type='transparent'
+                  color='blue'
+                  onClick={() => setVisible(false)}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  width='small'
+                  size={3}
+                  type='fill'
+                  color='green'
+                  className='ml-16'
+                  onClick={onConfirm}
+                >
+                  Submit
+                </Button>
+              </div>
+            </div>
+          }
+          trigger='click'
+        >
+          {children}
+        </Popover>
+      )}
+      {type === 'actual' && data.data_row === 'price' && !auth.xero && (
+        <Popover
+          visible={visible}
+          onVisibleChange={(v: boolean) => setVisible(v)}
+          overlayClassName={className}
+          placement='bottomLeft'
+          content={
+            <div>
+              <Input
+                onChange={e =>
+                  setCount(Number(e.target.value) > -1 ? e.target.value : '0')
+                }
+                type='number'
+                value={count}
+                className='mb-16'
+                label='Value'
+                placeholder={value}
+              />
+              <Input
+                onChange={e => setComment(e.target.value)}
+                type='textarea'
+                value={comment}
+                label='Comment'
+                className='mb-20'
+                placeholder=''
+                isOptional
               />
               <div className='d-flex justify-content-end align-items-center'>
                 <Button
