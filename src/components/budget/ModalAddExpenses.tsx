@@ -158,11 +158,10 @@ const ModalAddExpenses: FC<IOwnProps> = ({
   };
 
   const handleOnAddLine = () => {
-    const defaultId = expenses.length + 1;
     setExpenses([
       ...expenses,
       {
-        id: defaultId.toString(),
+        id: randomKey(),
         expenses_name: '',
         price_budget: '',
         line_budget_id: paramId,
@@ -177,11 +176,10 @@ const ModalAddExpenses: FC<IOwnProps> = ({
   };
 
   const handleOnAddLineCustom = () => {
-    const defaultId = expenses.length + 1;
     setExpenses([
       ...expenses,
       {
-        id: defaultId.toString(),
+        id: randomKey(),
         expenses_name: '',
         price_budget: '',
         line_budget_id: paramId,
