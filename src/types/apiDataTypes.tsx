@@ -33,6 +33,7 @@ export interface IUpdateBudget {
   from?: string;
   account?: string;
   to_xero?: boolean;
+  expense_date?: string;
 }
 
 export interface ILinesUser {

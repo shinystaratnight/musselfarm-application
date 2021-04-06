@@ -67,6 +67,7 @@ const ModalAddExpenses: FC<IOwnProps> = ({
       to_xero: true,
       date: moment().toDate().getTime(),
       due_date: moment().toDate().getTime(),
+      expense_date: moment().toDate().getTime(),
     },
   ]);
 
@@ -132,6 +133,9 @@ const ModalAddExpenses: FC<IOwnProps> = ({
         from: item.budget_type === 'a' && auth.xero ? item.from : '',
         date: item.budget_type === 'a' && auth.xero ? item.date : 0,
         due_date: item.budget_type === 'a' && auth.xero ? item.due_date : 0,
+        expense_date: item.expense_date
+          ? item.expense_date
+          : moment().toDate().getTime(),
         account: item.budget_type === 'a' && auth.xero ? item.account : '',
         to_xero: auth.xero ? item.to_xero : false,
       };
@@ -153,6 +157,7 @@ const ModalAddExpenses: FC<IOwnProps> = ({
         to_xero: true,
         date: moment().toDate().getTime(),
         due_date: moment().toDate().getTime(),
+        expense_date: moment().toDate().getTime(),
       },
     ]);
   };
@@ -170,6 +175,7 @@ const ModalAddExpenses: FC<IOwnProps> = ({
         to_xero: true,
         date: moment().toDate().getTime(),
         due_date: moment().toDate().getTime(),
+        expense_date: moment().toDate().getTime(),
       },
     ]);
     setDisabled(true);
@@ -188,6 +194,7 @@ const ModalAddExpenses: FC<IOwnProps> = ({
         to_xero: true,
         date: moment().toDate().getTime(),
         due_date: moment().toDate().getTime(),
+        expense_date: moment().toDate().getTime(),
       },
     ]);
     setDisabled(true);
@@ -207,6 +214,14 @@ const ModalAddExpenses: FC<IOwnProps> = ({
     setExpenses(
       expenses.map(item =>
         item.id === id ? { ...item, date: value } : { ...item },
+      ),
+    );
+  };
+
+  const handleOnExpenseDate = (value: number, id: string) => {
+    setExpenses(
+      expenses.map(item =>
+        item.id === id ? { ...item, expense_date: value } : { ...item },
       ),
     );
   };
@@ -327,6 +342,9 @@ const ModalAddExpenses: FC<IOwnProps> = ({
         type: 'select',
         budget_type: 'a',
         to_xero: true,
+        date: moment().toDate().getTime(),
+        due_date: moment().toDate().getTime(),
+        expense_date: moment().toDate().getTime(),
       },
     ]);
     onCancel(defaultType);
@@ -435,7 +453,34 @@ const ModalAddExpenses: FC<IOwnProps> = ({
                       placeholder='0'
                     />
                   </div>
-                  <div className={index ? '' : 'pt-20'}>
+                  <Datepicker
+                    label='Expense Date'
+                    defaultValue={expense.expense_date}
+                    onChange={e =>
+                      handleOnExpenseDate(
+                        e ? e!.toDate().getTime() : moment().toDate().getTime(),
+                        expense.id,
+                      )
+                    }
+                    required
+                  />
+                  <span
+                    className='budget__close-icon budget__close-icon--modal'
+                    onKeyDown={() => undefined}
+                    onClick={() => handleOnDeleteLine(expense.id)}
+                    role='button'
+                    tabIndex={0}
+                  >
+                    <CloseIcon />
+                  </span>
+                </div>
+                <div
+                  className='mb-12 d-flex align-items-end justify-content-between'
+                  style={{
+                    flexDirection: 'column',
+                  }}
+                >
+                  <div>
                     <Radio.Group
                       className='d-flex'
                       onChange={e =>
@@ -447,15 +492,6 @@ const ModalAddExpenses: FC<IOwnProps> = ({
                       <RadioButton className='ml-34' label='Actual' value='a' />
                     </Radio.Group>
                   </div>
-                  <span
-                    className='budget__close-icon budget__close-icon--modal'
-                    onKeyDown={() => undefined}
-                    onClick={() => handleOnDeleteLine(expense.id)}
-                    role='button'
-                    tabIndex={0}
-                  >
-                    <CloseIcon />
-                  </span>
                 </div>
                 {expense.budget_type === 'a' && auth.xero && (
                   <div className='mb-12 d-flex align-items-center justify-content-between'>

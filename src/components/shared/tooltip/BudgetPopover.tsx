@@ -40,6 +40,7 @@ const BudgetTooltip: FC<IOwnProps> = ({
 
   const oldData = data.rdata ? JSON.parse(data.rdata) : null;
   const [from, setFrom] = useState(oldData ? oldData.from : '');
+  const [expense_date, setExpenseDate] = useState(Number(data.expense_date));
   const [date, setDate] = useState(
     oldData ? oldData.date : moment().toDate().getTime(),
   );
@@ -72,6 +73,7 @@ const BudgetTooltip: FC<IOwnProps> = ({
         budget_id: data.budget_id,
         line_id: Number(query.get('line')),
         expenses_name: data.name,
+        expense_date: expense_date.toString(),
         data_row: `${data.data_row}${
           type === 'budgeted' ? '_budget' : '_actual'
         }`,
@@ -135,6 +137,16 @@ const BudgetTooltip: FC<IOwnProps> = ({
                     } as IMainList),
                 )}
                 defaultValue={from}
+              />
+              <Datepicker
+                label='Expense Date'
+                defaultValue={expense_date}
+                onChange={e =>
+                  setExpenseDate(
+                    e ? e!.toDate().getTime() : moment().toDate().getTime(),
+                  )
+                }
+                required
               />
               <Datepicker
                 label='Date'
@@ -236,6 +248,16 @@ const BudgetTooltip: FC<IOwnProps> = ({
                 label='Value'
                 placeholder={value}
               />
+              <Datepicker
+                label='Expense Date'
+                defaultValue={expense_date}
+                onChange={e =>
+                  setExpenseDate(
+                    e ? e!.toDate().getTime() : moment().toDate().getTime(),
+                  )
+                }
+                required
+              />
               <Input
                 onChange={e => setComment(e.target.value)}
                 type='textarea'
@@ -290,6 +312,16 @@ const BudgetTooltip: FC<IOwnProps> = ({
                 className='mb-16'
                 label='Value'
                 placeholder={value}
+              />
+              <Datepicker
+                label='Expense Date'
+                defaultValue={expense_date}
+                onChange={e =>
+                  setExpenseDate(
+                    e ? e!.toDate().getTime() : moment().toDate().getTime(),
+                  )
+                }
+                required
               />
               <Input
                 onChange={e => setComment(e.target.value)}

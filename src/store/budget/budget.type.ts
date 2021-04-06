@@ -69,6 +69,7 @@ export interface IRowPayload {
   expenses_id?: number;
   farm_id?: number;
   rdata?: string;
+  expense_date?: string;
 }
 
 export interface IDeleteMessage {

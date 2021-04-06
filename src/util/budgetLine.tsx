@@ -120,6 +120,7 @@ export const getBudgetByLine = (defaultData: any): IRowPayload[] => {
           data_row: 'price',
           expenses_id: expense.id,
           farm_id: defaultData?.farm_id,
+          expense_date: expense?.expense_date,
           rdata: expense.rdata,
         });
 
@@ -176,6 +177,7 @@ export const getBudgetByLine = (defaultData: any): IRowPayload[] => {
           data_row: 'price',
           expenses_id: expense.id,
           farm_id: defaultData?.farm_id,
+          expense_date: expense?.expense_date,
           rdata: expense.rdata,
         });
 
