@@ -40,7 +40,7 @@ const OverallTable: FC<IOwnProps> = ({ type, dataLine }) => {
           record.name === 'Seeding cost' ||
           record.name === 'Maintenance cost' ||
           record.name === 'Total expenses' ||
-          type === 'farm'
+          (type === 'farm' && record.budget_id !== -1)
         ) {
           return value;
         }
@@ -66,7 +66,7 @@ const OverallTable: FC<IOwnProps> = ({ type, dataLine }) => {
           record.name === 'Seeding cost' ||
           record.name === 'Maintenance cost' ||
           record.name === 'Total expenses' ||
-          type === 'farm'
+          (type === 'farm' && record.budget_id !== -1)
         ) {
           return value;
         }

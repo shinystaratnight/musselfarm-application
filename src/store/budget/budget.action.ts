@@ -238,6 +238,46 @@ export const updateBudgetValue = (data: any, type: string, history: any) => {
   };
 };
 
+export const updateFarmBudgetValue = (
+  data: any,
+  type: string,
+  history: any,
+) => {
+  return async (dispatch: IThunkType, getState: () => IRootState) => {
+    const url =
+      type === 'budget-part'
+        ? 'api/farm/budgets/update-farm-budget-part'
+        : 'api/farm/budgets/update-farm-expenses-part';
+    const res = await composeApi(
+      {
+        data,
+        method: 'POST',
+        url,
+        requireAuth: true,
+      },
+      dispatch,
+      getState().auth.auth,
+      history,
+    );
+    if (res?.status === 'Success') {
+      // dispatch(updateValue(data));
+      dispatch(
+        getMessage({
+          isError: false,
+          message: 'Success',
+        }),
+      );
+    } else {
+      dispatch(
+        getMessage({
+          isError: true,
+          message: res?.message || 'Error',
+        }),
+      );
+    }
+  };
+};
+
 export const createBudget = (data: any, history: any) => {
   return async (dispatch: IThunkType, getState: () => IRootState) => {
     const res = await composeApi(
@@ -245,6 +285,37 @@ export const createBudget = (data: any, history: any) => {
         data,
         method: 'POST',
         url: 'api/farm/line/budgets/add-expenses',
+        requireAuth: true,
+      },
+      dispatch,
+      getState().auth.auth,
+      history,
+    );
+    if (res?.status === 'Success') {
+      dispatch(
+        getMessage({
+          isError: false,
+          message: 'Success',
+        }),
+      );
+    } else {
+      dispatch(
+        getMessage({
+          isError: true,
+          message: res?.message,
+        }),
+      );
+    }
+  };
+};
+
+export const createFarmBudget = (data: any, history: any) => {
+  return async (dispatch: IThunkType, getState: () => IRootState) => {
+    const res = await composeApi(
+      {
+        data,
+        method: 'POST',
+        url: 'api/farm/budgets/add-farm-expenses',
         requireAuth: true,
       },
       dispatch,

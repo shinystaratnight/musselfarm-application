@@ -56,6 +56,19 @@ export const getBudgetByFarm = (defaultData: any): IRowPayload[] => {
     return null;
   });
 
+  // Farm Overall Expenses
+  defaultData?.farm_budget?.map((budget: any) => {
+    if (budget?.type === 's') {
+      totalValues.seed += Number(budget?.price_budget);
+      totalValues.seed_actual += Number(budget?.price_actual);
+    }
+    if (budget?.type === 'm') {
+      totalValues.maintenance += Number(budget?.price_budget);
+      totalValues.maintenance_actual += Number(budget?.price_actual);
+    }
+    return null;
+  });
+
   counter += 1;
   const length = getInterest(totalValues.length_actual, totalValues.length);
   rows.push({
@@ -154,6 +167,42 @@ export const getBudgetByFarm = (defaultData: any): IRowPayload[] => {
     budget_id: defaultData?.lines[0]?.line_budget[0]?.budget_id,
   });
 
+  counter += 1;
+  const seeds: IRowPayload[] = [];
+  defaultData?.farm_budget?.filter((expense: any, index: number) => {
+    if (expense?.type === 's') {
+      const values = getInterest(
+        Number(expense?.price_actual),
+        Number(expense?.price_budget),
+      );
+      seeds.push({
+        name: expense?.expenses_name,
+        budgeted: expense?.price_budget,
+        actual: expense?.price_actual,
+        var: {
+          ...values,
+          isReverse: true,
+        },
+        isBg: index % 2 !== 1,
+        key: counter.toString(),
+        budget_id: -1,
+        data_row: 'price',
+        expenses_id: expense.id,
+        farm_id: defaultData?.farm_id,
+        expense_date: expense?.expense_date,
+        rdata: expense.rdata,
+      });
+
+      counter += 1;
+    }
+    return null;
+  });
+
+  seeds.map((seedItem: any) => {
+    rows.push(seedItem);
+    return null;
+  });
+
   const maintenance = getInterest(
     totalValues.maintenance_actual,
     totalValues.maintenance,
@@ -170,6 +219,43 @@ export const getBudgetByFarm = (defaultData: any): IRowPayload[] => {
     },
     key: counter.toString(),
     budget_id: defaultData?.lines[0]?.line_budget[0]?.budget_id,
+  });
+
+  counter += 1;
+  const main: IRowPayload[] = [];
+  defaultData?.farm_budget?.filter((expense: any, index: number) => {
+    if (expense?.type === 'm') {
+      const values = getInterest(
+        Number(expense?.price_actual),
+        Number(expense?.price_budget),
+      );
+      main.push({
+        name: expense?.expenses_name,
+        budgeted: expense?.price_budget,
+        actual: expense?.price_actual,
+        var: {
+          ...values,
+          isReverse: true,
+        },
+        isBg: index % 2 !== 1,
+        key: counter.toString(),
+        // budget_id: defaultData?.lines[0]?.line_budget[0]?.budget_id,
+        budget_id: -1,
+        data_row: 'price',
+        expenses_id: expense.id,
+        farm_id: defaultData?.farm_id,
+        expense_date: expense?.expense_date,
+        rdata: expense?.rdata,
+      });
+
+      counter += 1;
+    }
+    return null;
+  });
+
+  main.map((mainItem: any) => {
+    rows.push(mainItem);
+    return null;
   });
 
   const total = getInterest(

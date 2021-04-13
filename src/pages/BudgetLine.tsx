@@ -20,7 +20,7 @@ import OverallTable from '../components/budget/OverallTable';
 import { IMainList } from '../types/basicComponentsTypes';
 import ButtonArrows from '../components/shared/button/ButtonArrows';
 import ModalExpenses from '../components/budget/ModalExpenses';
-// import FarmModalExpenses from '../components/budget/FarmModalExpenses';
+import FarmModalExpenses from '../components/budget/FarmModalExpenses';
 import { IRootState } from '../store/rootReducer';
 import { BudgetState, IBudgetPayload } from '../store/budget/budget.type';
 import { deleteMessage, getBudgetFarm } from '../store/budget/budget.action';
@@ -217,7 +217,7 @@ const BudgetLine: FC = (): ReactElement => {
                   />
                 </>
               )}
-              {/* {query.get('farm') && (
+              {query.get('farm') && (
                 <>
                   <Button
                     className={width > 460 ? '' : 'mb-12 mt-12 mr-12 ml-12'}
@@ -236,7 +236,7 @@ const BudgetLine: FC = (): ReactElement => {
                     onCancel={() => setIsModalVisibile(false)}
                   />
                 </>
-              )} */}
+              )}
             </div>
             {!isSpinner ? (
               <OverallTable
