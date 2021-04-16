@@ -40,34 +40,40 @@ export const getBudgetByFarm = (defaultData: any): IRowPayload[] => {
         line?.line_budget[0]?.budgeted_harvest_income_actual,
       );
 
-      line?.line_budget[0]?.expenses.map((expense: any) => {
-        if (expense?.type === 's') {
-          totalValues.seed += Number(expense?.price_budget);
-          totalValues.seed_actual += Number(expense?.price_actual);
-        }
-        if (expense?.type === 'm') {
-          totalValues.maintenance += Number(expense?.price_budget);
-          totalValues.maintenance_actual += Number(expense?.price_actual);
-        }
-
-        return null;
-      });
+      // line?.line_budget[0]?.expenses.map((expense: any) => {
+      //   if (expense?.type === 's') {
+      //     totalValues.seed += Number(expense?.price_budget);
+      //     totalValues.seed_actual += Number(expense?.price_actual);
+      //   }
+      //   if (expense?.type === 'm') {
+      //     totalValues.maintenance += Number(expense?.price_budget);
+      //     totalValues.maintenance_actual += Number(expense?.price_actual);
+      //   }
+      //   return null;
+      // });
     }
     return null;
   });
 
   // Farm Overall Expenses
-  defaultData?.farm_budget?.map((budget: any) => {
-    if (budget?.type === 's') {
-      totalValues.seed += Number(budget?.price_budget);
-      totalValues.seed_actual += Number(budget?.price_actual);
-    }
-    if (budget?.type === 'm') {
-      totalValues.maintenance += Number(budget?.price_budget);
-      totalValues.maintenance_actual += Number(budget?.price_actual);
-    }
-    return null;
-  });
+  // defaultData?.farm_expenses?.map((budget: any) => {
+  //   if (budget?.type === 's') {
+  //     totalValues.seed += Number(budget?.price_budget);
+  //     totalValues.seed_actual += Number(budget?.price_actual);
+  //   }
+  //   if (budget?.type === 'm') {
+  //     totalValues.maintenance += Number(budget?.price_budget);
+  //     totalValues.maintenance_actual += Number(budget?.price_actual);
+  //   }
+  //   return null;
+  // });
+
+  totalValues.seed = defaultData?.farm_expense_info?.budget_seeding_cost;
+  totalValues.seed_actual = defaultData?.farm_expense_info?.actual_seeding_cost;
+  totalValues.maintenance =
+    defaultData?.farm_expense_info?.budget_maintenance_cost;
+  totalValues.maintenance_actual =
+    defaultData?.farm_expense_info?.actual_maintenance_cost;
 
   counter += 1;
   const length = getInterest(totalValues.length_actual, totalValues.length);
@@ -169,7 +175,7 @@ export const getBudgetByFarm = (defaultData: any): IRowPayload[] => {
 
   counter += 1;
   const seeds: IRowPayload[] = [];
-  defaultData?.farm_budget?.filter((expense: any, index: number) => {
+  defaultData?.farm_expenses?.filter((expense: any, index: number) => {
     if (expense?.type === 's') {
       const values = getInterest(
         Number(expense?.price_actual),
@@ -223,7 +229,7 @@ export const getBudgetByFarm = (defaultData: any): IRowPayload[] => {
 
   counter += 1;
   const main: IRowPayload[] = [];
-  defaultData?.farm_budget?.filter((expense: any, index: number) => {
+  defaultData?.farm_expenses?.filter((expense: any, index: number) => {
     if (expense?.type === 'm') {
       const values = getInterest(
         Number(expense?.price_actual),

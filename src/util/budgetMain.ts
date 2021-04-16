@@ -81,12 +81,6 @@ export const getBudgetMain = (data: any) => {
           }
           return null;
         });
-
-        totalFarmArray[0].totalSeedingCost =
-          Number(totalFarmArray[0]?.totalSeedingCost) + seedingCostValue[0];
-        totalFarmArray[0].totalMaintenanceCost =
-          Number(totalFarmArray[0]?.totalMaintenanceCost) +
-          maintenanceCostValue[0];
       }
 
       if (line?.line_budget?.length > 1) {
@@ -151,6 +145,18 @@ export const getBudgetMain = (data: any) => {
         harvestIncome,
       };
     });
+
+    // totalFarmArray[0].totalSeedingCost =
+    //   Number(totalFarmArray[0]?.totalSeedingCost) + seedingCostValue[0];
+    // totalFarmArray[0].totalMaintenanceCost =
+    //   Number(totalFarmArray[0]?.totalMaintenanceCost) +
+    //   maintenanceCostValue[0];
+    totalFarmArray[0].totalSeedingCost =
+      Number(totalFarmArray[0]?.totalSeedingCost) +
+      item?.farm_expense_info?.actual_seeding_cost;
+    totalFarmArray[0].totalMaintenanceCost =
+      Number(totalFarmArray[0]?.totalMaintenanceCost) +
+      item?.farm_expense_info?.actual_maintenance_cost;
 
     const totalLength = getInterest(
       totalFarmArray[0]?.totalLength,
