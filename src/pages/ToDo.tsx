@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 
 import {
   Button,
@@ -12,8 +14,12 @@ import { ITab } from '../types/basicComponentsTypes';
 import ToDoComponent from '../components/todo/ToDoComponent';
 import ModalTask from '../components/todo/ModalTask';
 import { useWidth } from '../util/useWidth';
+import { removeAllTasks } from '../store/tasks/tasks.actions';
 
 const ToDo = () => {
+  const dispatch = useDispatch();
+  const history = useHistory();
+
   const [activeTab, setActiveTab] = useState('active');
   const [createTask, setCreateTask] = useState(false);
   const [clearCompleted, setClearCompleted] = useState(false);
@@ -32,6 +38,10 @@ const ToDo = () => {
     },
   ];
 
+  const handleOnAddTask = () => {
+    setCreateTask(false);
+  };
+
   const handleOnCreateTask = () => {
     setCreateTask(!createTask);
   };
@@ -40,12 +50,17 @@ const ToDo = () => {
     setClearCompleted(!clearCompleted);
   };
 
+  const handleOnClearCompletedTaks = async () => {
+    await dispatch(removeAllTasks(history));
+    setClearCompleted(false);
+  };
+
   return (
     <>
       <div className='container w-100'>
         <div className='d-flex justify-content-center align-items-center mt-28'>
           <div className='notifications w-100'>
-            <div className='mb-10 d-flex align-items-center justify-content-between'>
+            <div className='mt-28 mb-28 d-flex align-items-center justify-content-between'>
               <Title size={5} color='black-3' align='default' fontWeight={700}>
                 To Do List
               </Title>
@@ -68,8 +83,8 @@ const ToDo = () => {
                       onCancel={handleOnClear}
                       type='delete'
                       title='Error / Delete'
-                      text='This is place holder text. The basic dialog for modals should contain only valuable and relevant information. Simplify dialogs by removing unnecessary elements or content that does not support user tasks. If you find that the number of required elements for your design are making the dialog excessively large, then try a different design solution. '
-                      onConfirm={() => console.log('onDelete')}
+                      text='Clear all completed tasks?'
+                      onConfirm={handleOnClearCompletedTaks}
                     />
                   </>
                 )}
@@ -97,9 +112,10 @@ const ToDo = () => {
                 )}
                 <ModalTask
                   onCancel={handleOnCreateTask}
+                  data={null}
                   type='create'
                   title='Create task'
-                  onConfirm={() => console.log('onConfirm')}
+                  onConfirm={handleOnAddTask}
                   visible={createTask}
                 />
               </div>

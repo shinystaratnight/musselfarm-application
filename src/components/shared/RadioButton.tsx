@@ -13,6 +13,7 @@ interface IOwnProps {
   isLeftText?: boolean;
   isfullWidth?: boolean;
   icon?: ReactNode;
+  date?: string;
 }
 
 const RadioButton: FC<IOwnProps> = ({
@@ -24,6 +25,7 @@ const RadioButton: FC<IOwnProps> = ({
   isLeftText,
   isfullWidth,
   icon,
+  date,
 }) => {
   const radioClasses = classNames(className, {
     'ant-radio-wrapper-error': isError,
@@ -37,6 +39,17 @@ const RadioButton: FC<IOwnProps> = ({
       <Paragrapgh size={1} color='default' align='default' fontWeight={400}>
         {label}
       </Paragrapgh>
+      {date && (
+        <Paragrapgh
+          className='d-block mt-4'
+          size={2}
+          color='black-2'
+          align='default'
+          fontWeight={400}
+        >
+          {date}
+        </Paragrapgh>
+      )}
     </Radio>
   );
 };

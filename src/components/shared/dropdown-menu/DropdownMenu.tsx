@@ -16,6 +16,7 @@ interface IDropdownMenu {
   column?: string;
   onEdit?: (data: any, col?: string | undefined) => void | undefined;
   onDeleteRow?: (data: any) => void;
+  onArchiveRow?: (data: any) => void;
   onDeactivate?: (data: any) => void;
   onActivateUser?: (data: any) => void;
   isRedirect?: undefined | string;
@@ -31,6 +32,7 @@ const DropdownMenu: FC<IDropdownMenu> = ({
   onEdit,
   isRedirect,
   onDeleteRow,
+  onArchiveRow,
   onDeactivate,
   onActivateUser,
   isAdmin = false,
@@ -149,6 +151,14 @@ const DropdownMenu: FC<IDropdownMenu> = ({
     ) {
       onDeleteRow(rowData.current);
     }
+
+    if (key === 'delete' && type === 'todo' && onDeleteRow) {
+      onDeleteRow(rowData.current);
+    }
+
+    if (key === 'archive' && type === 'todo' && onArchiveRow) {
+      onArchiveRow(rowData.current);
+    }
   };
 
   const menu = (
@@ -170,6 +180,9 @@ const DropdownMenu: FC<IDropdownMenu> = ({
         )}
       {column === 'isUsers' && data.status === 'deactivated' && (
         <Menu.Item key='activate'>Activate</Menu.Item>
+      )}
+      {permission?.isEdit && type === 'todo' && (
+        <Menu.Item key='archive'>Archive</Menu.Item>
       )}
       {permission?.isEdit && <Menu.Item key='delete'>Delete</Menu.Item>}
     </Menu>

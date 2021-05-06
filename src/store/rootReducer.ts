@@ -7,6 +7,7 @@ import uiReducer from './ui/ui.reducer';
 import usersReducer from './users/users.reducer';
 import budgetReducer from './budget/budget.reducer';
 import utilsReducer from './utils/utils.reducer';
+import tasksReducer from './tasks/tasks.reducer';
 import subscriptReducer from './subscription/subscription.reducer';
 import seasonReducer from './seasons/seasons.reducer';
 
@@ -20,6 +21,7 @@ const rootReducer = combineReducers({
   subscription: subscriptReducer,
   utils: utilsReducer,
   seasons: seasonReducer,
+  tasks: tasksReducer,
 });
 
 export default rootReducer;

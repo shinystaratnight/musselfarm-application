@@ -24,6 +24,7 @@ import { ProfileState } from '../store/profile/profile.type';
 import { IOverviewCard } from '../types/apiDataTypes';
 import { composeApi } from '../apis/compose';
 import { AuthState } from '../store/auth/auth.type';
+import ToDo from './ToDo';
 
 const Overview: FC = () => {
   const dispatch = useDispatch();
@@ -274,6 +275,16 @@ const Overview: FC = () => {
                 ) : (
                   <TableMobile column='isFarms' data={farmsData} isHaveChild />
                 )}
+              </div>
+            </div>
+          </div>
+          <div className='overview__content pt-24 pb-50'>
+            <div
+              className='overview__left-content'
+              style={{ background: 'white' }}
+            >
+              <div className='width-100'>
+                <ToDo />
               </div>
             </div>
           </div>

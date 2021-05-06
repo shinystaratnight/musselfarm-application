@@ -27,6 +27,7 @@ const Header = () => {
     { link: '/farms', name: 'Farms', isExact: false },
     { link: '/budget', name: 'Budget', isExact: false },
     { link: '/budget-log', name: 'Budget log', isExact: false },
+    { link: '/to-do', name: 'Tasks', isExact: false },
   ]);
   const [isOpen, setIsOpen] = useState(false);
   const profile = useSelector<IRootState, ProfileState['user']>(
@@ -39,6 +40,7 @@ const Header = () => {
     { link: '/farms', name: 'Farms', isExact: false },
     { link: '/budget', name: 'Budget', isExact: false },
     { link: '/budget-log', name: 'Budget log', isExact: false },
+    { link: '/to-do', name: 'Tasks', isExact: false },
   ];
 
   useEffect(() => {

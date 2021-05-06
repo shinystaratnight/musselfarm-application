@@ -1,6 +1,12 @@
-import React, { FC, useState } from 'react';
+import React, { FC, useState, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { useHistory } from 'react-router-dom';
+import Item from 'antd/lib/list/Item';
+import { Radio } from 'antd';
+import moment from 'moment';
 import {
-  CheckboxButton,
+  Button,
+  RadioButton,
   ModalComponent,
   TrashIcon,
   DropdownMenu,
@@ -8,92 +14,147 @@ import {
 
 import ModalTask from './ModalTask';
 
+import { IRootState } from '../../store/rootReducer';
+import { ITaskData, ITaskState } from '../../store/tasks/tasks.type';
+import {
+  getTaskData,
+  removeTask,
+  updateTask,
+} from '../../store/tasks/tasks.actions';
+
 import './styles.scss';
+import Trash from '../shared/Trash';
 
 interface IOwnProps {
   isActivePage: boolean;
 }
 
 const ToDoComponent: FC<IOwnProps> = ({ isActivePage }) => {
-  const [list, setList] = useState([
-    {
-      id: '5464421223',
-      name: 'Mussel Farm 1 - Line 4',
-      date: '19.03.2020',
-      value: false,
-      isOpenDropdown: false,
-    },
-    {
-      id: '3454365356',
-      name: 'Mussel Farm 1 - Line 3',
-      date: '23.04.2020',
-      value: false,
-      isOpenDropdown: false,
-    },
-    {
-      id: '76979786786',
-      name: 'Mussel Farm 1 - Line 5',
-      date: '23.04.2020',
-      value: false,
-      isOpenDropdown: false,
-    },
-    {
-      id: '435346658769',
-      name: 'Mussel Farm 1 - Line 6',
-      date: '23.04.2020',
-      value: false,
-      isOpenDropdown: false,
-    },
-  ]);
+  const dispatch = useDispatch();
+  const history = useHistory();
+
+  const tasksData = useSelector<IRootState, ITaskState['tasks']>(
+    state => state.tasks.tasks,
+  );
+
   const [showModal, setShowModal] = useState(false);
   const [editTask, setEditTask] = useState(false);
+  const [editTaskData, setEditTaskData] = useState({
+    farm_id: 0,
+    line_id: 0,
+    due_date: 0,
+  });
   const [deleteTask, setDeleteTask] = useState(false);
+  const [deleteTaskId, setDeleteTaskId] = useState<string | number>('0');
+  const [archiveTask, setArchiveTask] = useState(false);
+  const [archiveTaskId, setArchiveTaskId] = useState<string | number>('0');
 
-  const handleOnItem = (value: boolean, id: string) => {
-    setList(list.map(item => (item.id === id ? { ...item, value } : item)));
+  useEffect(() => {
+    dispatch(getTaskData(history));
+  }, []);
+
+  const handleOnDeleteRow = (data: ITaskData) => {
+    setDeleteTask(true);
+    setDeleteTaskId(data.id!);
   };
 
-  const handleOnShowModal = (id: string) => {
-    setShowModal(!showModal);
+  const handleOnConfirmDelete = async () => {
+    await dispatch(removeTask(Number(deleteTaskId), history));
+    setDeleteTask(false);
+  };
+
+  const handleOnArchiveRow = (data: ITaskData) => {
+    setArchiveTask(true);
+    setArchiveTaskId(data.id!);
+  };
+
+  const handleOnConfirmArchive = async () => {
+    const task = tasksData.find(e => {
+      return e.id === archiveTaskId;
+    });
+    if (task) {
+      await dispatch(
+        updateTask(
+          {
+            ...task,
+            active: 1,
+          },
+          history,
+        ),
+      );
+      setArchiveTask(false);
+    }
   };
 
   const handleOnEditTask = (data: any) => {
-    console.log(data, 'edit');
+    setEditTaskData(data);
+    setEditTask(true);
+  };
+
+  const handleOnConfirmEditTask = () => {
+    setEditTask(false);
   };
 
   return (
     <div className='todo'>
-      {list.map(item => (
-        <div className='todo__item pb-20 mb-20 line-bottom' key={item.id}>
-          <CheckboxButton
-            key={item.id}
-            label={item.name}
-            checked={item.value}
-            date={item.date}
-            onChange={e => handleOnItem(e.target.checked, item.id)}
-          />
-          <ModalComponent
-            visible={deleteTask}
-            onCancel={() => setDeleteTask(!deleteTask)}
-            type='delete'
-            title='Error / Delete'
-            text='This is place holder text. The basic dialog for modals should contain only valuable and relevant information. Simplify dialogs by removing unnecessary elements or content that does not support user tasks. If you find that the number of required elements for your design are making the dialog excessively large, then try a different design solution. '
-            onConfirm={() => console.log('onDelete')}
-          />
-          <ModalTask
-            onCancel={() => setEditTask(!editTask)}
-            type='confirm'
-            title='Edit task'
-            onConfirm={() => console.log('onConfirm')}
-            visible={editTask}
-          />
-          {isActivePage ? (
-            <DropdownMenu data={item} type='todo' onEdit={handleOnEditTask} />
-          ) : (
-            <DropdownMenu data={item} type='todo' icon={<TrashIcon />} />
-          )}
-        </div>
-      ))}
+      {tasksData
+        .filter(e => {
+          return isActivePage !== !!e.active;
+        })
+        .map(item => (
+          <div className='todo__item pb-20 mb-20 line-bottom' key={item.id}>
+            <Radio.Group key={item.id} value={item.active ? 'checked' : ''}>
+              <RadioButton
+                label={`Mussel Farm ${item.farm_id} - Line ${item.line_id}`}
+                value='checked'
+                date={moment.unix(item.due_date / 1000).format('DD.MM.YYYY')}
+              />
+            </Radio.Group>
+            {isActivePage ? (
+              <DropdownMenu
+                data={item}
+                type='todo'
+                onEdit={handleOnEditTask}
+                onDeleteRow={handleOnDeleteRow}
+                onArchiveRow={handleOnArchiveRow}
+              />
+            ) : (
+              <button
+                style={{ border: 'none', background: 'none' }}
+                onClick={e => {
+                  setDeleteTask(true);
+                  setDeleteTaskId(item.id!);
+                }}
+              >
+                <TrashIcon />
+              </button>
+            )}
+          </div>
+        ))}
+      <ModalComponent
+        visible={deleteTask}
+        onCancel={() => setDeleteTask(!deleteTask)}
+        type='delete'
+        title='Error / Delete'
+        text='Do you really want to delete this task?'
+        onConfirm={handleOnConfirmDelete}
+      />
+      <ModalComponent
+        visible={archiveTask}
+        onCancel={() => setArchiveTask(!archiveTask)}
+        type='confirm'
+        title='Confirm / Archive'
+        text='Do you really want to archive this task?'
+        onConfirm={handleOnConfirmArchive}
+      />
+      <ModalTask
+        onCancel={() => setEditTask(!editTask)}
+        type='confirm'
+        data={editTaskData}
+        title='Edit task'
+        onConfirm={handleOnConfirmEditTask}
+        visible={editTask}
+      />
     </div>
   );
 };

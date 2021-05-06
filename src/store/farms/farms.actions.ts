@@ -565,7 +565,7 @@ export const editAssessment = (data: any, lineId: string, history: any) => {
       {
         data: {
           ...allData,
-          _method: 'patch',
+          _method: 'PATCH',
         },
         method: 'POST',
         url: `api/farm/line/assessment/assessments/${id}`,
