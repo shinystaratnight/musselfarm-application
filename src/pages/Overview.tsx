@@ -278,7 +278,7 @@ const Overview: FC = () => {
               </div>
             </div>
           </div>
-          <div className='overview__content pt-24 pb-50'>
+          <div className='overview__content pt-24 pb-48'>
             <div
               className='overview__left-content'
               style={{ background: 'white' }}
