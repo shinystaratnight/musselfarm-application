@@ -7,9 +7,11 @@ import { Datepicker, InputModal, Dropdown } from '../shared';
 import { IMainList } from '../../types/basicComponentsTypes';
 import { IRootState } from '../../store/rootReducer';
 import { IFarmState } from '../../store/farms/farms.type';
+import { ProfileState } from '../../store/profile/profile.type';
 import { addTask, updateTask } from '../../store/tasks/tasks.actions';
-import './styles.scss';
 import { ITaskData } from '../../store/tasks/tasks.type';
+import { UsersState } from '../../store/users/users.type';
+import './styles.scss';
 
 interface IOwnProps {
   type: string;
@@ -34,35 +36,75 @@ const ModalTask: FC<IOwnProps> = ({
   const farmsData = useSelector<IRootState, IFarmState['farmsData']>(
     state => state.farms.farmsData,
   );
+  const profile = useSelector<IRootState, ProfileState['user']>(
+    state => state.profile.user,
+  );
+  const usersStore = useSelector<IRootState, UsersState['users']>(
+    state => state.users.users,
+  );
 
   const [farm, setFarm] = useState(0);
   const [line, setLine] = useState(0);
+  const [charger, setCharger] = useState(0);
   const [date, setDate] = useState(moment().toDate().getTime());
+  const [itemsLine, setItemsLine] = useState<IMainList[]>([]);
 
-  const items: IMainList[] = [
-    { value: '2', label: 'Mussel Farm 2', id: '1' },
-    { value: '3', label: 'Mussel Farm 3', id: '2' },
-    { value: '1', label: 'Mussel Farm 1', id: '3' },
-  ];
-
-  const itemsLine: IMainList[] = [
-    { value: '2', label: 'Line 2', id: '1' },
-    { value: '3', label: 'Line 3', id: '3' },
-    { value: '1', label: 'Line 1', id: '2' },
-  ];
+  const items: IMainList[] = farmsData.map(el => {
+    return {
+      value: el.id.toString(),
+      id: el.id.toString(),
+      label: el.name,
+    };
+  });
 
   useEffect(() => {
-    setFarm(data ? data.farm_id : 0);
+    const farmId = data ? data.farm_id : 0;
+    setFarm(farmId);
     setLine(data ? data.line_id : 0);
     setDate(data ? Number(data.due_date) : moment().toDate().getTime());
+    setCharger(data?.charger_id ? data.charger_id : 0);
+
+    const curFarm = farmsData.find(el => {
+      return farmId === el.id;
+    });
+
+    setItemsLine(
+      curFarm?.lines
+        ? curFarm.lines.map(el => {
+            return {
+              value: el.id.toString(),
+              id: el.id.toString(),
+              label: el.line_name,
+            };
+          })
+        : [],
+    );
   }, [data]);
 
   const handleOnSelectFarm = (value: string) => {
     setFarm(Number(value));
+    const curFarm = farmsData.find(el => {
+      return Number(value) === el.id;
+    });
+    setItemsLine(
+      curFarm?.lines
+        ? curFarm.lines.map(el => {
+            return {
+              value: el.id.toString(),
+              id: el.id.toString(),
+              label: el.line_name,
+            };
+          })
+        : [],
+    );
   };
 
   const handleOnSelectLine = (value: string) => {
     setLine(Number(value));
+  };
+
+  const handleOnSelectCharger = (value: string) => {
+    setCharger(Number(value));
   };
 
   const handleOnConfirm = async () => {
@@ -72,6 +114,7 @@ const ModalTask: FC<IOwnProps> = ({
           farm_id: farm,
           line_id: line,
           due_date: date,
+          charger_id: charger,
         };
 
         await dispatch(addTask(newTask, history));
@@ -81,12 +124,14 @@ const ModalTask: FC<IOwnProps> = ({
           farm_id: farm,
           line_id: line,
           due_date: date,
+          charger_id: charger,
         };
 
         await dispatch(updateTask(newTask, history));
       }
       setFarm(0);
       setLine(0);
+      setCharger(0);
       setDate(moment().toDate().getTime());
       onConfirm();
     }
@@ -125,6 +170,29 @@ const ModalTask: FC<IOwnProps> = ({
           setDate(e ? e!.toDate().getTime() : moment().toDate().getTime())
         }
       />
+      {profile?.role === 'owner' && (
+        <Dropdown
+          className='mb-16'
+          placeholder='select charger'
+          defaultValue={charger.toString()}
+          onChange={(value, event) => handleOnSelectCharger(value)}
+          label='Select charger'
+          options={[
+            {
+              value: '0',
+              id: '0',
+              label: ' -- No Charger -- ',
+            },
+            ...usersStore.map(el => {
+              return {
+                value: el.id!.toString(),
+                id: el.id!.toString(),
+                label: el.name,
+              };
+            }),
+          ]}
+        />
+      )}
     </InputModal>
   );
 };

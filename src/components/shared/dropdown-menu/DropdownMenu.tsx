@@ -185,6 +185,16 @@ const DropdownMenu: FC<IDropdownMenu> = ({
         <Menu.Item key='archive'>Archive</Menu.Item>
       )}
       {permission?.isEdit && <Menu.Item key='delete'>Delete</Menu.Item>}
+      {type === 'todo' &&
+        column !== 'isUsers' &&
+        column !== 'isBudgetLog' &&
+        permission?.isEdit === false && (
+          <>
+            <Menu.Item key='edit'>Edit</Menu.Item>
+            <Menu.Item key='archive'>Archive</Menu.Item>
+            <Menu.Item key='delete'>Delete</Menu.Item>
+          </>
+        )}
     </Menu>
   );
 

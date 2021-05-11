@@ -17,7 +17,7 @@ export interface ITaskData {
   line_id: number;
   due_date: number;
   active?: number;
-  owner_id?: number;
+  charger_id?: number;
 }
 
 export type TasksTypes = ISetTaskData;
