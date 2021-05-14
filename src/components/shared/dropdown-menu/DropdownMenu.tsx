@@ -130,7 +130,7 @@ const DropdownMenu: FC<IDropdownMenu> = ({
       column !== 'isUsers' &&
       column !== 'isBudgetLog' &&
       column !== 'isUtil' &&
-      type != 'todo'
+      type !== 'todo'
     ) {
       let redirect;
       if (column === 'isFarms') {
