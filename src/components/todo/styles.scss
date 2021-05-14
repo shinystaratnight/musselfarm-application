@@ -1,4 +1,5 @@
 .todo {
+  width: 100%;
   margin-top: 14px;
 
   .ant-checkbox + span {
@@ -14,6 +15,12 @@
       cursor: pointer;
       transition: all 0.3s;
     }
+
+    .taskDetail {
+      color: #555;
+      text-align: right;
+      margin-right: 10px;
+    }
   }
 
   .paragrapgh--400 {
@@ -28,6 +35,45 @@
 
     &:focus {
       outline: none;
+    }
+  }
+  .taskCreator {
+    text-transform: uppercase;
+    margin-left: 5px;
+  }
+
+  .todolist__item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    .ant-radio-group .paragrapgh--1 {
+      font-size: 15px;
+    }
+    .ant-radio-group .paragrapgh--2 {
+      font-size: 13px;
+    }
+
+    svg {
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .taskDetail {
+      color: #555;
+      text-align: right;
+      margin-right: 10px;
+      font-size: 12px;
+    }
+  }
+}
+
+@media screen and (max-width: 560px) {
+  .todo__item {
+    flex-direction: column;
+    align-items: flex-start;
+    .d-flex {
+      margin-left: auto;
     }
   }
 }

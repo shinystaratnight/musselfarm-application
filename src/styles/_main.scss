@@ -1021,3 +1021,10 @@ $h-calc: (  80 );
   }
 }
 
+.overview_task_add {
+  float: right;
+  padding: 4px;
+  path {
+    fill: black;
+  }
+}

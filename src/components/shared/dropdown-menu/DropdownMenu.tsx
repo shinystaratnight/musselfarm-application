@@ -129,7 +129,8 @@ const DropdownMenu: FC<IDropdownMenu> = ({
       key === 'delete' &&
       column !== 'isUsers' &&
       column !== 'isBudgetLog' &&
-      column !== 'isUtil'
+      column !== 'isUtil' &&
+      type != 'todo'
     ) {
       let redirect;
       if (column === 'isFarms') {
@@ -182,7 +183,7 @@ const DropdownMenu: FC<IDropdownMenu> = ({
         <Menu.Item key='activate'>Activate</Menu.Item>
       )}
       {permission?.isEdit && type === 'todo' && (
-        <Menu.Item key='archive'>Archive</Menu.Item>
+        <Menu.Item key='archive'>Complete Task</Menu.Item>
       )}
       {permission?.isEdit && <Menu.Item key='delete'>Delete</Menu.Item>}
       {type === 'todo' &&
@@ -191,7 +192,7 @@ const DropdownMenu: FC<IDropdownMenu> = ({
         permission?.isEdit === false && (
           <>
             <Menu.Item key='edit'>Edit</Menu.Item>
-            <Menu.Item key='archive'>Archive</Menu.Item>
+            <Menu.Item key='archive'>Complete Task</Menu.Item>
             <Menu.Item key='delete'>Delete</Menu.Item>
           </>
         )}

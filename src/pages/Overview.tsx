@@ -18,13 +18,15 @@ import {
   ArrowLinkIcon,
   TableMobile,
   Spinner,
+  PlusIcon,
 } from '../components/shared';
 import Chart from '../components/chart/Chart';
+import ToDoList from '../components/todo/ToDoListComponent';
+import ModalTask from '../components/todo/ModalTask';
 import { ProfileState } from '../store/profile/profile.type';
 import { IOverviewCard } from '../types/apiDataTypes';
 import { composeApi } from '../apis/compose';
 import { AuthState } from '../store/auth/auth.type';
-import ToDo from './ToDo';
 
 const Overview: FC = () => {
   const dispatch = useDispatch();
@@ -35,6 +37,7 @@ const Overview: FC = () => {
   const [isCardsSpinner, setIsCardsSpinner] = useState(false);
   const [isChartSpinner, setIsChartSpinner] = useState(false);
   const [chartData, setChartData] = useState<any>();
+  const [createTask, setCreateTask] = useState(false);
 
   const authStore = useSelector<IRootState, AuthState['auth']>(
     state => state.auth.auth,
@@ -201,6 +204,14 @@ const Overview: FC = () => {
     );
   };
 
+  const handleOnCreateTask = () => {
+    setCreateTask(!createTask);
+  };
+
+  const handleOnAddTask = () => {
+    setCreateTask(false);
+  };
+
   return (
     <>
       <div className='bg-secondary min-h-100'>
@@ -277,17 +288,45 @@ const Overview: FC = () => {
                 )}
               </div>
             </div>
-          </div>
-          <div className='overview__content pt-24 pb-48'>
-            <div
-              className='overview__left-content'
-              style={{ background: 'white' }}
-            >
-              <div className='width-100'>
-                <ToDo />
+            <div className='overview__right-content'>
+              <div className='width-100 pt-12 pb-12 pl-16 pr-16 white-card'>
+                <div>
+                  <Link to='/tasks'>
+                    <Title
+                      size={6}
+                      color='black-3'
+                      align='left'
+                      fontWeight={500}
+                    >
+                      <span className='pr-12'>Upcoming tasks</span>
+                      <ArrowLinkIcon />
+                    </Title>
+                  </Link>
+                  <Button
+                    color='blue'
+                    size={1}
+                    width='default'
+                    type='transparent'
+                    className='overview_task_add'
+                    onClick={handleOnCreateTask}
+                  >
+                    <PlusIcon />
+                  </Button>
+                </div>
+                <div className='width-100 pt-12 d-flex justify-content-between align-items-center'>
+                  <ToDoList isActivePage />
+                </div>
               </div>
             </div>
           </div>
+          <ModalTask
+            onCancel={handleOnCreateTask}
+            data={null}
+            type='create'
+            title='Create task'
+            onConfirm={handleOnAddTask}
+            visible={createTask}
+          />
         </div>
       </div>
     </>

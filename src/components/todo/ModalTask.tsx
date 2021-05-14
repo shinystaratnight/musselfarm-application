@@ -43,8 +43,8 @@ const ModalTask: FC<IOwnProps> = ({
     state => state.users.users,
   );
 
-  const [farm, setFarm] = useState(0);
-  const [line, setLine] = useState(0);
+  const [farm, setFarm] = useState('0');
+  const [line, setLine] = useState('0');
   const [charger, setCharger] = useState(0);
   const [date, setDate] = useState(moment().toDate().getTime());
   const [itemsLine, setItemsLine] = useState<IMainList[]>([]);
@@ -59,8 +59,8 @@ const ModalTask: FC<IOwnProps> = ({
 
   useEffect(() => {
     const farmId = data ? data.farm_id : 0;
-    setFarm(farmId);
-    setLine(data ? data.line_id : 0);
+    setFarm(farmId.toString());
+    setLine(data ? data.line_id.toString() : '0');
     setDate(data ? Number(data.due_date) : moment().toDate().getTime());
     setCharger(data?.charger_id ? data.charger_id : 0);
 
@@ -82,7 +82,7 @@ const ModalTask: FC<IOwnProps> = ({
   }, [data]);
 
   const handleOnSelectFarm = (value: string) => {
-    setFarm(Number(value));
+    setFarm(value);
     const curFarm = farmsData.find(el => {
       return Number(value) === el.id;
     });
@@ -100,7 +100,7 @@ const ModalTask: FC<IOwnProps> = ({
   };
 
   const handleOnSelectLine = (value: string) => {
-    setLine(Number(value));
+    setLine(value);
   };
 
   const handleOnSelectCharger = (value: string) => {
@@ -108,33 +108,31 @@ const ModalTask: FC<IOwnProps> = ({
   };
 
   const handleOnConfirm = async () => {
-    if (farm !== 0 && line !== 0) {
-      if (type === 'create') {
-        const newTask: ITaskData = {
-          farm_id: farm,
-          line_id: line,
-          due_date: date,
-          charger_id: charger,
-        };
+    if (type === 'create') {
+      const newTask: ITaskData = {
+        farm_id: Number(farm),
+        line_id: Number(line),
+        due_date: date,
+        charger_id: charger,
+      };
 
-        await dispatch(addTask(newTask, history));
-      } else if (type === 'confirm') {
-        const newTask: ITaskData = {
-          ...data,
-          farm_id: farm,
-          line_id: line,
-          due_date: date,
-          charger_id: charger,
-        };
+      await dispatch(addTask(newTask, history));
+    } else if (type === 'confirm') {
+      const newTask: ITaskData = {
+        ...data,
+        farm_id: Number(farm),
+        line_id: Number(line),
+        due_date: date,
+        charger_id: charger,
+      };
 
-        await dispatch(updateTask(newTask, history));
-      }
-      setFarm(0);
-      setLine(0);
-      setCharger(0);
-      setDate(moment().toDate().getTime());
-      onConfirm();
+      await dispatch(updateTask(newTask, history));
     }
+    setFarm('0');
+    setLine('0');
+    setCharger(0);
+    setDate(moment().toDate().getTime());
+    onConfirm();
   };
 
   return (
@@ -151,7 +149,14 @@ const ModalTask: FC<IOwnProps> = ({
         defaultValue={farm ? `${farm}` : undefined}
         onChange={(value, event) => handleOnSelectFarm(value)}
         label='Select farm'
-        options={items}
+        options={[
+          {
+            value: '0',
+            id: '0',
+            label: ' -- No Farm -- ',
+          },
+          ...items,
+        ]}
       />
       <Dropdown
         className='mb-16'
@@ -159,7 +164,14 @@ const ModalTask: FC<IOwnProps> = ({
         defaultValue={line ? `${line}` : undefined}
         onChange={(value, event) => handleOnSelectLine(value)}
         label='Select line'
-        options={itemsLine}
+        options={[
+          {
+            value: '0',
+            id: '0',
+            label: ' -- No Line -- ',
+          },
+          ...itemsLine,
+        ]}
       />
       <Datepicker
         className='mb-24'
@@ -173,15 +185,15 @@ const ModalTask: FC<IOwnProps> = ({
       {profile?.role === 'owner' && (
         <Dropdown
           className='mb-16'
-          placeholder='select charger'
+          placeholder='select person responsible'
           defaultValue={charger.toString()}
           onChange={(value, event) => handleOnSelectCharger(value)}
-          label='Select charger'
+          label='Select person responsible'
           options={[
             {
               value: '0',
               id: '0',
-              label: ' -- No Charger -- ',
+              label: ' -- No Person -- ',
             },
             ...usersStore.map(el => {
               return {

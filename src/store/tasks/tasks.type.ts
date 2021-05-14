@@ -18,6 +18,8 @@ export interface ITaskData {
   due_date: number;
   active?: number;
   charger_id?: number;
+  created_at?: string;
+  creator_id?: number;
 }
 
 export type TasksTypes = ISetTaskData;

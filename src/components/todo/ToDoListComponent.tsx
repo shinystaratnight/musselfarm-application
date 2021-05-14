@@ -31,7 +31,7 @@ interface IOwnProps {
   isActivePage: boolean;
 }
 
-const ToDoComponent: FC<IOwnProps> = ({ isActivePage }) => {
+const ToDoList: FC<IOwnProps> = ({ isActivePage }) => {
   const dispatch = useDispatch();
   const history = useHistory();
 
@@ -138,7 +138,10 @@ const ToDoComponent: FC<IOwnProps> = ({ isActivePage }) => {
             return isActivePage !== !!e.active;
           })
           .map(item => (
-            <div className='todo__item pb-20 mb-20 line-bottom' key={item.id}>
+            <div
+              className='todolist__item pb-20 mb-20 line-bottom'
+              key={item.id}
+            >
               <Radio.Group
                 key={item.id}
                 value={
@@ -224,4 +227,4 @@ const ToDoComponent: FC<IOwnProps> = ({ isActivePage }) => {
   );
 };
 
-export default ToDoComponent;
+export default ToDoList;
