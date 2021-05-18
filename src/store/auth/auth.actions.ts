@@ -102,9 +102,7 @@ export const authLogin = (data: ILoginData) => {
     if (res?.status === 'Success') {
       localStorage.setItem('marine-farm', res?.data.access_token);
       localStorage.setItem('marine-farm-user_id', res?.user_id);
-      if (data.remember) {
-        localStorage.setItem('marine-farm-refresh', res?.data.refresh_token);
-      }
+      localStorage.setItem('marine-farm-refresh', res?.data.refresh_token);
 
       dispatch(
         singIn({

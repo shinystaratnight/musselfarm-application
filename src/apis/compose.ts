@@ -15,13 +15,14 @@ export const composeApi = async (
   authStore: ISignInPayload,
   history: any,
 ) => {
+  const prevAT = localStorage.getItem('marine-farm');
   const { data, method, url, requireAuth } = reqData;
   const responseData = await sendRequest(
     data,
     method,
     url,
     requireAuth,
-    authStore.access_token,
+    prevAT !== null && prevAT !== '' ? prevAT : authStore.access_token,
   );
   if (
     responseData?.message === 'Unauthenticated.' &&
@@ -29,6 +30,7 @@ export const composeApi = async (
     authStore?.refresh_token
   ) {
     const responseRefresh = await refreshTokenAPI(authStore);
+    const curAT = localStorage.getItem('marine-farm');
     if (responseRefresh?.status === 'Success') {
       localStorage.setItem('marine-farm', responseRefresh?.data.access_token);
       localStorage.setItem(
@@ -49,6 +51,24 @@ export const composeApi = async (
         url,
         requireAuth,
         responseRefresh?.data?.access_token,
+      );
+
+      if (repeatResponse?.message === 'Unauthenticated.') {
+        dispatch(logOut());
+        history.push('/sign-in');
+
+        return 0;
+      }
+
+      return repeatResponse;
+    }
+    if (prevAT !== curAT && curAT !== null && curAT !== '') {
+      const repeatResponse = await sendRequest(
+        data,
+        method,
+        url,
+        requireAuth,
+        curAT,
       );
 
       if (repeatResponse?.message === 'Unauthenticated.') {
