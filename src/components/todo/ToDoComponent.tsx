@@ -50,6 +50,7 @@ const ToDoComponent: FC<IOwnProps> = ({ isActivePage }) => {
     farm_id: 0,
     line_id: 0,
     due_date: 0,
+    title: '',
   });
   const [deleteTask, setDeleteTask] = useState(false);
   const [deleteTaskId, setDeleteTaskId] = useState<string | number>('0');
@@ -149,7 +150,7 @@ const ToDoComponent: FC<IOwnProps> = ({ isActivePage }) => {
                 onChange={e => onTaskComplete(e.target.value, item.id!)}
               >
                 <RadioButton
-                  label={`Mussel Farm ${item.farm_id} - Line ${item.line_id}`}
+                  label={item.title}
                   value='checked'
                   date={moment.unix(item.due_date / 1000).format('DD.MM.YYYY')}
                 />

@@ -15,6 +15,8 @@ export interface ITaskData {
   id?: string;
   farm_id: number;
   line_id: number;
+  title: string;
+  content?: string;
   due_date: number;
   active?: number;
   charger_id?: number;

@@ -165,12 +165,22 @@ const User = () => {
   };
 
   const handleOnPermissions = (e: boolean, key: string) => {
+    // setSwitchList(
+    //   switchList.map((item: any) =>
+    //     item.key === key ? { ...item, value: e } : item,
+    //   ),
+    // );
+    console.log(key, e);
     setSwitchList(
-      switchList.map((item: any) =>
-        item.key === key ? { ...item, value: e } : item,
-      ),
+      switchList.map((item: any) => {
+        if (item.key === key) return { ...item, value: e };
+        if (key === '2' && e && item.key === '1') return { ...item, value: e };
+        return item;
+      }),
     );
   };
+
+  console.log(switchList);
 
   const handleOnFarmCheck = (checked: boolean, farmId: string) => {
     const newArr = farms.map(farm => {
@@ -268,7 +278,7 @@ const User = () => {
     let counter = 0;
     let permission_id = {};
     switchList.map((item: any, index: number) => {
-      if (item.value && switchList.length - 1 !== index) {
+      if ((item.value || userType === 2) && switchList.length - 1 !== index) {
         permission_id = {
           ...permission_id,
           [counter]: Number(item.key),
@@ -287,7 +297,7 @@ const User = () => {
     let line_id = {};
     farms.map((farm, index) => {
       farm.lines?.map(line => {
-        if (line.value) {
+        if (line.value || userType === 2) {
           line_id = {
             ...line_id,
             [counterLine]: Number(line.id),
@@ -295,7 +305,7 @@ const User = () => {
           counterLine++;
         }
       });
-      if (farm.typeChecked !== 'empty') {
+      if (farm.typeChecked !== 'empty' || userType === 2) {
         farm_id = {
           ...farm_id,
           [counterFarm]: Number(farm.id),
@@ -367,81 +377,87 @@ const User = () => {
                   <RadioButton label='Admin' value={2} />
                   <RadioButton className='ml-34' label='User' value={3} />
                 </Radio.Group>
-                <Paragrapgh
-                  className='mb-14'
-                  size={1}
-                  color='black'
-                  align='left'
-                  fontWeight={500}
-                >
-                  Permissions
-                </Paragrapgh>
-                <div className='w-100 mb-16'>
-                  {switchList &&
-                    switchList.map((item: any) => (
-                      <ToggleButton
-                        key={item.key}
-                        className='mb-16'
-                        label={item.label}
-                        isfullWidth
-                        defaultChecked={item.value}
-                        isLeftText
-                        onChange={e => handleOnPermissions(e, item.key)}
-                      />
-                    ))}
-                </div>
-                <Paragrapgh
-                  className='mb-8'
-                  size={2}
-                  color='black-2'
-                  align='left'
-                  fontWeight={400}
-                >
-                  Select farm and lines
-                </Paragrapgh>
-                <div className='user-collapse'>
-                  <Collapse
-                    expandIcon={({ isActive }) => (
-                      <CaretLeftOutlined
-                        rotate={
-                          isActive && switchList[switchList.length - 1].value
-                            ? 180
-                            : 0
-                        }
-                      />
-                    )}
-                  >
-                    {farms.map(farm => (
-                      <Panel
-                        className={
-                          switchList[switchList.length - 1].value
-                            ? 'ant-collapse-item'
-                            : 'ant-collapse-item-disabled'
-                        }
-                        header={farm.title}
-                        key={farm.id}
-                        extra={genExtra(farm.typeChecked, farm.id)}
-                      >
-                        {farm.lines.map(line => (
-                          <CheckboxButton
-                            key={line?.id}
-                            label={line?.name as string}
-                            checked={line?.value}
-                            isfullWidth
-                            isLeftText
-                            onChange={e =>
-                              handleOnSelectFarm(
-                                e.target.checked,
-                                farm.id,
-                                line?.id as string,
-                              )
+                {userType !== 2 && (
+                  <>
+                    <Paragrapgh
+                      className='mb-14'
+                      size={1}
+                      color='black'
+                      align='left'
+                      fontWeight={500}
+                    >
+                      Permissions
+                    </Paragrapgh>
+                    <div className='w-100 mb-16'>
+                      {switchList &&
+                        switchList.map((item: any) => {
+                          return (
+                            <ToggleButton
+                              key={item.key}
+                              className='mb-16'
+                              label={item.label}
+                              isfullWidth
+                              checked={item.value}
+                              isLeftText
+                              onChange={e => handleOnPermissions(e, item.key)}
+                            />
+                          );
+                        })}
+                    </div>
+                    <Paragrapgh
+                      className='mb-8'
+                      size={2}
+                      color='black-2'
+                      align='left'
+                      fontWeight={400}
+                    >
+                      Select farm and lines
+                    </Paragrapgh>
+                    <div className='user-collapse'>
+                      <Collapse
+                        expandIcon={({ isActive }) => (
+                          <CaretLeftOutlined
+                            rotate={
+                              isActive && switchList[switchList.length - 1].value
+                                ? 180
+                                : 0
                             }
                           />
+                        )}
+                      >
+                        {farms.map(farm => (
+                          <Panel
+                            className={
+                              switchList[switchList.length - 1].value
+                                ? 'ant-collapse-item'
+                                : 'ant-collapse-item-disabled'
+                            }
+                            header={farm.title}
+                            key={farm.id}
+                            extra={genExtra(farm.typeChecked, farm.id)}
+                          >
+                            {farm.lines.map(line => (
+                              <CheckboxButton
+                                key={line?.id}
+                                label={line?.name as string}
+                                checked={line?.value}
+                                isfullWidth
+                                isLeftText
+                                onChange={e =>
+                                  handleOnSelectFarm(
+                                    e.target.checked,
+                                    farm.id,
+                                    line?.id as string,
+                                  )
+                                }
+                              />
+                            ))}
+                          </Panel>
                         ))}
-                      </Panel>
-                    ))}
-                  </Collapse>
-                </div>
+                      </Collapse>
+                    </div>
+                  </>
+                )}
                 <div className='mt-24 user-button d-flex justify-content-end align-items-center'>
                   <Link to='/users'>
                     <Button

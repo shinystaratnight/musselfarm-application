@@ -61,10 +61,7 @@ export const refreshTokenAPI = async (auth: ISignInPayload) => {
       const data = await response.data;
       if (data?.status === 'Success') {
         localStorage.setItem('marine-farm', data?.data.access_token);
-        localStorage.setItem(
-          'marine-farm-refresh',
-          data?.data.refresh_token,
-        );
+        localStorage.setItem('marine-farm-refresh', data?.data.refresh_token);
       }
       return data;
     }

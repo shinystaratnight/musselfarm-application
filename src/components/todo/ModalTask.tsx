@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import moment from 'moment';
 
-import { Datepicker, InputModal, Dropdown } from '../shared';
+import { Datepicker, InputModal, Dropdown, Input } from '../shared';
 import { IMainList } from '../../types/basicComponentsTypes';
 import { IRootState } from '../../store/rootReducer';
 import { IFarmState } from '../../store/farms/farms.type';
@@ -45,6 +45,8 @@ const ModalTask: FC<IOwnProps> = ({
 
   const [farm, setFarm] = useState('0');
   const [line, setLine] = useState('0');
+  const [tskTitle, setTskTitle] = useState('');
+  const [content, setContent] = useState('');
   const [charger, setCharger] = useState(0);
   const [date, setDate] = useState(moment().toDate().getTime());
   const [itemsLine, setItemsLine] = useState<IMainList[]>([]);
@@ -60,6 +62,9 @@ const ModalTask: FC<IOwnProps> = ({
   useEffect(() => {
     const farmId = data ? data.farm_id : 0;
     setFarm(farmId.toString());
+    setLine(data ? data.line_id.toString() : '0');
+    setTskTitle(data ? data.title : '');
+    setContent(data ? data.content! : '');
     setLine(data ? data.line_id.toString() : '0');
     setDate(data ? Number(data.due_date) : moment().toDate().getTime());
     setCharger(data?.charger_id ? data.charger_id : 0);
@@ -108,10 +113,13 @@ const ModalTask: FC<IOwnProps> = ({
   };
 
   const handleOnConfirm = async () => {
+    if (title === '') return;
     if (type === 'create') {
       const newTask: ITaskData = {
         farm_id: Number(farm),
         line_id: Number(line),
+        title: tskTitle,
+        content,
         due_date: date,
         charger_id: charger,
       };
@@ -122,6 +130,8 @@ const ModalTask: FC<IOwnProps> = ({
         ...data,
         farm_id: Number(farm),
         line_id: Number(line),
+        title: tskTitle,
+        content,
         due_date: date,
         charger_id: charger,
       };
@@ -130,6 +140,8 @@ const ModalTask: FC<IOwnProps> = ({
     }
     setFarm('0');
     setLine('0');
+    setContent('');
+    setTskTitle('');
     setCharger(0);
     setDate(moment().toDate().getTime());
     onConfirm();
@@ -143,6 +155,22 @@ const ModalTask: FC<IOwnProps> = ({
       type={type}
       onConfirm={handleOnConfirm}
     >
+      <Input
+        type='text'
+        onChange={e => setTskTitle(e.target.value)}
+        className='mb-16 w-100'
+        value={tskTitle}
+        label='Task title'
+        placeholder='task title'
+      />
+      <Input
+        type='textarea'
+        onChange={e => setContent(e.target.value)}
+        className='mb-16 w-100'
+        value={content}
+        label='Task content'
+        placeholder='task content'
+      />
       <Dropdown
         className='mb-16'
         placeholder='select farm'

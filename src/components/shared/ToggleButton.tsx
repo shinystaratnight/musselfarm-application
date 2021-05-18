@@ -8,6 +8,7 @@ interface IOwnProps {
   label: string;
   disabled?: boolean;
   defaultChecked?: boolean;
+  checked?: boolean;
   className?: string;
   isLeftText?: boolean;
   isfullWidth?: boolean;
@@ -18,6 +19,7 @@ const ToggleButton: FC<IOwnProps> = ({
   label,
   disabled,
   defaultChecked,
+  checked,
   onChange,
   className,
   isLeftText,
@@ -32,11 +34,7 @@ const ToggleButton: FC<IOwnProps> = ({
 
   return (
     <div className={toggleClasses}>
-      <Switch
-        defaultChecked={defaultChecked}
-        disabled={disabled}
-        onChange={onChange}
-      />
+      <Switch checked={checked} disabled={disabled} onChange={onChange} />
       <Paragrapgh
         className={labelClasses}
         size={1}

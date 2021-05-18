@@ -32,11 +32,6 @@ export const composeApi = async (
     const responseRefresh = await refreshTokenAPI(authStore);
     const curAT = localStorage.getItem('marine-farm');
     if (responseRefresh?.status === 'Success') {
-      localStorage.setItem('marine-farm', responseRefresh?.data.access_token);
-      localStorage.setItem(
-        'marine-farm-refresh',
-        responseRefresh?.data.refresh_token,
-      );
       await dispatch(
         updateToken({
           isAuth: true,
