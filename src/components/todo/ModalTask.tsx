@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import moment from 'moment';
 
-import { Datepicker, InputModal, Dropdown, Input } from '../shared';
+import { Datepicker, InputModal, Dropdown, Input, Feedback } from '../shared';
 import { IMainList } from '../../types/basicComponentsTypes';
 import { IRootState } from '../../store/rootReducer';
 import { IFarmState } from '../../store/farms/farms.type';
@@ -16,6 +16,8 @@ import './styles.scss';
 interface IOwnProps {
   type: string;
   data?: ITaskData | null;
+  viewOnly?: boolean;
+  className?: string;
   onCancel: () => void;
   onConfirm: () => void;
   title: string;
@@ -26,7 +28,9 @@ const ModalTask: FC<IOwnProps> = ({
   type,
   onCancel,
   onConfirm,
+  className,
   title,
+  viewOnly,
   visible,
   data,
 }) => {
@@ -50,6 +54,8 @@ const ModalTask: FC<IOwnProps> = ({
   const [charger, setCharger] = useState(0);
   const [date, setDate] = useState(moment().toDate().getTime());
   const [itemsLine, setItemsLine] = useState<IMainList[]>([]);
+  const [feedBack, setFeedback] = useState(false);
+  const [feedbackMsg, setFeedbackMsg] = useState('');
 
   const items: IMainList[] = farmsData.map(el => {
     return {
@@ -64,7 +70,7 @@ const ModalTask: FC<IOwnProps> = ({
     setFarm(farmId.toString());
     setLine(data ? data.line_id.toString() : '0');
     setTskTitle(data ? data.title : '');
-    setContent(data ? data.content! : '');
+    setContent(data && data.content ? data.content : '');
     setLine(data ? data.line_id.toString() : '0');
     setDate(data ? Number(data.due_date) : moment().toDate().getTime());
     setCharger(data?.charger_id ? data.charger_id : 0);
@@ -112,8 +118,36 @@ const ModalTask: FC<IOwnProps> = ({
     setCharger(Number(value));
   };
 
+  const userHasFarmPermission = () => {
+    if (charger === 0) return true;
+    const usr = usersStore.find(el => Number(el.id) === charger);
+    if (Number(line)) {
+      const ln = usr?.lines?.find(el => el === Number(line));
+      return ln;
+    }
+    if (Number(farm)) {
+      const fm = farmsData.find(el => el.id === Number(farm));
+      const ln = fm?.lines.map(el => Number(el.id));
+      console.log(fm);
+      console.log(ln);
+      console.log(usr?.lines);
+      if (ln) return ln.every(el => usr?.lines?.includes(el));
+      return false;
+    }
+    return true;
+  };
+
   const handleOnConfirm = async () => {
-    if (title === '') return;
+    if (tskTitle === '') {
+      setFeedback(true);
+      setFeedbackMsg('Fill Task Title');
+      return;
+    }
+    if (!userHasFarmPermission()) {
+      setFeedback(true);
+      setFeedbackMsg('User has not permission to the Farm/Line');
+      return;
+    }
     if (type === 'create') {
       const newTask: ITaskData = {
         farm_id: Number(farm),
@@ -150,16 +184,28 @@ const ModalTask: FC<IOwnProps> = ({
   return (
     <InputModal
       visible={visible}
+      hideCancelBtn
+      className={className}
       onCancel={onCancel}
       title={title}
       type={type}
       onConfirm={handleOnConfirm}
     >
+      {feedBack && (
+        <Feedback
+          className='mb-16 mt-16'
+          message={feedbackMsg}
+          type='warning'
+          theme='light'
+          onClose={() => setFeedback(false)}
+        />
+      )}
       <Input
         type='text'
         onChange={e => setTskTitle(e.target.value)}
         className='mb-16 w-100'
         value={tskTitle}
+        disabled={viewOnly}
         label='Task title'
         placeholder='task title'
       />
@@ -168,15 +214,17 @@ const ModalTask: FC<IOwnProps> = ({
         onChange={e => setContent(e.target.value)}
         className='mb-16 w-100'
         value={content}
+        disabled={viewOnly}
         label='Task content'
         placeholder='task content'
       />
       <Dropdown
         className='mb-16'
         placeholder='select farm'
+        disabled={viewOnly}
         defaultValue={farm ? `${farm}` : undefined}
         onChange={(value, event) => handleOnSelectFarm(value)}
-        label='Select farm'
+        label={viewOnly ? 'Selected Farm' : 'Select farm'}
         options={[
           {
             value: '0',
@@ -189,9 +237,10 @@ const ModalTask: FC<IOwnProps> = ({
       <Dropdown
         className='mb-16'
         placeholder='select line'
+        disabled={viewOnly}
         defaultValue={line ? `${line}` : undefined}
         onChange={(value, event) => handleOnSelectLine(value)}
-        label='Select line'
+        label={viewOnly ? 'Selected Line' : 'Select line'}
         options={[
           {
             value: '0',
@@ -205,6 +254,7 @@ const ModalTask: FC<IOwnProps> = ({
         className='mb-24'
         label='Date'
         required
+        disabled={viewOnly}
         defaultValue={Number(date)}
         onChange={e =>
           setDate(e ? e!.toDate().getTime() : moment().toDate().getTime())
@@ -214,9 +264,14 @@ const ModalTask: FC<IOwnProps> = ({
         <Dropdown
           className='mb-16'
           placeholder='select person responsible'
+          disabled={viewOnly}
           defaultValue={charger.toString()}
           onChange={(value, event) => handleOnSelectCharger(value)}
-          label='Select person responsible'
+          label={
+            viewOnly
+              ? 'Selected person responsible'
+              : 'Select person responsible'
+          }
           options={[
             {
               value: '0',

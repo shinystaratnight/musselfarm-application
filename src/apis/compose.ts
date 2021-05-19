@@ -25,13 +25,13 @@ export const composeApi = async (
     prevAT !== null && prevAT !== '' ? prevAT : authStore.access_token,
   );
   await waitForRefreshToken();
-  const curAT = localStorage.getItem('marine-farm');
   if (
     responseData?.message === 'Unauthenticated.' &&
     authStore?.access_token &&
     authStore?.refresh_token
   ) {
     const responseRefresh = await refreshTokenAPI(authStore);
+    const curAT = localStorage.getItem('marine-farm');
     if (responseRefresh?.status === 'Success') {
       await dispatch(
         updateToken({
@@ -58,7 +58,13 @@ export const composeApi = async (
 
       return repeatResponse;
     }
-    if (prevAT !== curAT && curAT !== null && curAT !== '') {
+    if (
+      prevAT !== curAT &&
+      curAT !== null &&
+      curAT !== '' &&
+      prevAT !== null &&
+      prevAT !== ''
+    ) {
       const repeatResponse = await sendRequest(
         data,
         method,

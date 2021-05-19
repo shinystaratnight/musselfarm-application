@@ -52,6 +52,20 @@ const ToDoList: FC<IOwnProps> = ({ isActivePage }) => {
     due_date: 0,
     title: '',
   });
+  const [showTask, setShowTask] = useState(false);
+  const [showTaskData, setShowTaskData] = useState<ITaskData>({
+    key: 0,
+    id: '',
+    farm_id: 0,
+    line_id: 0,
+    title: '',
+    content: '',
+    due_date: 0,
+    active: 0,
+    charger_id: 0,
+    created_at: '',
+    creator_id: 0,
+  });
   const [deleteTask, setDeleteTask] = useState(false);
   const [deleteTaskId, setDeleteTaskId] = useState<string | number>('0');
   const [archiveTask, setArchiveTask] = useState(false);
@@ -172,6 +186,18 @@ const ToDoList: FC<IOwnProps> = ({ isActivePage }) => {
                   </span>
                   <br />
                   on {item.created_at!.slice(0, 10)}
+                  <div>
+                    <button
+                      className='viewTask'
+                      style={{ border: 'none', background: 'none' }}
+                      onClick={e => {
+                        setShowTask(true);
+                        setShowTaskData(item);
+                      }}
+                    >
+                      Details
+                    </button>
+                  </div>
                 </div>
                 {isActivePage ? (
                   <DropdownMenu
@@ -223,6 +249,16 @@ const ToDoList: FC<IOwnProps> = ({ isActivePage }) => {
         title='Edit task'
         onConfirm={handleOnConfirmEditTask}
         visible={editTask}
+      />
+      <ModalTask
+        onCancel={() => setShowTask(!showTask)}
+        type='close'
+        className='viewTaskModal'
+        data={showTaskData}
+        title='View task'
+        viewOnly
+        onConfirm={() => setShowTask(!showTask)}
+        visible={showTask}
       />
     </div>
   );

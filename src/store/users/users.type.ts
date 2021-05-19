@@ -77,6 +77,8 @@ export interface IUserPayload {
   key?: number;
   id?: string;
   user_id?: string;
+  farms?: Array<number>;
+  lines?: Array<number>;
 }
 
 export type UsersTypes =

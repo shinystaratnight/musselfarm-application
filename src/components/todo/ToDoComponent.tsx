@@ -1,7 +1,6 @@
 import React, { FC, useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import Item from 'antd/lib/list/Item';
 import { Radio } from 'antd';
 import moment from 'moment';
 import {
@@ -23,9 +22,9 @@ import {
 } from '../../store/tasks/tasks.actions';
 import { UsersState } from '../../store/users/users.type';
 import { getAllUsers } from '../../store/users/users.actions';
-
+import { IFarmState } from '../../store/farms/farms.type';
+import { getFarmsData } from '../../store/farms/farms.actions';
 import './styles.scss';
-import Trash from '../shared/Trash';
 
 interface IOwnProps {
   isActivePage: boolean;
@@ -41,10 +40,26 @@ const ToDoComponent: FC<IOwnProps> = ({ isActivePage }) => {
   const usersStore = useSelector<IRootState, UsersState['users']>(
     state => state.users.users,
   );
+  const farmsData = useSelector<IRootState, IFarmState['farmsData']>(
+    state => state.farms.farmsData,
+  );
 
   const [completedTasks, setCompletedTasks] = useState<string[]>([]);
   const [isSpinner, setIsSpinner] = useState(false);
-  const [showModal, setShowModal] = useState(false);
+  const [showTask, setShowTask] = useState(false);
+  const [showTaskData, setShowTaskData] = useState<ITaskData>({
+    key: 0,
+    id: '',
+    farm_id: 0,
+    line_id: 0,
+    title: '',
+    content: '',
+    due_date: 0,
+    active: 0,
+    charger_id: 0,
+    created_at: '',
+    creator_id: 0,
+  });
   const [editTask, setEditTask] = useState(false);
   const [editTaskData, setEditTaskData] = useState({
     farm_id: 0,
@@ -66,6 +81,7 @@ const ToDoComponent: FC<IOwnProps> = ({ isActivePage }) => {
   useEffect(() => {
     setIsSpinner(true);
     dispatch(getTaskData(history));
+    dispatch(getFarmsData(history));
     getUsers();
     setIsSpinner(false);
   }, []);
@@ -131,6 +147,21 @@ const ToDoComponent: FC<IOwnProps> = ({ isActivePage }) => {
     }
   };
 
+  const getFarmName = (farmId: number) => {
+    const cFarm = farmsData.find(el => Number(el.id) === farmId);
+    if (cFarm) return cFarm.name;
+    return ' No Farm Selected ';
+  };
+
+  const getLineName = (farmId: number, lineId: number) => {
+    const cFarm = farmsData.find(el => Number(el.id) === farmId);
+    if (cFarm) {
+      const cLine = cFarm.lines.find(el => Number(el.id) === lineId);
+      if (cLine) return cLine.line_name;
+    }
+    return ' No Line Selected ';
+  };
+
   return (
     <div className='todo'>
       {!isSpinner &&
@@ -169,6 +200,18 @@ const ToDoComponent: FC<IOwnProps> = ({ isActivePage }) => {
                   </span>
                   <br />
                   on {item.created_at!.slice(0, 10)}
+                  <div>
+                    <button
+                      className='viewTask'
+                      style={{ border: 'none', background: 'none' }}
+                      onClick={e => {
+                        setShowTask(true);
+                        setShowTaskData(item);
+                      }}
+                    >
+                      Details
+                    </button>
+                  </div>
                 </div>
                 {isActivePage ? (
                   <DropdownMenu
@@ -220,6 +263,16 @@ const ToDoComponent: FC<IOwnProps> = ({ isActivePage }) => {
         title='Edit task'
         onConfirm={handleOnConfirmEditTask}
         visible={editTask}
+      />
+      <ModalTask
+        onCancel={() => setShowTask(!showTask)}
+        type='close'
+        className='viewTaskModal'
+        data={showTaskData}
+        title='View task'
+        viewOnly
+        onConfirm={() => setShowTask(!showTask)}
+        visible={showTask}
       />
     </div>
   );

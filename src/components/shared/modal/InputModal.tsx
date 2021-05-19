@@ -15,6 +15,7 @@ interface IOwnProps {
   onConfirm: () => void;
   className?: string;
   children: ReactNode;
+  hideCancelBtn?: boolean;
   title: string;
   visible: boolean;
   disabled?: boolean;
@@ -26,6 +27,7 @@ const InputModal: FC<IOwnProps> = ({
   visible,
   onCancel,
   onConfirm,
+  hideCancelBtn,
   title,
   children,
   type,
@@ -55,15 +57,17 @@ const InputModal: FC<IOwnProps> = ({
         {children}
       </div>
       <div className='modal-button d-flex justify-content-end align-items-center'>
-        <Button
-          width={width < 769 ? 'wide' : 'small'}
-          size={2}
-          type='transparent'
-          color='blue'
-          onClick={onCancel}
-        >
-          Cancel
-        </Button>
+        {hideCancelBtn && (
+          <Button
+            width={width < 769 ? 'wide' : 'small'}
+            size={2}
+            type='transparent'
+            color='blue'
+            onClick={onCancel}
+          >
+            Cancel
+          </Button>
+        )}
         {type === 'confirm' && (
           <Button
             width={width < 769 ? 'wide' : 'small'}
@@ -88,6 +92,19 @@ const InputModal: FC<IOwnProps> = ({
             disabled={disabled}
           >
             Create
+          </Button>
+        )}
+        {type === 'close' && (
+          <Button
+            width={width < 769 ? 'wide' : 'small'}
+            size={2}
+            type='fill'
+            color='green'
+            className='ml-16'
+            onClick={onConfirm}
+            disabled={disabled}
+          >
+            Close
           </Button>
         )}
       </div>

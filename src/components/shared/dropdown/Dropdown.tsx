@@ -11,6 +11,7 @@ interface IOwnProps {
   defaultValue?: string;
   onChange?: (value: string, event: any) => void;
   placeholder?: string;
+  disabled?: boolean;
   className?: string;
   label: string;
   options: IMainList[];
@@ -21,6 +22,7 @@ const Dropdown: FC<IOwnProps> = ({
   onChange,
   placeholder,
   className,
+  disabled,
   label,
   options,
 }) => {
@@ -49,6 +51,7 @@ const Dropdown: FC<IOwnProps> = ({
       <Select
         size='large'
         open={open}
+        disabled={disabled}
         suffixIcon={suffixIcon}
         placeholder={placeholder}
         value={defaultValue}
