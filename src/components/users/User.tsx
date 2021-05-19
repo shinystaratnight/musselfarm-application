@@ -165,12 +165,6 @@ const User = () => {
   };
 
   const handleOnPermissions = (e: boolean, key: string) => {
-    // setSwitchList(
-    //   switchList.map((item: any) =>
-    //     item.key === key ? { ...item, value: e } : item,
-    //   ),
-    // );
-    console.log(key, e);
     setSwitchList(
       switchList.map((item: any) => {
         if (item.key === key) return { ...item, value: e };

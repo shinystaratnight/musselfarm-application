@@ -1,6 +1,11 @@
 import axios, { AxiosRequestConfig } from 'axios';
 import { ISignInPayload } from '../store/auth/auth.type';
 
+let isRefreshingToken = false;
+let prevAuthToken = '';
+let prevRefreshToken = '';
+let glbResponse;
+
 export const sendRequest = async (
   data: any,
   method: 'GET' | 'POST' | 'DELETE' | 'PUT',
@@ -42,9 +47,23 @@ export const sendRequest = async (
   }
 };
 
+export const waitForRefreshToken = () => {
+  return new Promise<void>(resolve => {
+    function checkFlag() {
+      if (isRefreshingToken === false) resolve();
+      else window.setTimeout(checkFlag, 100);
+    }
+    checkFlag();
+  });
+};
+
 export const refreshTokenAPI = async (auth: ISignInPayload) => {
   try {
-    const response = await axios.post(
+    isRefreshingToken = true;
+    prevAuthToken = auth.access_token!;
+    prevRefreshToken = auth.refresh_token!;
+
+    glbResponse = await axios.post(
       `${process.env.REACT_APP_API_URL}api/refresh`,
       null,
       {
@@ -57,17 +76,19 @@ export const refreshTokenAPI = async (auth: ISignInPayload) => {
       },
     );
 
-    if (response.status === 200) {
-      const data = await response.data;
+    if (glbResponse.status === 200) {
+      const data = await glbResponse.data;
       if (data?.status === 'Success') {
         localStorage.setItem('marine-farm', data?.data.access_token);
         localStorage.setItem('marine-farm-refresh', data?.data.refresh_token);
       }
+      isRefreshingToken = false;
       return data;
     }
-
+    isRefreshingToken = false;
     return false;
   } catch (e) {
+    isRefreshingToken = false;
     return e;
   }
 };

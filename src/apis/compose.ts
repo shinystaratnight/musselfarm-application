@@ -1,5 +1,5 @@
 import { logOut, updateToken } from '../store/auth/auth.actions';
-import { refreshTokenAPI, sendRequest } from './index';
+import { refreshTokenAPI, sendRequest, waitForRefreshToken } from './index';
 import { ISignInPayload } from '../store/auth/auth.type';
 
 interface requestData {
@@ -24,13 +24,14 @@ export const composeApi = async (
     requireAuth,
     prevAT !== null && prevAT !== '' ? prevAT : authStore.access_token,
   );
+  await waitForRefreshToken();
+  const curAT = localStorage.getItem('marine-farm');
   if (
     responseData?.message === 'Unauthenticated.' &&
     authStore?.access_token &&
     authStore?.refresh_token
   ) {
     const responseRefresh = await refreshTokenAPI(authStore);
-    const curAT = localStorage.getItem('marine-farm');
     if (responseRefresh?.status === 'Success') {
       await dispatch(
         updateToken({
