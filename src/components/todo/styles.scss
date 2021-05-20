@@ -9,7 +9,23 @@
   &__item {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+
+    span.ant-radio + * {
+      padding-left: 0px;
+      padding-right: 6px;
+    }
+    .info-row {
+      cursor: pointer;
+      flex: 1;
+      justify-content: space-between;
+    }
+
+    .ant-radio-group .paragrapgh--1 {
+      font-size: 15px;
+    }
+    .ant-radio-group .paragrapgh--2 {
+      font-size: 13px;
+    }
 
     svg {
       cursor: pointer;
@@ -45,7 +61,16 @@
   .todolist__item {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+
+    span.ant-radio + * {
+      padding-left: 0px;
+      padding-right: 6px;
+    }
+    .info-row {
+      cursor: pointer;
+      flex: 1;
+      justify-content: space-between;
+    }
 
     .ant-radio-group .paragrapgh--1 {
       font-size: 15px;

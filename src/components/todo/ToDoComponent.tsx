@@ -1,4 +1,4 @@
-import React, { FC, useState, useEffect } from 'react';
+import React, { FC, useState, useEffect, KeyboardEvent } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { Radio } from 'antd';
@@ -162,6 +162,23 @@ const ToDoComponent: FC<IOwnProps> = ({ isActivePage }) => {
     return ' No Line Selected ';
   };
 
+  const onShowTask = (data: ITaskData) => {
+    setShowTask(true);
+    setShowTaskData(data);
+  };
+
+  const onKeyPress = (e: KeyboardEvent<HTMLDivElement>) => {
+    const enterOrSpace =
+      e.key === 'Enter' ||
+      e.key === ' ' ||
+      e.key === 'Spacebar' ||
+      e.which === 13 ||
+      e.which === 32;
+    if (enterOrSpace) {
+      e.preventDefault();
+    }
+  };
+
   return (
     <div className='todo'>
       {!isSpinner &&
@@ -180,58 +197,56 @@ const ToDoComponent: FC<IOwnProps> = ({ isActivePage }) => {
                 }
                 onChange={e => onTaskComplete(e.target.value, item.id!)}
               >
-                <RadioButton
-                  label={item.title}
-                  value='checked'
-                  date={moment.unix(item.due_date / 1000).format('DD.MM.YYYY')}
-                />
+                <RadioButton label='' value='checked' />
               </Radio.Group>
-              <div className='d-flex flex-direction-row'>
-                <div className='taskDetail'>
-                  created by
-                  <span className='taskCreator'>
-                    {
-                      usersStore.find(
-                        el =>
-                          el.user_id?.toString() ===
-                          item.creator_id?.toString(),
-                      )?.name
-                    }
-                  </span>
-                  <br />
-                  on {item.created_at!.slice(0, 10)}
-                  <div>
+              <div
+                className='d-flex flex-direction-row info-row'
+                onClick={e => onShowTask(item)}
+                onKeyPress={e => onKeyPress(e)}
+              >
+                <div>
+                  <p className='paragrapgh paragrapgh--1 paragrapgh--400 paragrapgh--default paragrapgh--default'>
+                    {item.title}
+                  </p>
+                  <p className='d-block mt-4 paragrapgh paragrapgh--2 paragrapgh--400 paragrapgh--black-2 paragrapgh--default'>
+                    {moment.unix(item.due_date / 1000).format('DD.MM.YYYY')}
+                  </p>
+                </div>
+                <div className='d-flex flex-direction-row'>
+                  <div className='taskDetail'>
+                    created by
+                    <span className='taskCreator'>
+                      {
+                        usersStore.find(
+                          el =>
+                            el.user_id?.toString() ===
+                            item.creator_id?.toString(),
+                        )?.name
+                      }
+                    </span>
+                    <br />
+                    on {item.created_at!.slice(0, 10)}
+                  </div>
+                  {isActivePage ? (
+                    <DropdownMenu
+                      data={item}
+                      type='todo'
+                      onEdit={handleOnEditTask}
+                      onDeleteRow={handleOnDeleteRow}
+                      onArchiveRow={handleOnArchiveRow}
+                    />
+                  ) : (
                     <button
-                      className='viewTask'
                       style={{ border: 'none', background: 'none' }}
                       onClick={e => {
-                        setShowTask(true);
-                        setShowTaskData(item);
+                        setDeleteTask(true);
+                        setDeleteTaskId(item.id!);
                       }}
                     >
-                      Details
+                      <TrashIcon />
                     </button>
-                  </div>
+                  )}
                 </div>
-                {isActivePage ? (
-                  <DropdownMenu
-                    data={item}
-                    type='todo'
-                    onEdit={handleOnEditTask}
-                    onDeleteRow={handleOnDeleteRow}
-                    onArchiveRow={handleOnArchiveRow}
-                  />
-                ) : (
-                  <button
-                    style={{ border: 'none', background: 'none' }}
-                    onClick={e => {
-                      setDeleteTask(true);
-                      setDeleteTaskId(item.id!);
-                    }}
-                  >
-                    <TrashIcon />
-                  </button>
-                )}
               </div>
             </div>
           ))}
