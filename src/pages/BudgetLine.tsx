@@ -17,11 +17,13 @@ import {
 } from '../components/shared';
 import { useWidth } from '../util/useWidth';
 import OverallTable from '../components/budget/OverallTable';
+import ExportBudgetTable from '../components/budget/ExportBudgetTable';
 import { IMainList } from '../types/basicComponentsTypes';
 import ButtonArrows from '../components/shared/button/ButtonArrows';
 import ModalExpenses from '../components/budget/ModalExpenses';
 import FarmModalExpenses from '../components/budget/FarmModalExpenses';
 import { IRootState } from '../store/rootReducer';
+import { AuthState } from '../store/auth/auth.type';
 import { BudgetState, IBudgetPayload } from '../store/budget/budget.type';
 import { deleteMessage, getBudgetFarm } from '../store/budget/budget.action';
 import { getXeroContacts, getXeroAccounts } from '../store/utils/utils.actions';
@@ -50,6 +52,9 @@ const BudgetLine: FC = (): ReactElement => {
   );
   const budgetStore = useSelector<IRootState, BudgetState['budget']>(
     state => state.budget.budget,
+  );
+  const auth = useSelector<IRootState, AuthState['auth']>(
+    state => state.auth.auth,
   );
 
   const getData = async () => {
@@ -198,45 +203,48 @@ const BudgetLine: FC = (): ReactElement => {
                 options={lines}
                 defaultValue={defaultDropdown}
               />
-              {query.get('line') && (
-                <>
-                  <Button
-                    className={width > 460 ? '' : 'mb-12 mt-12 mr-12 ml-12'}
-                    color='blue'
-                    size={4}
-                    width={width > 460 ? 'small' : 'wide'}
-                    type='bordered'
-                    onClick={() => setIsModalVisibile(!isModalVisibile)}
-                  >
-                    Add expenses
-                  </Button>
-                  <ModalExpenses
-                    onConfirm={() => setIsModalVisibile(false)}
-                    visible={isModalVisibile}
-                    onCancel={() => setIsModalVisibile(false)}
-                  />
-                </>
-              )}
-              {query.get('farm') && (
-                <>
-                  <Button
-                    className={width > 460 ? '' : 'mb-12 mt-12 mr-12 ml-12'}
-                    color='blue'
-                    size={4}
-                    width={width > 460 ? 'small' : 'wide'}
-                    type='bordered'
-                    onClick={() => setIsModalVisibile(!isModalVisibile)}
-                  >
-                    Add expenses
-                  </Button>
-                  <FarmModalExpenses
-                    farmId={query.get('farm')}
-                    onConfirm={() => setIsModalVisibile(false)}
-                    visible={isModalVisibile}
-                    onCancel={() => setIsModalVisibile(false)}
-                  />
-                </>
-              )}
+              <div>
+                {query.get('line') && (
+                  <>
+                    <Button
+                      className={width > 460 ? '' : 'mb-12 mt-12 mr-12 ml-12'}
+                      color='blue'
+                      size={4}
+                      width={width > 460 ? 'small' : 'wide'}
+                      type='bordered'
+                      onClick={() => setIsModalVisibile(!isModalVisibile)}
+                    >
+                      Add expenses
+                    </Button>
+                    <ModalExpenses
+                      onConfirm={() => setIsModalVisibile(false)}
+                      visible={isModalVisibile}
+                      onCancel={() => setIsModalVisibile(false)}
+                    />
+                  </>
+                )}
+                {query.get('farm') && (
+                  <>
+                    <Button
+                      className={width > 460 ? '' : 'mb-12 mt-12 mr-12 ml-12'}
+                      color='blue'
+                      size={4}
+                      width={width > 460 ? 'small' : 'wide'}
+                      type='bordered'
+                      onClick={() => setIsModalVisibile(!isModalVisibile)}
+                    >
+                      Add expenses
+                    </Button>
+                    <FarmModalExpenses
+                      farmId={query.get('farm')}
+                      onConfirm={() => setIsModalVisibile(false)}
+                      visible={isModalVisibile}
+                      onCancel={() => setIsModalVisibile(false)}
+                    />
+                  </>
+                )}
+                <ExportBudgetTable dataLine={data} />
+              </div>
             </div>
             {!isSpinner ? (
               <OverallTable

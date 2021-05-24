@@ -255,14 +255,17 @@ const FarmModalAddExpenses: FC<IOwnProps> = ({
                     placeholder='maintenance name'
                     onChange={(value, event) => handleOnName(value, expense.id)}
                     label='Maintenance name'
-                    options={maintenanceData.map(
-                      (maintenance: IUtilData) =>
-                        ({
-                          value: maintenance.name,
-                          label: maintenance.name,
-                          id: maintenance.id,
-                        } as IMainList),
-                    )}
+                    options={
+                      maintenanceData &&
+                      maintenanceData.map(
+                        (maintenance: IUtilData) =>
+                          ({
+                            value: maintenance.name,
+                            label: maintenance.name,
+                            id: maintenance.id,
+                          } as IMainList),
+                      )
+                    }
                     defaultValue={
                       expense.expenses_name ? expense.expenses_name : undefined
                     }

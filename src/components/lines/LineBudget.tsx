@@ -543,14 +543,17 @@ const LineBudget: FC<ILineBudget> = ({
                       handleOnSelectType(value, 2, maintenanceCost.id)
                     }
                     label='Maintenance name'
-                    options={maintenanceData.map(
-                      (maintenance: IUtilData) =>
-                        ({
-                          value: maintenance.name,
-                          label: maintenance.name,
-                          id: maintenance.id,
-                        } as IMainList),
-                    )}
+                    options={
+                      maintenanceData &&
+                      maintenanceData.map(
+                        (maintenance: IUtilData) =>
+                          ({
+                            value: maintenance.name,
+                            label: maintenance.name,
+                            id: maintenance.id,
+                          } as IMainList),
+                      )
+                    }
                     defaultValue={
                       maintenanceCost.name ? maintenanceCost.name : undefined
                     }

@@ -58,7 +58,7 @@ const Dropdown: FC<IOwnProps> = ({
         onDropdownVisibleChange={o => setOpen(o)}
         onChange={onChange}
       >
-        {options.map((option: IMainList) => (
+        {options && options.map((option: IMainList) => (
           <Option value={option.value} key={option.id}>
             {option.label}
           </Option>

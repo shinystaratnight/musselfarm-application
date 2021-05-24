@@ -45,6 +45,7 @@ module.exports = {
     "react/button-has-type": 1,
     "@typescript-eslint/ban-ts-ignore": "off",
     "@typescript-eslint/naming-convention": "off",
+    '@typescript-eslint/no-var-requires': 0,
     'jsx-a11y/no-static-element-interactions': [
       1,
       {
