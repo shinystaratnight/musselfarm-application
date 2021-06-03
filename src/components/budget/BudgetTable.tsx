@@ -5,8 +5,6 @@ import classNames from 'classnames';
 
 import useColumns from '../shared/tables/useColumns';
 import { CaretDownIcon } from '../shared';
-import TableMobile from '../shared/table-mobile/TableMobile';
-import MobileBudgetFarm from './MobileBudgetFarm';
 import MobileBudgetTable from './MobileBudgetTable';
 import { useWidth } from '../../util/useWidth';
 

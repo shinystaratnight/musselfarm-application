@@ -12,7 +12,7 @@ interface IOwnProps {
 }
 
 const ExportBudgetTable: FC<IOwnProps> = ({ dataLine }) => {
-  const [data, setData] = useState<any>();
+  const [data, setData] = useState<any>('');
 
   const getStyle = (dat: any, id: number) => {
     let style = {};
@@ -79,7 +79,6 @@ const ExportBudgetTable: FC<IOwnProps> = ({ dataLine }) => {
       }
       style = { ...style, font: { color: { rgb: color } } };
     }
-    console.log(dat.var);
     return style;
   };
 
@@ -134,13 +133,13 @@ const ExportBudgetTable: FC<IOwnProps> = ({ dataLine }) => {
   return (
     <ExcelFile
       element={
-        <button style={{ border: 'none', background: 'none' }}>
+        <button style={{ border: 'none', background: 'none', cursor: 'pointer' }}>
           <DownloadIcon />
         </button>
       }
       filename='Budget'
     >
-      <ExcelSheet dataSet={data && data} name='Budget' />
+      <ExcelSheet dataSet={data} name='Budget' />
     </ExcelFile>
   );
 };

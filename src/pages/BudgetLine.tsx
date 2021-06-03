@@ -14,10 +14,13 @@ import {
   Button,
   Spinner,
   Feedback,
+  UploadIcon,
 } from '../components/shared';
+import { sendMultipart } from '../apis';
 import { useWidth } from '../util/useWidth';
 import OverallTable from '../components/budget/OverallTable';
 import ExportBudgetTable from '../components/budget/ExportBudgetTable';
+import ImportBudget from '../components/budget/ImportBudget';
 import { IMainList } from '../types/basicComponentsTypes';
 import ButtonArrows from '../components/shared/button/ButtonArrows';
 import ModalExpenses from '../components/budget/ModalExpenses';
@@ -33,14 +36,21 @@ const BudgetLine: FC = (): ReactElement => {
   const width = useWidth();
   const history = useHistory();
   const dispatch = useDispatch();
+
   const query = new URLSearchParams(useLocation().search);
   const [isModalVisibile, setIsModalVisibile] = useState(false);
+  const [importModalVisibile, setImportModalVisibile] = useState(false);
   const [defaultDropdown, setDefaultDropdown] = useState('');
   const [isSpinner, setIsSpinner] = useState(false);
   const [year, setYear] = useState<number>(new Date().getFullYear());
   const [farmName, setFarmName] = useState('Mussel Farm 1');
   const [data, setData] = useState<any>();
   const [isNotFound, setIsNotFound] = useState(false);
+  const [importExpenseResult, setImportExpenseResult] = useState({
+    visible: false,
+    success: true,
+    message: '',
+  });
   const [lines, setLines] = useState<IMainList[]>([
     { value: '1', label: 'Overall budget', id: '1', apiValue: '1' },
   ]);
@@ -168,6 +178,52 @@ const BudgetLine: FC = (): ReactElement => {
     setDefaultDropdown(itemSelected?.value as string);
   };
 
+  const importBudget = async (type: string, file: any) => {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    let url = '';
+    if (query.get('farm')) {
+      formData.append('farm_id', query.get('farm')!);
+      url = 'api/farm/budgets/import-farm-expenses-from-excel';
+    } else if (query.get('line')) {
+      formData.append('line_budget_id', query.get('line')!);
+      url = 'api/farm/line/budgets/import-line-expenses-from-excel';
+    }
+
+    formData.append('expenseType', type);
+    const responseData = await sendMultipart(
+      formData,
+      'POST',
+      url,
+      true,
+      auth.access_token,
+    );
+    if (responseData?.status === 'Success') {
+      setImportExpenseResult({
+        visible: true,
+        success: true,
+        message: `Import Expenses success! ${responseData.count} rows are imported.`,
+      });
+      getData();
+    } else {
+      setImportExpenseResult({
+        visible: true,
+        success: false,
+        message:
+          'There was an error while uploading. Please refresh page and try uploading again',
+      });
+    }
+    setTimeout(() => {
+      setImportExpenseResult({
+        visible: false,
+        success: true,
+        message: '',
+      });
+    }, 3000);
+    setImportModalVisibile(!importModalVisibile);
+  };
+
   useEffect(() => {
     getData();
   }, [year, defaultDropdown]);
@@ -203,7 +259,7 @@ const BudgetLine: FC = (): ReactElement => {
                 options={lines}
                 defaultValue={defaultDropdown}
               />
-              <div>
+              <div className='d-flex flex-direction-row align-items-center'>
                 {query.get('line') && (
                   <>
                     <Button
@@ -243,7 +299,17 @@ const BudgetLine: FC = (): ReactElement => {
                     />
                   </>
                 )}
-                <ExportBudgetTable dataLine={data} />
+                <ExportBudgetTable dataLine={data && data} />
+                <button
+                  style={{
+                    border: 'none',
+                    background: 'none',
+                    cursor: 'pointer',
+                  }}
+                  onClick={() => setImportModalVisibile(!importModalVisibile)}
+                >
+                  <UploadIcon />
+                </button>
               </div>
             </div>
             {!isSpinner ? (
@@ -275,6 +341,19 @@ const BudgetLine: FC = (): ReactElement => {
           isGlobal
         />
       )}
+      {importExpenseResult.visible && (
+        <Feedback
+          message={importExpenseResult.message}
+          type={importExpenseResult.success ? 'success' : 'error'}
+          theme='light'
+          isGlobal
+        />
+      )}
+      <ImportBudget
+        onImport={importBudget}
+        onCancel={() => setImportModalVisibile(false)}
+        visible={importModalVisibile}
+      />
     </div>
   );
 };

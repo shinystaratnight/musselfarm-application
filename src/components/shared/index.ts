@@ -70,6 +70,7 @@ export { default as SearchBigIcon } from './SearchBigIcon';
 export { default as TablesModal } from './tables/Modal';
 export { default as MinusIcon } from './MinusIcon';
 export { default as DownloadIcon } from './DownloadIcon';
+export { default as UploadIcon } from './UploadIcon';
 export { default as CardDots } from './CardDots';
 export { default as VisaIcon } from './VisaIcon';
 export { default as MasterCardIcon } from './MasterCard';
