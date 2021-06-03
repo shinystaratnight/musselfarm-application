@@ -133,7 +133,13 @@ const ExportBudgetTable: FC<IOwnProps> = ({ dataLine }) => {
   return (
     <ExcelFile
       element={
-        <button style={{ border: 'none', background: 'none', cursor: 'pointer' }}>
+        <button
+          style={{
+            border: 'none',
+            background: 'none',
+            cursor: 'pointer',
+          }}
+        >
           <DownloadIcon />
         </button>
       }
