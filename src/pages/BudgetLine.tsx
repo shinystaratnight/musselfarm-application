@@ -206,6 +206,12 @@ const BudgetLine: FC = (): ReactElement => {
         message: `Import Expenses success! ${responseData.count} rows are imported.`,
       });
       getData();
+    } else if (responseData?.status === 'Fail') {
+      setImportExpenseResult({
+        visible: true,
+        success: false,
+        message: responseData.message,
+      });
     } else {
       setImportExpenseResult({
         visible: true,
