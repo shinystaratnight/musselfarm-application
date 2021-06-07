@@ -166,3 +166,29 @@ export const downloadInvoice = async (id: string, access_token = '') => {
     return e?.response?.data;
   }
 };
+
+export const downLoadSampleBudgetImport = async () => {
+  try {
+    const req: AxiosRequestConfig = {
+      headers: {
+        Accept: '*',
+      },
+      method: 'GET',
+      url: `${process.env.REACT_APP_API_URL}uploads/sample_budget_import.xlsx`,
+      responseType: 'blob',
+    };
+
+    const response = await axios(req);
+
+    const durl = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement('a');
+    link.href = durl;
+    link.setAttribute('download', 'budget_import.xlsx');
+    document.body.appendChild(link);
+    link.click();
+
+    return false;
+  } catch (e) {
+    return e?.response?.data;
+  }
+};

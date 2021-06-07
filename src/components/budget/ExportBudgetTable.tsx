@@ -1,6 +1,5 @@
-import React, { FC, useRef, useState, useEffect } from 'react';
+import React, { FC, useState, useEffect } from 'react';
 import ReactExport, { ExcelSheet } from 'react-data-export';
-import { getSyntheticLeadingComments } from 'typescript';
 import moment from 'moment';
 import './styles.scss';
 import { DownloadIcon } from '../shared';
@@ -12,7 +11,7 @@ interface IOwnProps {
 }
 
 const ExportBudgetTable: FC<IOwnProps> = ({ dataLine }) => {
-  const [data, setData] = useState<any>('');
+  const [data, setData] = useState<any>([]);
 
   const getStyle = (dat: any, id: number) => {
     let style = {};
@@ -125,7 +124,7 @@ const ExportBudgetTable: FC<IOwnProps> = ({ dataLine }) => {
     setData([
       {
         columns: header,
-        data: rowData,
+        data: rowData === undefined ? rowData : [],
       },
     ]);
   }, [dataLine]);
@@ -145,7 +144,7 @@ const ExportBudgetTable: FC<IOwnProps> = ({ dataLine }) => {
       }
       filename='Budget'
     >
-      <ExcelSheet dataSet={data} name='Budget' />
+      <ExcelSheet name='Budget' dataSet={data} />
     </ExcelFile>
   );
 };

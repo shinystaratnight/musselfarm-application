@@ -252,7 +252,7 @@ const ModalTask: FC<IOwnProps> = ({
       />
       <Datepicker
         className='mb-24'
-        label='Date'
+        label='Due Date'
         required
         disabled={viewOnly}
         defaultValue={Number(date)}

@@ -1,12 +1,9 @@
-import React, { FC, FormEvent, useState, useEffect } from 'react';
-import ReactExport, { ExcelSheet } from 'react-data-export';
-import { useFilePicker } from 'use-file-picker';
-import { getSyntheticLeadingComments } from 'typescript';
-import { Radio, Collapse } from 'antd';
-import moment from 'moment';
+import React, { FC, useState } from 'react';
+import { Radio } from 'antd';
 import { useWidth } from '../../util/useWidth';
 import './styles.scss';
 import { InputModal, RadioButton, Button, Spinner } from '../shared';
+import { downloadInvoice, downLoadSampleBudgetImport } from '../../apis/index';
 
 interface IOwnProps {
   visible: boolean;
@@ -37,13 +34,15 @@ const ImportBudget: FC<IOwnProps> = ({ visible, onCancel, onImport }) => {
       title='Import Budget'
       type='confirm'
       onConfirm={async () => {
-        if (file.name) {
-          setUploading(true);
-          await onImport(importType, file);
+        if (!uploading) {
+          if (file.name) {
+            setUploading(true);
+            await onImport(importType, file);
+          }
+          setImportType('a');
+          setFile({ name: '' });
+          setUploading(false);
         }
-        setImportType('a');
-        setFile({ name: '' });
-        setUploading(false);
       }}
       modalWidth={550}
     >
@@ -56,7 +55,7 @@ const ImportBudget: FC<IOwnProps> = ({ visible, onCancel, onImport }) => {
         <RadioButton label='Budgeted' value='b' className='ml-34' />
       </Radio.Group>
       {!uploading && (
-        <div className='mt-20'>
+        <div className='mt-20 mb-10'>
           <form style={{ display: 'grid' }}>
             <Button
               className={
@@ -78,6 +77,14 @@ const ImportBudget: FC<IOwnProps> = ({ visible, onCancel, onImport }) => {
             </Button>
           </form>
           <div>{file && file.name}</div>
+          <div className='mt-10 d-flex justify-content-end'>
+            <a
+              href={`${process.env.REACT_APP_API_URL}uploads/sample_budget_import.xlsx`}
+              style={{ textDecoration: 'underline' }}
+            >
+              Download Sample
+            </a>
+          </div>
         </div>
       )}
       {uploading && (

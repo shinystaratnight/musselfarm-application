@@ -305,7 +305,7 @@ const BudgetLine: FC = (): ReactElement => {
                     />
                   </>
                 )}
-                <ExportBudgetTable dataLine={data && data} />
+                <ExportBudgetTable dataLine={data || []} />
                 <button
                   style={{
                     border: 'none',

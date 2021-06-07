@@ -1,7 +1,7 @@
 import React, { FC, useState, useEffect, KeyboardEvent } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import { Radio } from 'antd';
+import { Radio, Tag } from 'antd';
 import moment from 'moment';
 import {
   Spinner,
@@ -9,6 +9,7 @@ import {
   ModalComponent,
   TrashIcon,
   DropdownMenu,
+  CheckboxButton,
 } from '../shared';
 
 import ModalTask from './ModalTask';
@@ -86,6 +87,12 @@ const ToDoComponent: FC<IOwnProps> = ({ isActivePage }) => {
     setIsSpinner(false);
   }, []);
 
+  useEffect(() => {
+    setCompletedTasks(
+      tasksData.filter(item => item.active).map(item => item.id!),
+    );
+  }, [tasksData]);
+
   const handleOnDeleteRow = (data: ITaskData) => {
     setDeleteTask(true);
     setDeleteTaskId(data.id!);
@@ -128,18 +135,28 @@ const ToDoComponent: FC<IOwnProps> = ({ isActivePage }) => {
     setEditTask(false);
   };
 
-  const onTaskComplete = async (value: string, itemId: string) => {
-    console.log(value, itemId);
+  const onTaskComplete = async (value: boolean, itemId: string) => {
     const task = tasksData.find(e => {
       return e.id === itemId;
     });
-    if (value === 'checked' && task) {
+    if (value && task) {
       setCompletedTasks([...completedTasks, itemId]);
       await dispatch(
         updateTask(
           {
             ...task,
             active: 1,
+          },
+          history,
+        ),
+      );
+    } else if (!value && task) {
+      setCompletedTasks(completedTasks.filter(item => item !== itemId));
+      await dispatch(
+        updateTask(
+          {
+            ...task,
+            active: 0,
           },
           history,
         ),
@@ -179,6 +196,25 @@ const ToDoComponent: FC<IOwnProps> = ({ isActivePage }) => {
     }
   };
 
+  const getTaskUrgentType = (date: number) => {
+    const dateofvisit = moment.unix(date / 1000);
+    const today = moment();
+    const diff = today.diff(dateofvisit, 'days');
+    if (diff <= 0 && diff > -10) return 'gold';
+    if (diff <= -10) return 'green';
+    return 'red';
+  };
+
+  const getDueDateString = (date: number) => {
+    const dateofvisit = moment.unix(date / 1000);
+    const today = moment();
+    const diff = today.diff(dateofvisit, 'days');
+    if (diff > 0) return `Overdue ${diff} day(s)`;
+    if (diff === 0) return 'Due today';
+    if (diff < 0) return `Due in ${-diff} day(s)`;
+    return '';
+  };
+
   return (
     <div className='todo'>
       {!isSpinner &&
@@ -186,31 +222,34 @@ const ToDoComponent: FC<IOwnProps> = ({ isActivePage }) => {
           .filter(e => {
             return isActivePage !== !!e.active;
           })
+          .sort((a, b) => a.due_date - b.due_date)
           .map(item => (
             <div className='todo__item pb-20 mb-20 line-bottom' key={item.id}>
-              <Radio.Group
+              <CheckboxButton
                 key={item.id}
-                value={
-                  item.active || completedTasks.includes(item.id!)
-                    ? 'checked'
-                    : ''
-                }
-                onChange={e => onTaskComplete(e.target.value, item.id!)}
-              >
-                <RadioButton label='' value='checked' />
-              </Radio.Group>
+                label=''
+                checked={completedTasks.includes(item.id!)}
+                onChange={e => onTaskComplete(e.target.checked, item.id!)}
+              />
               <div
                 className='d-flex flex-direction-row info-row'
                 onClick={e => onShowTask(item)}
                 onKeyPress={e => onKeyPress(e)}
               >
-                <div>
-                  <p className='paragrapgh paragrapgh--1 paragrapgh--400 paragrapgh--default paragrapgh--default'>
-                    {item.title}
-                  </p>
-                  <p className='d-block mt-4 paragrapgh paragrapgh--2 paragrapgh--400 paragrapgh--black-2 paragrapgh--default'>
-                    {moment.unix(item.due_date / 1000).format('DD.MM.YYYY')}
-                  </p>
+                <div className='d-flex flex-direction-row align-items-center'>
+                  <div>
+                    <p className='paragrapgh paragrapgh--1 paragrapgh--400 paragrapgh--default paragrapgh--default'>
+                      {item.title}
+                    </p>
+                    <p className='d-block mt-4 paragrapgh paragrapgh--2 paragrapgh--400 paragrapgh--black-2 paragrapgh--default'>
+                      {moment.unix(item.due_date / 1000).format('DD.MM.YYYY')}
+                    </p>
+                  </div>
+                  <div className='ml-10 due_date_tag'>
+                    <Tag color={getTaskUrgentType(item.due_date)}>
+                      {getDueDateString(item.due_date)}
+                    </Tag>
+                  </div>
                 </div>
                 <div className='d-flex flex-direction-row'>
                   <div className='taskDetail'>
@@ -241,6 +280,8 @@ const ToDoComponent: FC<IOwnProps> = ({ isActivePage }) => {
                       onClick={e => {
                         setDeleteTask(true);
                         setDeleteTaskId(item.id!);
+                        e.preventDefault();
+                        e.stopPropagation();
                       }}
                     >
                       <TrashIcon />

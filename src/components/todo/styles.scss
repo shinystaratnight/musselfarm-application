@@ -125,3 +125,20 @@
     cursor: auto;
   }
 }
+
+.todo__item {
+  .ant-checkbox-inner {
+    border-radius: 50% !important;
+  }
+  .ant-checkbox-checked::after {
+    border-radius: 50% !important;
+  }
+}
+
+.due_date_tag {
+  span {
+    padding: 0px 7px;
+    font-size: 12px;
+    border-radius: 2px;
+  }
+}
