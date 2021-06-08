@@ -1,11 +1,10 @@
 import React, { FC, useState, useEffect, KeyboardEvent } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import { Radio, Tag } from 'antd';
+import { Tag } from 'antd';
 import moment from 'moment';
 import {
   Spinner,
-  RadioButton,
   ModalComponent,
   TrashIcon,
   DropdownMenu,
@@ -230,10 +229,7 @@ const ToDoComponent: FC<IOwnProps> = ({ activePage, filterType }) => {
           })
           .filter(e => {
             if (activePage === 'active') {
-              const dateofvisit = moment.unix(e.due_date / 1000);
-              const diff = moment().diff(dateofvisit, 'days');
-              if (diff <= 0) return !e.active;
-              return false;
+              return !e.active;
             }
             if (activePage === 'overdue') {
               const dateofvisit = moment.unix(e.due_date / 1000);

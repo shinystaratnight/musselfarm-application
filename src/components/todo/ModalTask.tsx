@@ -128,9 +128,6 @@ const ModalTask: FC<IOwnProps> = ({
     if (Number(farm)) {
       const fm = farmsData.find(el => el.id === Number(farm));
       const ln = fm?.lines.map(el => Number(el.id));
-      console.log(fm);
-      console.log(ln);
-      console.log(usr?.lines);
       if (ln) return ln.every(el => usr?.lines?.includes(el));
       return false;
     }
@@ -155,7 +152,8 @@ const ModalTask: FC<IOwnProps> = ({
         title: tskTitle,
         content,
         due_date: date,
-        charger_id: charger,
+        charger_id:
+          profile?.role === 'owner' ? charger : Number(profile.user_id),
       };
 
       await dispatch(addTask(newTask, history));
@@ -167,7 +165,8 @@ const ModalTask: FC<IOwnProps> = ({
         title: tskTitle,
         content,
         due_date: date,
-        charger_id: charger,
+        charger_id:
+          profile?.role === 'owner' ? charger : Number(profile.user_id),
       };
 
       await dispatch(updateTask(newTask, history));

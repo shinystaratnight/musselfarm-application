@@ -1,8 +1,7 @@
 import React, { FC, useState, useEffect, KeyboardEvent } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import Item from 'antd/lib/list/Item';
-import { Radio } from 'antd';
+import { Radio, Tag } from 'antd';
 import moment from 'moment';
 import {
   Spinner,
@@ -167,6 +166,25 @@ const ToDoList: FC<IOwnProps> = ({ isActivePage, filterType }) => {
     }
   };
 
+  const getTaskUrgentType = (date: number) => {
+    const dateofvisit = moment.unix(date / 1000);
+    const today = moment();
+    const diff = today.diff(dateofvisit, 'days');
+    if (diff <= 0 && diff > -10) return 'gold';
+    if (diff <= -10) return 'green';
+    return 'red';
+  };
+
+  const getDueDateString = (date: number) => {
+    const dateofvisit = moment.unix(date / 1000);
+    const today = moment();
+    const diff = today.diff(dateofvisit, 'days');
+    if (diff > 0) return `Overdue ${diff} day(s)`;
+    if (diff === 0) return 'Due today';
+    if (diff < 0) return `Due in ${-diff} day(s)`;
+    return '';
+  };
+
   return (
     <div className='todo'>
       {!isSpinner &&
@@ -178,6 +196,7 @@ const ToDoList: FC<IOwnProps> = ({ isActivePage, filterType }) => {
           .filter(e => {
             return isActivePage !== !!e.active;
           })
+          .sort((a, b) => a.due_date - b.due_date)
           .map(item => (
             <div
               className='todolist__item pb-20 mb-20 line-bottom d-flex align-items-center'
@@ -205,6 +224,12 @@ const ToDoList: FC<IOwnProps> = ({ isActivePage, filterType }) => {
                   </p>
                   <p className='d-block mt-4 paragrapgh paragrapgh--2 paragrapgh--400 paragrapgh--black-2 paragrapgh--default'>
                     {moment.unix(item.due_date / 1000).format('DD.MM.YYYY')}
+                    <Tag
+                      className='due_date_tag'
+                      color={getTaskUrgentType(item.due_date)}
+                    >
+                      {getDueDateString(item.due_date)}
+                    </Tag>
                   </p>
                 </div>
                 <div className='d-flex flex-direction-row'>
