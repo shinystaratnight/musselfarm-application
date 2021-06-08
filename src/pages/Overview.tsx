@@ -334,7 +334,7 @@ const Overview: FC = () => {
                   defaultValue={filterType}
                 />
                 <div className='width-100 pt-12 d-flex justify-content-between align-items-center'>
-                  <ToDoList isActivePage filterType={filterType}/>
+                  <ToDoList isActivePage filterType={filterType} />
                 </div>
               </div>
             </div>
