@@ -22,16 +22,18 @@ import {
   updateTask,
 } from '../../store/tasks/tasks.actions';
 import { UsersState } from '../../store/users/users.type';
+import { ProfileState } from '../../store/profile/profile.type';
 import { getAllUsers } from '../../store/users/users.actions';
 
 import './styles.scss';
 import Trash from '../shared/Trash';
 
 interface IOwnProps {
+  filterType: string;
   isActivePage: boolean;
 }
 
-const ToDoList: FC<IOwnProps> = ({ isActivePage }) => {
+const ToDoList: FC<IOwnProps> = ({ isActivePage, filterType }) => {
   const dispatch = useDispatch();
   const history = useHistory();
 
@@ -40,6 +42,9 @@ const ToDoList: FC<IOwnProps> = ({ isActivePage }) => {
   );
   const usersStore = useSelector<IRootState, UsersState['users']>(
     state => state.users.users,
+  );
+  const profile = useSelector<IRootState, ProfileState['user']>(
+    state => state.profile.user,
   );
 
   const [completedTasks, setCompletedTasks] = useState<string[]>([]);
@@ -166,6 +171,10 @@ const ToDoList: FC<IOwnProps> = ({ isActivePage }) => {
     <div className='todo'>
       {!isSpinner &&
         tasksData
+          .filter(e => {
+            if (filterType === 'all') return true;
+            return e.charger_id === profile.user_id;
+          })
           .filter(e => {
             return isActivePage !== !!e.active;
           })

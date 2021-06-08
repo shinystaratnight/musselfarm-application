@@ -129,6 +129,10 @@ $min-width: ( 74,77 );
   flex-wrap: wrap;
 }
 
+.flex-grow {
+  flex-grow: 1;
+}
+
 $flex-basis: ( 100 ,50,51, 49, 46,32 );
 
 @each $value in $flex-basis {

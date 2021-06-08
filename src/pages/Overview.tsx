@@ -19,6 +19,7 @@ import {
   TableMobile,
   Spinner,
   PlusIcon,
+  Dropdown,
 } from '../components/shared';
 import Chart from '../components/chart/Chart';
 import ToDoList from '../components/todo/ToDoListComponent';
@@ -36,6 +37,7 @@ const Overview: FC = () => {
   const [cardsData, setCardsData] = useState<IOverviewCard[]>([]);
   const [isCardsSpinner, setIsCardsSpinner] = useState(false);
   const [isChartSpinner, setIsChartSpinner] = useState(false);
+  const [filterType, setFilterType] = useState('all');
   const [chartData, setChartData] = useState<any>();
   const [createTask, setCreateTask] = useState(false);
 
@@ -313,8 +315,26 @@ const Overview: FC = () => {
                     <PlusIcon />
                   </Button>
                 </div>
+                <Dropdown
+                  className='mr-6'
+                  onChange={(value, event) => setFilterType(value)}
+                  label=''
+                  options={[
+                    {
+                      value: 'all',
+                      label: 'View all Tasks',
+                      id: 'all',
+                    },
+                    {
+                      value: 'mine',
+                      label: 'View mine only',
+                      id: 'mine',
+                    },
+                  ]}
+                  defaultValue={filterType}
+                />
                 <div className='width-100 pt-12 d-flex justify-content-between align-items-center'>
-                  <ToDoList isActivePage />
+                  <ToDoList isActivePage filterType={filterType}/>
                 </div>
               </div>
             </div>

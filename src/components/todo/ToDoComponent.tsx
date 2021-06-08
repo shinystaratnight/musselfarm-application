@@ -21,6 +21,7 @@ import {
   removeTask,
   updateTask,
 } from '../../store/tasks/tasks.actions';
+import { ProfileState } from '../../store/profile/profile.type';
 import { UsersState } from '../../store/users/users.type';
 import { getAllUsers } from '../../store/users/users.actions';
 import { IFarmState } from '../../store/farms/farms.type';
@@ -28,10 +29,11 @@ import { getFarmsData } from '../../store/farms/farms.actions';
 import './styles.scss';
 
 interface IOwnProps {
-  isActivePage: boolean;
+  activePage: string;
+  filterType: string;
 }
 
-const ToDoComponent: FC<IOwnProps> = ({ isActivePage }) => {
+const ToDoComponent: FC<IOwnProps> = ({ activePage, filterType }) => {
   const dispatch = useDispatch();
   const history = useHistory();
 
@@ -43,6 +45,9 @@ const ToDoComponent: FC<IOwnProps> = ({ isActivePage }) => {
   );
   const farmsData = useSelector<IRootState, IFarmState['farmsData']>(
     state => state.farms.farmsData,
+  );
+  const profile = useSelector<IRootState, ProfileState['user']>(
+    state => state.profile.user,
   );
 
   const [completedTasks, setCompletedTasks] = useState<string[]>([]);
@@ -220,7 +225,26 @@ const ToDoComponent: FC<IOwnProps> = ({ isActivePage }) => {
       {!isSpinner &&
         tasksData
           .filter(e => {
-            return isActivePage !== !!e.active;
+            if (filterType === 'all') return true;
+            return e.charger_id === Number(profile.user_id);
+          })
+          .filter(e => {
+            if (activePage === 'active') {
+              const dateofvisit = moment.unix(e.due_date / 1000);
+              const diff = moment().diff(dateofvisit, 'days');
+              if (diff <= 0) return !e.active;
+              return false;
+            }
+            if (activePage === 'overdue') {
+              const dateofvisit = moment.unix(e.due_date / 1000);
+              const diff = moment().diff(dateofvisit, 'days');
+              if (diff > 0) return !e.active;
+              return false;
+            }
+            if (activePage === 'completed') {
+              return !!e.active;
+            }
+            return !e.active;
           })
           .sort((a, b) => a.due_date - b.due_date)
           .map(item => (
@@ -236,7 +260,7 @@ const ToDoComponent: FC<IOwnProps> = ({ isActivePage }) => {
                 onClick={e => onShowTask(item)}
                 onKeyPress={e => onKeyPress(e)}
               >
-                <div className='d-flex flex-direction-row align-items-center'>
+                <div className='d-flex flex-direction-row align-items-end'>
                   <div>
                     <p className='paragrapgh paragrapgh--1 paragrapgh--400 paragrapgh--default paragrapgh--default'>
                       {item.title}
@@ -245,11 +269,13 @@ const ToDoComponent: FC<IOwnProps> = ({ isActivePage }) => {
                       {moment.unix(item.due_date / 1000).format('DD.MM.YYYY')}
                     </p>
                   </div>
-                  <div className='ml-10 due_date_tag'>
-                    <Tag color={getTaskUrgentType(item.due_date)}>
-                      {getDueDateString(item.due_date)}
-                    </Tag>
-                  </div>
+                  {(activePage === 'active' || activePage === 'overdue') && (
+                    <div className='ml-10 due_date_tag'>
+                      <Tag color={getTaskUrgentType(item.due_date)}>
+                        {getDueDateString(item.due_date)}
+                      </Tag>
+                    </div>
+                  )}
                 </div>
                 <div className='d-flex flex-direction-row'>
                   <div className='taskDetail'>
@@ -266,7 +292,7 @@ const ToDoComponent: FC<IOwnProps> = ({ isActivePage }) => {
                     <br />
                     on {item.created_at!.slice(0, 10)}
                   </div>
-                  {isActivePage ? (
+                  {activePage === 'active' || activePage === 'overdue' ? (
                     <DropdownMenu
                       data={item}
                       type='todo'

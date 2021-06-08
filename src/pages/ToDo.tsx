@@ -9,6 +9,7 @@ import {
   PlusIcon,
   TabsComponent,
   Title,
+  Dropdown,
 } from '../components/shared';
 import { ITab } from '../types/basicComponentsTypes';
 import ToDoComponent from '../components/todo/ToDoComponent';
@@ -23,16 +24,22 @@ const ToDo = () => {
   const [activeTab, setActiveTab] = useState('active');
   const [createTask, setCreateTask] = useState(false);
   const [clearCompleted, setClearCompleted] = useState(false);
+  const [filterType, setFilterType] = useState('all');
   const width = useWidth();
 
   const tabItems: ITab[] = [
     {
-      content: <ToDoComponent isActivePage />,
+      content: <ToDoComponent activePage='active' filterType={filterType} />,
       title: 'Active',
       id: 'active',
     },
     {
-      content: <ToDoComponent isActivePage={false} />,
+      content: <ToDoComponent activePage='overdue' filterType={filterType} />,
+      title: 'Overdue',
+      id: 'overdue',
+    },
+    {
+      content: <ToDoComponent activePage='completed' filterType={filterType} />,
       title: 'Completed',
       id: 'completed',
     },
@@ -60,56 +67,76 @@ const ToDo = () => {
       <div className='container w-100'>
         <div className='d-flex justify-content-center align-items-center mt-28'>
           <div className='notifications w-100'>
-            <div className='mt-28 mb-28 d-flex align-items-center justify-content-between'>
+            <div className='mt-28 mb-28 d-flex flex-wrap align-items-center justify-content-between'>
               <Title size={5} color='black-3' align='default' fontWeight={700}>
                 To Do List
               </Title>
-              <div className='d-flex'>
-                {activeTab === 'completed' && (
-                  <>
+              <div className='d-flex flex-wrap'>
+                <Dropdown
+                  className='mr-6'
+                  onChange={(value, event) => setFilterType(value)}
+                  label=''
+                  options={[
+                    {
+                      value: 'all',
+                      label: 'View all Tasks',
+                      id: 'all',
+                    },
+                    {
+                      value: 'mine',
+                      label: 'View mine only',
+                      id: 'mine',
+                    },
+                  ]}
+                  defaultValue={filterType}
+                />
+                <div className='d-flex flex-grow justify-content-between'>
+                  {activeTab === 'completed' && (
+                    <>
+                      <Button
+                        className='mr-6'
+                        color='blue'
+                        size={1}
+                        width='small'
+                        type='transparent'
+                        isNoneBorder
+                        onClick={handleOnClear}
+                      >
+                        Clear completed
+                      </Button>
+                      <ModalComponent
+                        visible={clearCompleted}
+                        onCancel={handleOnClear}
+                        type='delete'
+                        title='Error / Delete'
+                        text='Clear all completed tasks?'
+                        onConfirm={handleOnClearCompletedTaks}
+                      />
+                    </>
+                  )}
+                  {width > 768 ? (
                     <Button
-                      className='mr-16'
                       color='blue'
+                      onClick={handleOnCreateTask}
                       size={1}
                       width='small'
-                      isNoneBorder
-                      type='bordered'
-                      onClick={handleOnClear}
+                      type='fill'
                     >
-                      Clear completed
+                      Add task
                     </Button>
-                    <ModalComponent
-                      visible={clearCompleted}
-                      onCancel={handleOnClear}
-                      type='delete'
-                      title='Error / Delete'
-                      text='Clear all completed tasks?'
-                      onConfirm={handleOnClearCompletedTaks}
-                    />
-                  </>
-                )}
-                {width > 768 ? (
-                  <Button
-                    color='blue'
-                    onClick={handleOnCreateTask}
-                    size={1}
-                    width='small'
-                    type='fill'
-                  >
-                    Add task
-                  </Button>
-                ) : (
-                  <Button
-                    color='blue'
-                    onClick={handleOnCreateTask}
-                    size={0}
-                    width='default'
-                    type='fill'
-                    iconOnly
-                  >
-                    <PlusIcon />
-                  </Button>
-                )}
+                  ) : (
+                    <Button
+                      color='blue'
+                      onClick={handleOnCreateTask}
+                      size={0}
+                      width='default'
+                      type='fill'
+                      iconOnly
+                    >
+                      <PlusIcon />
+                    </Button>
+                  )}
+                </div>
                 <ModalTask
                   onCancel={handleOnCreateTask}
                   data={null}
