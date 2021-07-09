@@ -106,6 +106,10 @@ $min-width: ( 74,77 );
 }
 
 .align-items {
+  &-start {
+    align-items: flex-start;
+  }  
+
   &-center {
     align-items: center;
   }
@@ -123,6 +127,10 @@ $min-width: ( 74,77 );
 
 .tx-center {
   text-align: center;
+}
+
+.tx-left {
+  text-align: left;
 }
 
 .flex-wrap {

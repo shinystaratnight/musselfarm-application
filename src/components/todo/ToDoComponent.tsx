@@ -212,7 +212,7 @@ const ToDoComponent: FC<IOwnProps> = ({ activePage, filterType }) => {
   const getDueDateString = (date: number) => {
     const dateofvisit = moment.unix(date / 1000);
     const today = moment();
-    const diff = today.diff(dateofvisit, 'days');
+    const diff = Math.round(today.diff(dateofvisit, 'days', true));
     if (diff > 0) return `Overdue ${diff} day(s)`;
     if (diff === 0) return 'Due today';
     if (diff < 0) return `Due in ${-diff} day(s)`;

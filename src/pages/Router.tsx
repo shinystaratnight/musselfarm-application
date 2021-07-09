@@ -6,6 +6,7 @@ import AddUsers from './AddUsers';
 import FarmsRouter from './FarmsRouter';
 import Notifications from './Notifications';
 import ToDo from './ToDo';
+import Automation from './Automation';
 import Overview from './Overview';
 import Users from './Users';
 import PrivateRoute from '../components/PrivateRoute';
@@ -55,6 +56,7 @@ const Router = () => {
           isFinance
         />
         <PrivateRoute path='/to-do' component={ToDo} exact={false} />
+        <PrivateRoute path='/automation' component={Automation} exact={false} />
         <PrivateRoute path='/notifications' component={Notifications} exact />
         <PrivateRoute path='/loading/:type' component={Loading} exact />
         <PrivateRoute path='*' component={NotFound} exact={false} />

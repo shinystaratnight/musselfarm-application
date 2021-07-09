@@ -28,6 +28,7 @@ const Header = () => {
     { link: '/budget', name: 'Budget', isExact: false },
     { link: '/budget-log', name: 'Budget log', isExact: false },
     { link: '/to-do', name: 'Tasks', isExact: false },
+    { link: '/automation', name: 'Automations', isExact: false },
   ]);
   const [isOpen, setIsOpen] = useState(false);
   const profile = useSelector<IRootState, ProfileState['user']>(

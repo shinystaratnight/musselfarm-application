@@ -471,6 +471,84 @@ const useColumns = (column: string) => {
         ),
       },
     ],
+    isAutomation: [
+      {
+        title: '',
+        dataIndex: 'id',
+        key: 'id',
+        render: (id: number) => (
+          <>
+            <span className='mr-10'>{id}</span>
+            <span className='ml-3'>If</span>
+          </>
+        ),
+      },
+      {
+        title: 'Condition',
+        dataIndex: 'condition',
+        key: 'condition',
+        render: (condition: string) => (
+          <>
+            <span className='mr-10'>{condition}</span>
+            <span>Is</span>
+          </>
+        ),
+      },
+      {
+        title: 'Action',
+        dataIndex: 'action',
+        key: 'action',
+        render: (action: string) => (
+          <>
+            <span className='mr-10'>{action}</span>
+            <span>Then</span>
+          </>
+        ),
+      },
+      {
+        title: 'Time',
+        dataIndex: 'time',
+        key: 'time',
+        render: (time: number) => {
+          if (time === 0) {
+            return <span>At the day</span>;
+          }
+          if (time > 0) {
+            return <span>{time} Day(s) After</span>;
+          }
+          return <span>{-time} Day(s) Before</span>;
+        },
+      },
+      {
+        title: 'Outcome',
+        dataIndex: 'outcome',
+        key: 'outcome',
+        render: (outcome: any) => (
+          <div className='d-flex'>
+            <div className='mr-15 tx-left' style={{ width: 80 }}>
+              Create Task
+            </div>
+            <div
+              className='d-flex flex-direction-col tx-left'
+              style={{ flex: 1 }}
+            >
+              <div>
+                <span>Title:</span>
+                <span>{outcome.title}</span>
+              </div>
+              <div>
+                <span>Desc:</span>
+                <span>
+                  {outcome.description.length >= 70
+                    ? `${outcome.description.slice(0, 70)}...`
+                    : outcome.description}
+                </span>
+              </div>
+            </div>
+          </div>
+        ),
+      },
+    ],
   };
 
   if (column) {

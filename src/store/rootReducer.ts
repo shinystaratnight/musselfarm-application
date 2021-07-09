@@ -1,6 +1,7 @@
 import { combineReducers, Dispatch } from 'redux';
 
 import authReducer from './auth/auth.reducer';
+import automationReducer from './automation/automation.reducer';
 import farmsReducer from './farms/farms.reducer';
 import profileReducer from './profile/profile.reducer';
 import uiReducer from './ui/ui.reducer';
@@ -13,6 +14,7 @@ import seasonReducer from './seasons/seasons.reducer';
 
 const rootReducer = combineReducers({
   auth: authReducer,
+  automation: automationReducer,
   farms: farmsReducer,
   profile: profileReducer,
   ui: uiReducer,
