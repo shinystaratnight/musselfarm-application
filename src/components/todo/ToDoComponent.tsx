@@ -168,21 +168,6 @@ const ToDoComponent: FC<IOwnProps> = ({ activePage, filterType }) => {
     }
   };
 
-  const getFarmName = (farmId: number) => {
-    const cFarm = farmsData.find(el => Number(el.id) === farmId);
-    if (cFarm) return cFarm.name;
-    return ' No Farm Selected ';
-  };
-
-  const getLineName = (farmId: number, lineId: number) => {
-    const cFarm = farmsData.find(el => Number(el.id) === farmId);
-    if (cFarm) {
-      const cLine = cFarm.lines.find(el => Number(el.id) === lineId);
-      if (cLine) return cLine.line_name;
-    }
-    return ' No Line Selected ';
-  };
-
   const onShowTask = (data: ITaskData) => {
     setShowTask(true);
     setShowTaskData(data);

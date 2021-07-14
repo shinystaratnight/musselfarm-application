@@ -1,9 +1,13 @@
 import React, { FC } from 'react';
 import { useHistory } from 'react-router-dom';
 import classNames from 'classnames';
+import { useSelector } from 'react-redux';
 
 import { Paragrapgh } from '../shared';
 import DropdownMenu from '../shared/dropdown-menu/DropdownMenu';
+
+import { ProfileState } from '../../store/profile/profile.type';
+import { IRootState } from '../../store/rootReducer';
 
 interface ITableMobileHeader {
   data: any;
@@ -16,23 +20,40 @@ const MobileAutomation: FC<ITableMobileHeader> = ({
   handleOnEdit,
   onDeleteRow,
 }) => {
-  const history = useHistory();
+  const profile = useSelector<IRootState, ProfileState['user']>(
+    state => state.profile.user,
+  );
+
+  const checkPermission = () => {
+    if (profile.role === 'admin' || profile.role === 'owner') {
+      return 1;
+    }
+    if (
+      profile.user_id === data.creator_id ||
+      profile.user_id === data.charger_id
+    ) {
+      return 1;
+    }
+    return 0;
+  };
 
   return (
     <div className='table-mobile__card mb-12'>
-      <div
-        className={classNames('table-mobile__card-dots', {
-          'hide-element': false,
-        })}
-      >
-        <DropdownMenu
-          data={data}
-          column='isAutomation'
-          onEdit={handleOnEdit}
-          onDeleteRow={onDeleteRow}
-          type='automations'
-        />
-      </div>
+      {checkPermission() && (
+        <div
+          className={classNames('table-mobile__card-dots', {
+            'hide-element': false,
+          })}
+        >
+          <DropdownMenu
+            data={data}
+            column='isAutomation'
+            onEdit={handleOnEdit}
+            onDeleteRow={onDeleteRow}
+            type='automations'
+          />
+        </div>
+      )}
       <div className='d-flex pb-23 mt-24'>
         <div className='flex-basis-50'>
           <Paragrapgh size={3} color='black-2' align='left' fontWeight={400}>

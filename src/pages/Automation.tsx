@@ -8,6 +8,7 @@ import {
   Title,
   Spinner,
   ModalComponent,
+  Feedback,
 } from '../components/shared';
 import ModalAutomation from '../components/automation/ModalAutomation';
 import AutomationTable from '../components/automation/AutomationTable';
@@ -18,6 +19,7 @@ import { IAutomationState } from '../store/automation/automation.type';
 import {
   getAutomationsData,
   removeAutomation,
+  removeMessage,
 } from '../store/automation/automation.actions';
 import { IRootState } from '../store/rootReducer';
 import { useWidth } from '../util/useWidth';
@@ -33,6 +35,9 @@ const ToDo = () => {
   const isSpinner = useSelector<IRootState, IUiState['isSpinner']>(
     state => state.ui.isSpinner,
   );
+  const message = useSelector<IRootState, IAutomationState['message']>(
+    state => state.automation.message,
+  );
   const automations = useSelector<
     IRootState,
     IAutomationState['automationsData']
@@ -47,6 +52,14 @@ const ToDo = () => {
   useEffect(() => {
     dispatch(getAutomationsData(history));
   }, []);
+
+  useEffect(() => {
+    if (message?.message) {
+      setTimeout(() => {
+        dispatch(removeMessage());
+      }, 3000);
+    }
+  }, [message]);
 
   const showAutomationAddModal = () => {
     setAutoData(null);
@@ -131,7 +144,10 @@ const ToDo = () => {
         </div>
       </div>
       <ModalAutomation
-        onCancel={() => setAutomationModalVisible(!automationModalVisible)}
+        onCancel={() => {
+          setAutomationModalVisible(!automationModalVisible);
+          setAutoData(null);
+        }}
         onConfirm={showAutomationAddModal}
         visible={automationModalVisible}
         type={isEdit}
@@ -139,12 +155,27 @@ const ToDo = () => {
       />
       <ModalComponent
         visible={deleteAutomation}
-        onCancel={() => setDeleteAutomation(!deleteAutomation)}
+        onCancel={() => {
+          setDeleteAutomation(!deleteAutomation);
+          setAutoData(null);
+        }}
         type='delete'
         title='Error / Delete'
         text='Do you really want to delete this automation?'
         onConfirm={onConfirmDelete}
       />
+      {message?.message && (
+        <Feedback
+          message={message.message}
+          type={
+            message.message === 'Success' || message.message === 'success'
+              ? 'success'
+              : 'error'
+          }
+          theme='light'
+          isGlobal
+        />
+      )}
     </div>
   );
 };

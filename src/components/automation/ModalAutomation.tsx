@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
 import { Dropdown, InputModal, Input } from '../shared';
@@ -7,9 +7,10 @@ import {
   addAutomation,
   updateAutomation,
 } from '../../store/automation/automation.actions';
-import randomKey from '../../util/randomKey';
-import { useWidth } from '../../util/useWidth';
 import { IRootState } from '../../store/rootReducer';
+import { UsersState } from '../../store/users/users.type';
+import { ProfileState } from '../../store/profile/profile.type';
+import { IAutomation } from '../../store/automation/automation.type';
 
 interface IOwnProps {
   onCancel: () => void;
@@ -24,12 +25,18 @@ const ModalAutomation: FC<IOwnProps> = ({
   onConfirm,
   visible,
   onCancel,
-  className,
   type,
   data,
 }) => {
   const history = useHistory();
   const dispatch = useDispatch();
+
+  const usersStore = useSelector<IRootState, UsersState['users']>(
+    state => state.users.users,
+  );
+  const profile = useSelector<IRootState, ProfileState['user']>(
+    state => state.profile.user,
+  );
 
   const conditionsList = [
     {
@@ -69,12 +76,15 @@ const ModalAutomation: FC<IOwnProps> = ({
 
   const timeList = [-7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7];
 
+  const [isEdit, setIsEdit] = useState(false);
   const [automationId, setAutomationId] = useState(0);
   const [condition, setCondition] = useState('Seeding');
   const [action, setAction] = useState('Created');
   const [time, setTime] = useState(0);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+  const [creatorID, setCreatorID] = useState(0);
+  const [charger, setCharger] = useState(0);
 
   useEffect(() => {
     if (data) {
@@ -84,6 +94,18 @@ const ModalAutomation: FC<IOwnProps> = ({
       setTime(data.time);
       setTitle(data.outcome.title);
       setDescription(data.outcome.description);
+      setIsEdit(true);
+      setCreatorID(data.creator_id);
+      setCharger(data.charger_id);
+    } else {
+      if (
+        profile.role !== 'admin' &&
+        profile.role !== 'owner' &&
+        profile.user_id
+      ) {
+        setCharger(parseInt(profile.user_id, 10));
+      }
+      setIsEdit(false);
     }
   }, [data]);
 
@@ -104,6 +126,10 @@ const ModalAutomation: FC<IOwnProps> = ({
     onConfirm();
   };
 
+  const handleOnSelectCharger = (value: string) => {
+    setCharger(Number(value));
+  };
+
   return (
     <InputModal
       visible={visible}
@@ -113,18 +139,35 @@ const ModalAutomation: FC<IOwnProps> = ({
         setTime(0);
         setTitle('');
         setDescription('');
+        setIsEdit(false);
+        setCreatorID(0);
+        setCharger(0);
         onCancel();
       }}
       type={!type ? 'create' : 'confirm'}
       title={!type ? 'Add Automation' : 'Edit Automation'}
       onConfirm={() => {
         if (title !== '' && description !== '') {
-          handleConfirmAction({ condition, action, time, title, description });
+          let dat = {
+            condition,
+            action,
+            time,
+            title,
+            description,
+            charger_id: 0,
+          };
+          if (charger) {
+            dat = { ...dat, charger_id: charger };
+          }
+          handleConfirmAction(dat);
           setCondition('Seeding');
           setAction('Created');
           setTime(0);
           setTitle('');
           setDescription('');
+          setIsEdit(false);
+          setCreatorID(0);
+          setCharger(0);
           onCancel();
         }
       }}
@@ -163,6 +206,31 @@ const ModalAutomation: FC<IOwnProps> = ({
         })}
         defaultValue={`${time}`}
       />
+      {(profile?.role === 'owner' || profile?.role === 'admin') &&
+        (isEdit === false ||
+          (isEdit === true && `${profile.user_id}` === `${creatorID}`)) && (
+          <Dropdown
+            className='mb-16'
+            placeholder='select person responsible'
+            defaultValue={charger ? charger.toString() : '0'}
+            onChange={(value, event) => handleOnSelectCharger(value)}
+            label='Select person responsible'
+            options={[
+              {
+                value: '0',
+                id: '0',
+                label: ' -- No Person -- ',
+              },
+              ...usersStore.map(el => {
+                return {
+                  value: el.id!.toString(),
+                  id: el.id!.toString(),
+                  label: el.name,
+                };
+              }),
+            ]}
+          />
+        )}
       <Input
         type='text'
         onChange={e => setTitle(e.target.value)}

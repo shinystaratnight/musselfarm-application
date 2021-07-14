@@ -1,12 +1,16 @@
 import React, { FC, useEffect } from 'react';
 import { Table } from 'antd';
 import classNames from 'classnames';
+import { useSelector } from 'react-redux';
 
 import './styles.scss';
 import useColumns from '../shared/tables/useColumns';
 import MobileAutomationTable from './MobileAutomationTable';
 import DropdownMenu from '../shared/dropdown-menu/DropdownMenu';
 import { useWidth } from '../../util/useWidth';
+
+import { ProfileState } from '../../store/profile/profile.type';
+import { IRootState } from '../../store/rootReducer';
 
 interface ITables {
   data: any[];
@@ -26,6 +30,10 @@ const AutomationTable: FC<ITables> = ({
   const columns = useColumns(column);
   const width = useWidth();
 
+  const profile = useSelector<IRootState, ProfileState['user']>(
+    state => state.profile.user,
+  );
+
   const handleOnEdit = (dat: any) => {
     onEdit(dat);
   };
@@ -34,21 +42,34 @@ const AutomationTable: FC<ITables> = ({
     onDelete(dat);
   };
 
+  const checkPermission = (d: any) => {
+    if (profile.role === 'admin' || profile.role === 'owner') {
+      return 1;
+    }
+    if (profile.user_id === d.creator_id || profile.user_id === d.charger_id) {
+      return 1;
+    }
+    return 0;
+  };
+
   const editField = {
     title: '',
     key: 'more',
     align: 'right',
-    render: (d: any) => (
-      <>
-        <DropdownMenu
-          data={d}
-          column={column}
-          onEdit={handleOnEdit}
-          onDeleteRow={onDeleteRow}
-          type='automations'
-        />
-      </>
-    ),
+    render: (d: any) =>
+      checkPermission(d) ? (
+        <>
+          <DropdownMenu
+            data={d}
+            column={column}
+            onEdit={handleOnEdit}
+            onDeleteRow={onDeleteRow}
+            type='automations'
+          />
+        </>
+      ) : (
+        <></>
+      ),
   };
 
   const getColumns = () => {

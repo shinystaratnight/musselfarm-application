@@ -116,10 +116,12 @@ const HarvestCompleteModal: FC<IHarvestCompleteModal> = ({
           defaultValue={fieldData.harvestDate}
           label='Harvest complete date'
           onChange={e => {
-            setFieldData(prev => ({
-              ...prev,
-              harvestDate: e!.toDate().getTime(),
-            }));
+            if (e?.toDate()) {
+              setFieldData(prev => ({
+                ...prev,
+                harvestDate: e.toDate().getTime(),
+              }));
+            }
           }}
         />
       </div>

@@ -1,7 +1,12 @@
-import { SET_AUTOMATIONS_DATA } from './automation.constants';
+import {
+  SET_AUTOMATIONS_DATA,
+  SET_AUTOMATIONS_MESSAGE,
+  REMOVE_AUTOMATIONS_MESSAGE,
+} from './automation.constants';
 
 export type IAutomationState = {
   automationsData: IAutomationsData;
+  message: IMessage;
 };
 
 export interface IAutomation {
@@ -9,6 +14,8 @@ export interface IAutomation {
   condition: string;
   action: string;
   time: number;
+  creator_id?: number;
+  charger_id?: number;
   outcome: {
     title: string;
     description: string;
@@ -22,4 +29,21 @@ export interface ISetAutomationData {
   payload: IAutomationsData;
 }
 
-export type UiTypes = ISetAutomationData;
+export interface ISetMessage {
+  type: typeof SET_AUTOMATIONS_MESSAGE
+  payload: IMessage
+}
+
+export interface IRemoveMessage {
+  type: typeof REMOVE_AUTOMATIONS_MESSAGE
+  payload: IMessage
+}
+export interface IMessage {
+  isError: boolean;
+  message: string;
+}
+
+export type AutomationTypes =
+  | ISetAutomationData
+  | ISetMessage
+  | IRemoveMessage;

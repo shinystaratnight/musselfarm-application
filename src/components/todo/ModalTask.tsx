@@ -259,7 +259,7 @@ const ModalTask: FC<IOwnProps> = ({
           setDate(e ? e!.toDate().getTime() : moment().toDate().getTime())
         }
       />
-      {profile?.role === 'owner' && (
+      {(profile?.role === 'owner' || profile?.role === 'admin') && (
         <Dropdown
           className='mb-16'
           placeholder='select person responsible'

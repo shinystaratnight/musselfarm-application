@@ -1,10 +1,14 @@
 import {
   IAutomationsData,
   ISetAutomationData,
-  IAutomationState,
+  IMessage,
   IAutomation,
 } from './automation.type';
-import { SET_AUTOMATIONS_DATA } from './automation.constants';
+import {
+  SET_AUTOMATIONS_DATA,
+  SET_AUTOMATIONS_MESSAGE,
+  REMOVE_AUTOMATIONS_MESSAGE,
+} from './automation.constants';
 import { IRootState, IThunkType } from '../rootReducer';
 import { isSpinner } from '../ui/ui.actions';
 import { composeApi } from '../../apis/compose';
@@ -15,6 +19,17 @@ export const setAutomations = (
   type: SET_AUTOMATIONS_DATA,
   payload,
 });
+
+export const setMessage = (message: IMessage) => {
+  return {
+    type: SET_AUTOMATIONS_MESSAGE,
+    payload: message,
+  };
+};
+
+export const removeMessage = () => {
+  return { type: REMOVE_AUTOMATIONS_MESSAGE };
+};
 
 export const getAutomationsData = (history: any): IRootState => {
   return async (dispatch: IThunkType, getState: () => IRootState) => {
@@ -32,24 +47,24 @@ export const getAutomationsData = (history: any): IRootState => {
     );
 
     if (responseData?.data) {
-      if (responseData?.data?.length) {
-        dispatch(
-          setAutomations(
-            responseData.data.map((automation: any) => {
-              return {
-                id: automation.id,
-                condition: automation.condition,
-                action: automation.action,
-                time: automation.time,
-                outcome: {
-                  title: automation.title,
-                  description: automation.description,
-                },
-              };
-            }),
-          ),
-        );
-      }
+      dispatch(
+        setAutomations(
+          responseData.data.map((automation: any) => {
+            return {
+              id: automation.id,
+              condition: automation.condition,
+              action: automation.action,
+              time: automation.time,
+              charger_id: automation.charger_id,
+              creator_id: automation.creator_id,
+              outcome: {
+                title: automation.title,
+                description: automation.description,
+              },
+            };
+          }),
+        ),
+      );
     }
     dispatch(isSpinner(false));
   };
@@ -76,6 +91,13 @@ export const addAutomation = (
 
     if (responseData.status === 'success') {
       dispatch(getAutomationsData(history));
+    } else {
+      dispatch(
+        setMessage({
+          isError: true,
+          message: 'Automation add failed.',
+        }),
+      );
     }
 
     dispatch(isSpinner(false));
@@ -106,6 +128,13 @@ export const updateAutomation = (
 
     if (responseData.status === 'success') {
       dispatch(getAutomationsData(history));
+    } else {
+      dispatch(
+        setMessage({
+          isError: true,
+          message: 'Automation update failed.',
+        }),
+      );
     }
 
     dispatch(isSpinner(false));
@@ -133,6 +162,13 @@ export const removeAutomation = (
 
     if (responseData.status === 'success') {
       dispatch(getAutomationsData(history));
+    } else {
+      dispatch(
+        setMessage({
+          isError: true,
+          message: 'Automation remove failed.',
+        }),
+      );
     }
 
     dispatch(isSpinner(false));
