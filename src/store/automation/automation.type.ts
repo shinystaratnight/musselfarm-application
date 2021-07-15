@@ -14,6 +14,7 @@ export interface IAutomation {
   condition: string;
   action: string;
   time: number;
+  unit: string;
   creator_id?: number;
   charger_id?: number;
   outcome: {

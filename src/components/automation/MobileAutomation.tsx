@@ -80,8 +80,12 @@ const MobileAutomation: FC<ITableMobileHeader> = ({
           <div className='d-flex align-items-center'>
             <div className='pr-6 tx-color-3'>
               {data.time === 0 && <span>At the day</span>}
-              {data.time > 0 && <span>{data.time} Day(s) After</span>}
-              {data.time < 0 && <span>{-data.time} Day(s) Before</span>}
+              {data.time > 0 && (
+                <span>{`${data.time} ${data.unit}(s) After`}</span>
+              )}
+              {data.time < 0 && (
+                <span>{`${-data.time} ${data.unit}(s) Before`}</span>
+              )}
             </div>
           </div>
         </div>

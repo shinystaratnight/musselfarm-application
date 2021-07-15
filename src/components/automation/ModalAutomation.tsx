@@ -74,13 +74,35 @@ const ModalAutomation: FC<IOwnProps> = ({
     },
   ];
 
-  const timeList = [-7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7];
+  const units = [
+    {
+      id: '1',
+      value: 'hour',
+      label: 'Hour',
+    },
+    {
+      id: '2',
+      value: 'day',
+      label: 'Day',
+    },
+    {
+      id: '3',
+      value: 'week',
+      label: 'Week',
+    },
+    {
+      id: '4',
+      value: 'month',
+      label: 'Month',
+    },
+  ];
 
   const [isEdit, setIsEdit] = useState(false);
   const [automationId, setAutomationId] = useState(0);
   const [condition, setCondition] = useState('Seeding');
   const [action, setAction] = useState('Created');
   const [time, setTime] = useState(0);
+  const [unit, setUnit] = useState('day');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [creatorID, setCreatorID] = useState(0);
@@ -92,6 +114,7 @@ const ModalAutomation: FC<IOwnProps> = ({
       setCondition(data.condition);
       setAction(data.action);
       setTime(data.time);
+      setUnit(data.unit);
       setTitle(data.outcome.title);
       setDescription(data.outcome.description);
       setIsEdit(true);
@@ -137,6 +160,7 @@ const ModalAutomation: FC<IOwnProps> = ({
         setCondition('Seeding');
         setAction('Created');
         setTime(0);
+        setUnit('day');
         setTitle('');
         setDescription('');
         setIsEdit(false);
@@ -152,6 +176,7 @@ const ModalAutomation: FC<IOwnProps> = ({
             condition,
             action,
             time,
+            unit,
             title,
             description,
             charger_id: 0,
@@ -163,6 +188,7 @@ const ModalAutomation: FC<IOwnProps> = ({
           setCondition('Seeding');
           setAction('Created');
           setTime(0);
+          setUnit('day');
           setTitle('');
           setDescription('');
           setIsEdit(false);
@@ -188,24 +214,28 @@ const ModalAutomation: FC<IOwnProps> = ({
         options={actionsList}
         defaultValue={action}
       />
-      <Dropdown
-        className='mr-16 w-100 mb-24'
-        placeholder='Choose Time'
-        onChange={value => setTime(parseInt(value, 10))}
-        label='Time'
-        options={timeList.map((timeDays, index) => {
-          let label = '';
-          if (timeDays === 0) label = 'At the day';
-          if (timeDays > 0) label = `${timeDays} Day(s) After`;
-          if (timeDays < 0) label = `${-timeDays} Day(s) Before`;
-          return {
-            value: `${timeDays}`,
-            label,
-            id: `${index}`,
-          };
-        })}
-        defaultValue={`${time}`}
-      />
+      <div className='d-flex pb-17 time-input'>
+        <div className='mr-16 w-50 mb-24'>
+          <Input
+            type='number'
+            onChange={e => setTime(parseInt(e.target.value, 10))}
+            className='w-100'
+            value={`${time}`}
+            label='Time'
+            placeholder='time'
+          />
+        </div>
+        <div className='w-50 mb-24'>
+          <Dropdown
+            className='w-100'
+            placeholder='Choose Unit'
+            onChange={value => setUnit(value)}
+            label='Unit'
+            options={units}
+            defaultValue={unit}
+          />
+        </div>
+      </div>
       {(profile?.role === 'owner' || profile?.role === 'admin') &&
         (isEdit === false ||
           (isEdit === true && `${profile.user_id}` === `${creatorID}`)) && (

@@ -3,6 +3,7 @@ import moment from 'moment';
 
 import { IList } from '../../../types/basicComponentsTypes';
 import { IFarmData, IOwners } from '../../../store/farms/farms.type';
+import { IAutomation } from '../../../store/automation/automation.type';
 import randomKey from '../../../util/randomKey';
 import amountDays from '../../../util/amountDays';
 import toggleSecondMillisecond from '../../../util/toggleSecondMillisecond';
@@ -509,14 +510,14 @@ const useColumns = (column: string) => {
         title: 'Time',
         dataIndex: 'time',
         key: 'time',
-        render: (time: number) => {
+        render: (time: number, row: IAutomation) => {
           if (time === 0) {
             return <span>At the day</span>;
           }
           if (time > 0) {
-            return <span>{time} Day(s) After</span>;
+            return <span>{`${row.time} ${row.unit}(s) After`}</span>;
           }
-          return <span>{-time} Day(s) Before</span>;
+          return <span>{`${-row.time} ${row.unit}(s) Before`}</span>;
         },
       },
       {
