@@ -130,7 +130,6 @@ const AssessmentModal: FC<IAssessmentModal> = ({
 
   const fieldValid = () => {
     if (
-      !state.color ||
       state.conditionAverage === '' ||
       state.blues === '' ||
       state.tones === ''
