@@ -159,7 +159,7 @@ const useColumns = (column: string) => {
         ),
       },
       {
-        title: 'Profit per meter',
+        title: 'Income per meter',
         dataIndex: 'profit_per_meter',
         key: 'profit_per_meter',
         render: (profitMeter: number, data: any) => (

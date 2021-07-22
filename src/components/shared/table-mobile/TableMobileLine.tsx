@@ -180,7 +180,7 @@ const TableMobileLine: FC<ITableMobileLine> = ({
         <div className='d-flex'>
           <div className='flex-basis-50 '>
             <Subtitle size={3} color='black-2' align='left' fontWeight={400}>
-              Profit per meter
+              Income per meter
             </Subtitle>
             <Subtitle size={5} color='black-5' align='left' fontWeight={400}>
               {column === 'isLine' && (

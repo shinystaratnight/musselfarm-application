@@ -235,7 +235,7 @@ const FarmLineTemplateDesktop: FC<IFarmLineTemplateDesktop> = ({
             fontWeight={400}
             className='mb-4'
           >
-            Profit per meter
+            Income per meter
           </Subtitle>
           <Subtitle size={4} color='black' align='left' fontWeight={500}>
             {currentGroup?.profit_per_meter
