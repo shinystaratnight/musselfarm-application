@@ -222,6 +222,11 @@ const useColumns = (column: string) => {
         key: 'condition_avg',
       },
       {
+        title: 'Condition Score',
+        dataIndex: 'condition_score',
+        key: 'condition_score',
+      },
+      {
         title: 'Blues',
         dataIndex: 'blues',
         key: 'blues',

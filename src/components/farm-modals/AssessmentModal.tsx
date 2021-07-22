@@ -11,6 +11,7 @@ import { IMainList } from '../../types/basicComponentsTypes';
 import { hideFeedback, showFeedback } from '../../store/farms/farms.actions';
 import toggleSecondMillisecond from '../../util/toggleSecondMillisecond';
 
+import PercentIcon from '../shared/PercentIcon';
 import Datepicker from '../shared/datepicker/Datepicker';
 import Dropdown from '../shared/dropdown/Dropdown';
 import Input from '../shared/input/Input';
@@ -50,6 +51,7 @@ const AssessmentModal: FC<IAssessmentModal> = ({
     conditionMin: '',
     conditionMax: '',
     conditionAverage: '',
+    conditionScore: '',
     blues: '0',
     tones: '',
     plannedDateHarvest: toggleSecondMillisecond(
@@ -71,6 +73,13 @@ const AssessmentModal: FC<IAssessmentModal> = ({
       const isType: string | undefined = type;
 
       if (isType) {
+        if (type === 'conditionScore') {
+          return {
+            ...prev,
+            [isType]: Number(value) > 100 ? 100 : `${Number(value)}`,
+          };
+        }
+
         if (type === 'conditionMin') {
           const newValue = value.split('');
           const validValue = newValue
@@ -172,6 +181,7 @@ const AssessmentModal: FC<IAssessmentModal> = ({
           conditionMin,
           dateAssessment,
           plannedDateHarvest,
+          conditionScore,
           ...allData
         } = state;
 
@@ -180,6 +190,7 @@ const AssessmentModal: FC<IAssessmentModal> = ({
           condition_min: conditionMin,
           condition_max: conditionMax,
           condition_average: conditionAverage,
+          condition_score: conditionScore,
           date_assessment: toggleSecondMillisecond(dateAssessment),
           planned_date_harvest: toggleSecondMillisecond(plannedDateHarvest),
         };
@@ -196,6 +207,7 @@ const AssessmentModal: FC<IAssessmentModal> = ({
         condition_avg,
         condition_max,
         condition_min,
+        condition_score,
         planned_date_harvest,
         date_assessment,
         blues,
@@ -212,6 +224,7 @@ const AssessmentModal: FC<IAssessmentModal> = ({
         conditionAverage: condition_avg,
         blues,
         tones,
+        conditionScore: condition_score,
         dateAssessment: toggleSecondMillisecond(date_assessment),
         plannedDateHarvest: toggleSecondMillisecond(planned_date_harvest),
         comment,
@@ -284,6 +297,16 @@ const AssessmentModal: FC<IAssessmentModal> = ({
             onChange={handleChangeInput}
           />
         </div>
+      </div>
+      <div className='mb-17'>
+        <Input
+          type='number'
+          value={state.conditionScore}
+          dataType='conditionScore'
+          label='Condition Score'
+          unit={<PercentIcon />}
+          onChange={handleChangeInput}
+        />
       </div>
       <Input
         className='mb-17'

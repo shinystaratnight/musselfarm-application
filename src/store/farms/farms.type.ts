@@ -127,6 +127,7 @@ export interface IAssessment {
   blues: number;
   color: string;
   comment: string;
+  conditionScore: number;
   conditionAverage: number;
   conditionMax: number;
   conditionMin: number;

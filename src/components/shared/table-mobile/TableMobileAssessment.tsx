@@ -33,7 +33,7 @@ const TableMobileAssessment: FC<ITableMobileAssessment> = ({
             {moment(
               data?.date_assessment
                 ? toggleSecondMillisecond(data?.date_assessment)
-                : 1611220802422,
+                : toggleSecondMillisecond(0),
             ).format('DD.MM.YYYY')}
           </Subtitle>
         </div>
@@ -107,6 +107,14 @@ const TableMobileAssessment: FC<ITableMobileAssessment> = ({
       </div>
 
       <div className='d-flex'>
+        <div className='flex-basis-50 ml-24'>
+          <Subtitle size={3} color='black-2' align='left' fontWeight={400}>
+            Condition Score
+          </Subtitle>
+          <Subtitle size={5} color='black-5' align='left' fontWeight={400}>
+            {data?.condition_score}
+          </Subtitle>
+        </div>
         <div className='flex-basis-50'>
           <Subtitle size={3} color='black-2' align='left' fontWeight={400}>
             Comment
