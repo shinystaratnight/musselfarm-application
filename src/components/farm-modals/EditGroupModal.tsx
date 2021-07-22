@@ -28,6 +28,7 @@ interface IFieldData {
   season_name: string;
   id: string;
   drop: number;
+  spat_size: number;
   submersion: number;
   spacing: number;
   density: number;
@@ -55,6 +56,7 @@ const EditGroupModal: FC<IEditGroupModal> = ({ data, onConfirm, trigger }) => {
     id: '',
     season_name: '',
     drop: 0,
+    spat_size: 0,
     submersion: 0,
     spacing: 0,
     density: 0,
@@ -126,6 +128,7 @@ const EditGroupModal: FC<IEditGroupModal> = ({ data, onConfirm, trigger }) => {
       drop: data?.drop,
       submersion: data?.submersion,
       spacing: data?.spacing,
+      spat_size: data?.spat_size,
       density: data?.density,
       floats: data?.floats,
     };
@@ -222,6 +225,22 @@ const EditGroupModal: FC<IEditGroupModal> = ({ data, onConfirm, trigger }) => {
           required
           onChange={e =>
             setFieldData(prev => ({ ...prev, drop: Number(e.target.value) }))
+          }
+        />
+      </div>
+      <div className='mb-16'>
+        <Input
+          type='number'
+          value={fieldData.spat_size.toString()}
+          label='Spat Size'
+          dataType='spat_size'
+          unit='mm'
+          required
+          onChange={e =>
+            setFieldData(prev => ({
+              ...prev,
+              spat_size: Number(e.target.value),
+            }))
           }
         />
       </div>

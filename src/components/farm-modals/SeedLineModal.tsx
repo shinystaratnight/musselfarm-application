@@ -60,6 +60,7 @@ const SeedLineModal: FC<ITablesModal> = ({ data, onConfirm, trigger }) => {
     seed_id: '',
     name: '',
     drop: 0,
+    spat_size: 0,
     submersion: 0,
     spacing: 0,
     density: 0,
@@ -275,6 +276,22 @@ const SeedLineModal: FC<ITablesModal> = ({ data, onConfirm, trigger }) => {
           required
           onChange={e =>
             setFieldData(prev => ({ ...prev, drop: Number(e.target.value) }))
+          }
+        />
+      </div>
+      <div className='mb-16'>
+        <Input
+          type='number'
+          value={fieldData.spat_size.toString()}
+          label='Spat Size'
+          dataType='spat_size'
+          unit='mm'
+          required
+          onChange={e =>
+            setFieldData(prev => ({
+              ...prev,
+              spat_size: Number(e.target.value),
+            }))
           }
         />
       </div>
