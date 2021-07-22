@@ -52,9 +52,10 @@ const AssessmentModal: FC<IAssessmentModal> = ({
     conditionAverage: '',
     blues: '',
     tones: '',
-    dateAssessment: toggleSecondMillisecond(
+    plannedDateHarvest: toggleSecondMillisecond(
       Number(dataLine?.planned_date_harvest),
     ),
+    dateAssessment: moment().toDate().getTime(),
     comment: '',
   });
 
@@ -170,6 +171,7 @@ const AssessmentModal: FC<IAssessmentModal> = ({
           conditionMax,
           conditionMin,
           dateAssessment,
+          plannedDateHarvest,
           ...allData
         } = state;
 
@@ -178,7 +180,8 @@ const AssessmentModal: FC<IAssessmentModal> = ({
           condition_min: conditionMin,
           condition_max: conditionMax,
           condition_average: conditionAverage,
-          planned_date_harvest: toggleSecondMillisecond(dateAssessment),
+          date_assessment: toggleSecondMillisecond(dateAssessment),
+          planned_date_harvest: toggleSecondMillisecond(plannedDateHarvest),
         };
         onConfirm(validData);
       }
@@ -194,6 +197,7 @@ const AssessmentModal: FC<IAssessmentModal> = ({
         condition_max,
         condition_min,
         planned_date_harvest,
+        date_assessment,
         blues,
         color,
         comment,
@@ -208,7 +212,8 @@ const AssessmentModal: FC<IAssessmentModal> = ({
         conditionAverage: condition_avg,
         blues,
         tones,
-        dateAssessment: toggleSecondMillisecond(planned_date_harvest),
+        dateAssessment: toggleSecondMillisecond(date_assessment),
+        plannedDateHarvest: toggleSecondMillisecond(planned_date_harvest),
         comment,
         id,
       };
@@ -301,7 +306,7 @@ const AssessmentModal: FC<IAssessmentModal> = ({
       <Datepicker
         className='mb-17'
         defaultValue={state.dateAssessment}
-        label='Planned harvest date'
+        label='Assessment date'
         onChange={e => {
           if (e!.toDate().getTime() < Number(dataLine?.planned_date)) {
             setState(prev => ({
@@ -312,6 +317,24 @@ const AssessmentModal: FC<IAssessmentModal> = ({
             setState(prev => ({
               ...prev,
               dateAssessment: e!.toDate().getTime(),
+            }));
+          }
+        }}
+      />
+      <Datepicker
+        className='mb-17'
+        defaultValue={state.plannedDateHarvest}
+        label='Planned harvest date'
+        onChange={e => {
+          if (e!.toDate().getTime() < Number(dataLine?.planned_date)) {
+            setState(prev => ({
+              ...prev,
+              plannedDateHarvest: moment().toDate().getTime(),
+            }));
+          } else {
+            setState(prev => ({
+              ...prev,
+              plannedDateHarvest: e!.toDate().getTime(),
             }));
           }
         }}

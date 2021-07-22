@@ -31,8 +31,8 @@ const TableMobileAssessment: FC<ITableMobileAssessment> = ({
           </Subtitle>
           <Subtitle size={5} color='black-5' align='left' fontWeight={400}>
             {moment(
-              data?.created_at
-                ? toggleSecondMillisecond(data?.created_at)
+              data?.date_assessment
+                ? toggleSecondMillisecond(data?.date_assessment)
                 : 1611220802422,
             ).format('DD.MM.YYYY')}
           </Subtitle>

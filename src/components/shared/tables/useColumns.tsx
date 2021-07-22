@@ -187,8 +187,8 @@ const useColumns = (column: string) => {
     isLine: [
       {
         title: 'Date of assessment',
-        dataIndex: 'created_at',
-        key: 'created_at',
+        dataIndex: 'date_assessment',
+        key: 'date_assessment',
         render: (date: any, data: any) => {
           return (
             <span>
