@@ -81,8 +81,9 @@ const AddLines = () => {
             : acum;
         }, 0);
 
-        if (farmData?.lines?.length > nNum)
+        if (farmData?.lines?.length > nNum) {
           nNum = farmData?.lines?.length;
+        }
 
         name = `${nNum + 1}`;
       }

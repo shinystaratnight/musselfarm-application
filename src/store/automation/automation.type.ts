@@ -26,25 +26,22 @@ export interface IAutomation {
 export type IAutomationsData = Array<IAutomation>;
 
 export interface ISetAutomationData {
-  type: typeof SET_AUTOMATIONS_DATA
+  type: typeof SET_AUTOMATIONS_DATA;
   payload: IAutomationsData;
 }
 
 export interface ISetMessage {
-  type: typeof SET_AUTOMATIONS_MESSAGE
-  payload: IMessage
+  type: typeof SET_AUTOMATIONS_MESSAGE;
+  payload: IMessage;
 }
 
 export interface IRemoveMessage {
-  type: typeof REMOVE_AUTOMATIONS_MESSAGE
-  payload: IMessage
+  type: typeof REMOVE_AUTOMATIONS_MESSAGE;
+  payload: IMessage;
 }
 export interface IMessage {
   isError: boolean;
   message: string;
 }
 
-export type AutomationTypes =
-  | ISetAutomationData
-  | ISetMessage
-  | IRemoveMessage;
+export type AutomationTypes = ISetAutomationData | ISetMessage | IRemoveMessage;
