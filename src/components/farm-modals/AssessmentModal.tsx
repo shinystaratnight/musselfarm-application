@@ -50,7 +50,7 @@ const AssessmentModal: FC<IAssessmentModal> = ({
     conditionMin: '',
     conditionMax: '',
     conditionAverage: '',
-    blues: '',
+    blues: '0',
     tones: '',
     plannedDateHarvest: toggleSecondMillisecond(
       Number(dataLine?.planned_date_harvest),
