@@ -75,11 +75,14 @@ const AddLines = () => {
       if (!farmData?.lines?.length) {
         name = '1';
       } else {
-        const nNum = farmData?.lines?.reduce((acum: any, curent: any): any => {
-          return acum > Number(curent.line_name)
-            ? acum
-            : Number(curent.line_name);
+        let nNum = farmData?.lines?.reduce((acum: any, curent: any): any => {
+          return acum < Number(curent.line_name)
+            ? Number(curent.line_name)
+            : acum;
         }, 0);
+
+        if (farmData?.lines?.length > nNum)
+          nNum = farmData?.lines?.length;
 
         name = `${nNum + 1}`;
       }
