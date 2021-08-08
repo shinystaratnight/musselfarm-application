@@ -16,7 +16,7 @@ export interface IAutomation {
   time: number;
   unit: string;
   creator_id?: number;
-  charger_id?: number;
+  assigned_to?: number;
   outcome: {
     title: string;
     description: string;

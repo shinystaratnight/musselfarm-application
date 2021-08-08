@@ -119,7 +119,7 @@ const ModalAutomation: FC<IOwnProps> = ({
       setDescription(data.outcome.description);
       setIsEdit(true);
       setCreatorID(data.creator_id);
-      setCharger(data.charger_id);
+      setCharger(data.assigned_to);
     } else {
       if (
         profile.role !== 'admin' &&
@@ -179,10 +179,10 @@ const ModalAutomation: FC<IOwnProps> = ({
             unit,
             title,
             description,
-            charger_id: 0,
+            assigned_to: 0,
           };
           if (charger) {
-            dat = { ...dat, charger_id: charger };
+            dat = { ...dat, assigned_to: charger };
           }
           handleConfirmAction(dat);
           setCondition('Seeding');

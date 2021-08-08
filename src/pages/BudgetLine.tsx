@@ -187,7 +187,7 @@ const BudgetLine: FC = (): ReactElement => {
       formData.append('farm_id', query.get('farm')!);
       url = 'api/farm/budgets/import-farm-expenses-from-excel';
     } else if (query.get('line')) {
-      formData.append('line_budget_id', query.get('line')!);
+      formData.append('line_budget_id', `${budgetInfoStore[1].budget_id!}`);
       url = 'api/farm/line/budgets/import-line-expenses-from-excel';
     }
 

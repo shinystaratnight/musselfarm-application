@@ -61,7 +61,7 @@ const ToDoComponent: FC<IOwnProps> = ({ activePage, filterType }) => {
     content: '',
     due_date: 0,
     active: 0,
-    charger_id: 0,
+    assigned_to: 0,
     created_at: '',
     creator_id: 0,
   });
@@ -210,7 +210,7 @@ const ToDoComponent: FC<IOwnProps> = ({ activePage, filterType }) => {
         tasksData
           .filter(e => {
             if (filterType === 'all') return true;
-            return e.charger_id === Number(profile.user_id);
+            return e.assigned_to === Number(profile.user_id);
           })
           .filter(e => {
             if (activePage === 'active') {

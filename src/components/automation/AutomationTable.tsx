@@ -46,7 +46,7 @@ const AutomationTable: FC<ITables> = ({
     if (profile.role === 'admin' || profile.role === 'owner') {
       return 1;
     }
-    if (profile.user_id === d.creator_id || profile.user_id === d.charger_id) {
+    if (profile.user_id === d.creator_id || profile.user_id === d.assigned_to) {
       return 1;
     }
     return 0;

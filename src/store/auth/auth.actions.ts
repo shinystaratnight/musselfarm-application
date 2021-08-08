@@ -1,6 +1,7 @@
 import {
   LOGOUT,
   NEXT_VIEW,
+  SET_ACCOUNT_ID,
   SIGN_IN,
   UPDATE_TOKEN,
   XERO_ACTIVE,
@@ -47,6 +48,13 @@ export const logOut = () => {
 export const nextView = (value: INextView) => {
   return {
     type: NEXT_VIEW,
+    payload: value,
+  };
+};
+
+export const setAccountId = (value: string) => {
+  return {
+    type: SET_ACCOUNT_ID,
     payload: value,
   };
 };
@@ -103,6 +111,15 @@ export const authLogin = (data: ILoginData) => {
       localStorage.setItem('marine-farm', res?.data.access_token);
       localStorage.setItem('marine-farm-user_id', res?.user_id);
       localStorage.setItem('marine-farm-refresh', res?.data.refresh_token);
+
+      const responseData = await sendRequest(
+        {},
+        'POST',
+        'api/user/inviters',
+        true,
+      );
+
+      await dispatch(setAccountId(responseData.inviters[0].acc_id));
 
       dispatch(
         singIn({

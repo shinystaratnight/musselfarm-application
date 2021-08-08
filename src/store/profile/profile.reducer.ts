@@ -9,12 +9,16 @@ import {
   UPDATE_EMAIL_PROFILE,
   INITIAL_STATE,
   SET_PERMISSION,
+  SET_INVITERS,
+  SET_CUR_INVITER,
 } from './profile.constants';
 
 const initialState: ProfileState = {
   user: {
     email: '',
   },
+  currentInviter: -1,
+  inviters: [],
   message: {
     isError: false,
     message: '',
@@ -31,6 +35,16 @@ const profileReducer = (
   action: ProfileTypes,
 ) => {
   switch (action.type) {
+    case SET_CUR_INVITER:
+      return {
+        ...state,
+        currentInviter: action.payload,
+      };
+    case SET_INVITERS:
+      return {
+        ...state,
+        inviters: action.payload,
+      };
     case GET_PROFILE:
       return {
         ...state,

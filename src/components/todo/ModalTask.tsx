@@ -73,7 +73,7 @@ const ModalTask: FC<IOwnProps> = ({
     setContent(data && data.content ? data.content : '');
     setLine(data ? data.line_id.toString() : '0');
     setDate(data ? Number(data.due_date) : moment().toDate().getTime());
-    setCharger(data?.charger_id ? data.charger_id : 0);
+    setCharger(data?.assigned_to ? data.assigned_to : 0);
 
     const curFarm = farmsData.find(el => {
       return farmId === el.id;
@@ -152,8 +152,10 @@ const ModalTask: FC<IOwnProps> = ({
         title: tskTitle,
         content,
         due_date: date,
-        charger_id:
-          profile?.role === 'owner' ? charger : Number(profile.user_id),
+        assigned_to:
+          profile?.role === 'owner' || profile?.role === 'admin'
+            ? charger
+            : Number(profile.user_id),
       };
 
       await dispatch(addTask(newTask, history));
@@ -165,8 +167,10 @@ const ModalTask: FC<IOwnProps> = ({
         title: tskTitle,
         content,
         due_date: date,
-        charger_id:
-          profile?.role === 'owner' ? charger : Number(profile.user_id),
+        assigned_to:
+          profile?.role === 'owner' || profile?.role === 'admin'
+            ? charger
+            : Number(profile.user_id),
       };
 
       await dispatch(updateTask(newTask, history));

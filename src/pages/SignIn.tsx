@@ -17,6 +17,7 @@ import {
   getInitialProfile,
   getUserEmail,
   getUserProfile,
+  getInviters,
 } from '../store/profile/profile.actions';
 import { useWidth } from '../util/useWidth';
 import { getFarmsData } from '../store/farms/farms.actions';
@@ -30,6 +31,7 @@ const SignIn = () => {
   const width = useWidth();
   const [disabled, setDisabled] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
+  const [isInviteAccpet, setIsInviteAccept] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isValidFields, setIsValidFields] = useState<boolean>(false);
@@ -65,6 +67,7 @@ const SignIn = () => {
       dispatch(getUserProfile(auth.id as string, history));
       dispatch(getUserEmail(history));
       dispatch(getFarmsData(history));
+      // dispatch(getInviters(history));
     }
   }, [auth]);
 
@@ -73,6 +76,9 @@ const SignIn = () => {
       setIsChecked(true);
     }
 
+    if (params.checked === 'invite-accept') {
+      setIsInviteAccept(true);
+    }
     if (auth.message) {
       dispatch(logOut());
     }
@@ -84,7 +90,12 @@ const SignIn = () => {
         setIsChecked(false);
       }, 3000);
     }
-  }, [isChecked]);
+    if (isInviteAccpet) {
+      setTimeout(() => {
+        setIsInviteAccept(false);
+      }, 3000);
+    }
+  }, [isChecked, isInviteAccpet]);
 
   const handleOnChangeEmail = (value: string) => {
     setEmail(value);
@@ -249,6 +260,15 @@ const SignIn = () => {
         <Feedback
           className='mt-4'
           message='An email has been confirmed successfully'
+          type='success'
+          theme='light'
+          isGlobal
+        />
+      )}
+      {isInviteAccpet && (
+        <Feedback
+          className='mt-4'
+          message='Invitation accepted successfully'
           type='success'
           theme='light'
           isGlobal

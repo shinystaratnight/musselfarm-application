@@ -66,7 +66,7 @@ const ToDoList: FC<IOwnProps> = ({ isActivePage, filterType }) => {
     content: '',
     due_date: 0,
     active: 0,
-    charger_id: 0,
+    assigned_to: 0,
     created_at: '',
     creator_id: 0,
   });
@@ -131,7 +131,6 @@ const ToDoList: FC<IOwnProps> = ({ isActivePage, filterType }) => {
   };
 
   const onTaskComplete = async (value: string, itemId: string) => {
-    console.log(value, itemId);
     const task = tasksData.find(e => {
       return e.id === itemId;
     });
@@ -191,7 +190,7 @@ const ToDoList: FC<IOwnProps> = ({ isActivePage, filterType }) => {
         tasksData
           .filter(e => {
             if (filterType === 'all') return true;
-            return e.charger_id === profile.user_id;
+            return e.assigned_to === profile.user_id;
           })
           .filter(e => {
             return isActivePage !== !!e.active;

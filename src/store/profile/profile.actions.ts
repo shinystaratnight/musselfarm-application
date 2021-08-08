@@ -8,8 +8,15 @@ import {
   UPDATE_EMAIL_PROFILE,
   INITIAL_STATE,
   SET_PERMISSION,
+  SET_INVITERS,
+  SET_CUR_INVITER,
 } from './profile.constants';
-import { IMessage, IProfilePayload, IPermissions } from './profile.type';
+import {
+  IMessage,
+  IProfilePayload,
+  IPermissions,
+  IInviter,
+} from './profile.type';
 import { IRootState, IThunkType } from '../rootReducer';
 import { composeApi } from '../../apis/compose';
 
@@ -64,6 +71,49 @@ export const getMessage = (payloadIn: IMessage) => {
 export const deleteMessage = () => {
   return {
     type: DELETE_MESSAGE,
+  };
+};
+
+export const setInviters = (payload: IInviter[]) => {
+  return {
+    type: SET_INVITERS,
+    payload,
+  };
+};
+
+export const setCurrentInviter = (payload: number) => {
+  return {
+    type: SET_CUR_INVITER,
+    payload,
+  };
+};
+
+export const getInviters = (history: any) => {
+  return async (dispatch: IThunkType, getState: () => IRootState) => {
+    const res = await composeApi(
+      {
+        data: [],
+        method: 'POST',
+        url: 'api/user/inviters',
+        requireAuth: true,
+      },
+      dispatch,
+      getState().auth.auth,
+      history,
+    );
+    if (res) {
+      dispatch(setInviters(res.inviters));
+      if (res.inviters.length) {
+        dispatch(setCurrentInviter(res.inviters[0].id));
+      }
+    } else {
+      dispatch(
+        getMessage({
+          isError: true,
+          message: res?.message,
+        }),
+      );
+    }
   };
 };
 

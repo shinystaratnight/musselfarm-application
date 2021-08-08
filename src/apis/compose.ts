@@ -18,7 +18,10 @@ export const composeApi = async (
   const prevAT = localStorage.getItem('marine-farm');
   const { data, method, url, requireAuth } = reqData;
   const responseData = await sendRequest(
-    data,
+    {
+      ...data,
+      account_id: authStore.account_id,
+    },
     method,
     url,
     requireAuth,
@@ -42,7 +45,10 @@ export const composeApi = async (
         }),
       );
       const repeatResponse = await sendRequest(
-        data,
+        {
+          ...data,
+          account_id: authStore.account_id,
+        },
         method,
         url,
         requireAuth,
@@ -66,7 +72,10 @@ export const composeApi = async (
       prevAT !== ''
     ) {
       const repeatResponse = await sendRequest(
-        data,
+        {
+          ...data,
+          account_id: authStore.account_id,
+        },
         method,
         url,
         requireAuth,

@@ -174,8 +174,6 @@ const User = () => {
     );
   };
 
-  console.log(switchList);
-
   const handleOnFarmCheck = (checked: boolean, farmId: string) => {
     const newArr = farms.map(farm => {
       if (farm.id === farmId) {
@@ -252,6 +250,7 @@ const User = () => {
     const data: any = {
       email,
       inviting_user_id: Number(authStore.id),
+      account_id: Number(authStore.account_id),
       role_id: userType,
       permission_id,
       farm_id: farmsAndLines.farm_id,

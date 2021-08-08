@@ -30,7 +30,7 @@ const MobileAutomation: FC<ITableMobileHeader> = ({
     }
     if (
       profile.user_id === data.creator_id ||
-      profile.user_id === data.charger_id
+      profile.user_id === data.assigned_to
     ) {
       return 1;
     }

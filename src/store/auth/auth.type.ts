@@ -4,6 +4,7 @@ import {
   NEXT_VIEW,
   UPDATE_TOKEN,
   XERO_ACTIVE,
+  SET_ACCOUNT_ID,
 } from './auth.constants';
 
 export interface AuthState {
@@ -32,6 +33,11 @@ export interface ISignInType {
   payload: ISignInPayload;
 }
 
+export interface ISetAccount {
+  type: typeof SET_ACCOUNT_ID;
+  payload: string;
+}
+
 export interface ISignInPayload {
   isAuth?: boolean;
   access_token?: string;
@@ -39,6 +45,7 @@ export interface ISignInPayload {
   xero?: boolean;
   message?: string;
   id?: string;
+  account_id?: string;
 }
 
 export interface IUpdateTokenType {
@@ -61,4 +68,5 @@ export type AuthTypes =
   | ISignUpSuccess
   | ILogout
   | IXeroActive
+  | ISetAccount
   | IUpdateTokenType;

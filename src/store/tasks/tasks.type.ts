@@ -19,7 +19,7 @@ export interface ITaskData {
   content?: string;
   due_date: number;
   active?: number;
-  charger_id?: number;
+  assigned_to?: number;
   created_at?: string;
   creator_id?: number;
 }

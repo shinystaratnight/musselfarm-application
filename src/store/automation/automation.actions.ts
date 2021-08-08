@@ -56,7 +56,7 @@ export const getAutomationsData = (history: any): IRootState => {
               action: automation.action,
               time: automation.time,
               unit: automation.unit,
-              charger_id: automation.charger_id,
+              assigned_to: automation.assigned_to,
               creator_id: automation.creator_id,
               outcome: {
                 title: automation.title,

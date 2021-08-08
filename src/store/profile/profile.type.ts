@@ -8,12 +8,16 @@ import {
   UPDATE_EMAIL_PROFILE,
   INITIAL_STATE,
   SET_PERMISSION,
+  SET_INVITERS,
+  SET_CUR_INVITER,
 } from './profile.constants';
 
 export interface ProfileState {
   user: IProfilePayload;
   message: IMessage;
+  inviters: string[];
   permission?: IPermissions;
+  currentInviter: number;
 }
 
 export interface IGetProfile {
@@ -87,6 +91,20 @@ export interface IPermissions {
   isFinance: boolean;
 }
 
+export interface IInviter {
+  id: string;
+  email: string;
+}
+export interface ISetInviters {
+  type: typeof SET_INVITERS;
+  payload: IInviter[];
+}
+
+export interface ISetCurInviter {
+  type: typeof SET_CUR_INVITER;
+  payload: number;
+}
+
 export type ProfileTypes =
   | IGetProfile
   | IUpdateProfile
@@ -96,4 +114,6 @@ export type ProfileTypes =
   | IDeleteMessage
   | IUpdateEmailProfile
   | IInitialState
+  | ISetInviters
+  | ISetCurInviter
   | ISetPermisson;
