@@ -299,13 +299,7 @@ const FarmLine: FC = (): ReactElement => {
   };
 
   useEffect(() => {
-    if (!lineData) {
-      dispatch(getLineData(params.idLine, history, params.idFarm));
-    }
-
-    if (lineData && params.idLine !== lineData.id.toString()) {
-      dispatch(getLineData(params.idLine, history, params.idFarm));
-    }
+    dispatch(getLineData(params.idLine, history, params.idFarm));
   }, []);
 
   useEffect(() => {
