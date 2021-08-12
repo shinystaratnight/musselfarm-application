@@ -72,7 +72,7 @@ const TableMobileAssessment: FC<ITableMobileAssessment> = ({
             Condition average
           </Subtitle>
           <Subtitle size={5} color='black-5' align='left' fontWeight={400}>
-            {data?.condition_average}
+            {data?.condition_avg}
           </Subtitle>
         </div>
         <div className='flex-basis-50 ml-24'>

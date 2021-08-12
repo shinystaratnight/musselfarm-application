@@ -189,7 +189,7 @@ const AssessmentModal: FC<IAssessmentModal> = ({
           ...allData,
           condition_min: conditionMin,
           condition_max: conditionMax,
-          condition_average: conditionAverage,
+          condition_avg: conditionAverage,
           condition_score: conditionScore,
           date_assessment: toggleSecondMillisecond(dateAssessment),
           planned_date_harvest: toggleSecondMillisecond(plannedDateHarvest),
