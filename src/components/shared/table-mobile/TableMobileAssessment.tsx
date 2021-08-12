@@ -107,7 +107,7 @@ const TableMobileAssessment: FC<ITableMobileAssessment> = ({
       </div>
 
       <div className='d-flex'>
-        <div className='flex-basis-50 ml-24'>
+        <div className='flex-basis-50'>
           <Subtitle size={3} color='black-2' align='left' fontWeight={400}>
             Condition Score
           </Subtitle>
@@ -115,7 +115,7 @@ const TableMobileAssessment: FC<ITableMobileAssessment> = ({
             {data?.condition_score}
           </Subtitle>
         </div>
-        <div className='flex-basis-50'>
+        <div className='flex-basis-50 ml-24'>
           <Subtitle size={3} color='black-2' align='left' fontWeight={400}>
             Comment
           </Subtitle>
