@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, FC } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import moment from 'moment';
-import { Radio, Collapse } from 'antd';
+import { Radio } from 'antd';
 import { RadioChangeEvent } from 'antd/lib/radio';
 
 import { hideFeedback, showFeedback } from '../../store/farms/farms.actions';
@@ -11,16 +11,14 @@ import { IRootState } from '../../store/rootReducer';
 import { IFarmState } from '../../store/farms/farms.type';
 import { IUtilState, IUtilData } from '../../store/utils/utils.type';
 import { getUtilData } from '../../store/utils/utils.actions';
-import {
-  ISeasonData,
-  ISeasonsData,
-  ISeasonState,
-} from '../../store/seasons/seasons.type';
+import { ISeasonData, ISeasonState } from '../../store/seasons/seasons.type';
 import { getSeasonData } from '../../store/seasons/seasons.actions';
 import { AuthState } from '../../store/auth/auth.type';
 
 import { composeApi } from '../../apis/compose';
 import toggleSecondMillisecond from '../../util/toggleSecondMillisecond';
+
+import { IFieldData } from './EditGroupModal';
 
 import { Datepicker, Dropdown, Input, Feedback, RadioButton } from '../shared';
 
@@ -54,10 +52,11 @@ const SeedLineModal: FC<ITablesModal> = ({ data, onConfirm, trigger }) => {
     state => state.auth.auth,
   );
 
-  const [fieldData, setFieldData] = useState({
+  const [fieldData, setFieldData] = useState<IFieldData>({
     planned_date: moment().toDate().getTime(),
     planned_date_harvest: moment().toDate().getTime(),
     seed_id: '',
+    line_length: 0,
     name: '',
     drop: 0,
     spat_size: 0,
@@ -84,6 +83,17 @@ const SeedLineModal: FC<ITablesModal> = ({ data, onConfirm, trigger }) => {
         }),
       );
       return null;
+    }
+
+    if (Number(fieldData.line_length) === 0) {
+      dispatch(
+        showFeedback({
+          isMessageModal: true,
+          type: 'error',
+          message: 'Line length must be greater then 0',
+        }),
+      );
+      return false;
     }
 
     if (
@@ -251,6 +261,22 @@ const SeedLineModal: FC<ITablesModal> = ({ data, onConfirm, trigger }) => {
         }}
         required
       />
+      <div className='mb-16'>
+        <Input
+          type='number'
+          value={fieldData.line_length.toString()}
+          label='Line Length'
+          dataType='line_length'
+          unit='m'
+          required
+          onChange={e =>
+            setFieldData(prev => ({
+              ...prev,
+              line_length: Number(e.target.value),
+            }))
+          }
+        />
+      </div>
       <Dropdown
         className='mb-16'
         placeholder='Seed type'

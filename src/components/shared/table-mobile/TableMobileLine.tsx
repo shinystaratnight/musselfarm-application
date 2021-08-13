@@ -65,7 +65,7 @@ const TableMobileLine: FC<ITableMobileLine> = ({
             </Subtitle>
             <Subtitle size={5} color='black-5' align='left' fontWeight={400}>
               <>
-                <span className='pr-6'>{data?.length}</span>
+                <span className='pr-6'>{`${data?.length}`}</span>
                 <span>m</span>
               </>
             </Subtitle>

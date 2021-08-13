@@ -20,19 +20,20 @@ interface IEditGroupModal {
   trigger: boolean;
 }
 
-interface IFieldData {
+export interface IFieldData {
   planned_date: number;
   planned_date_harvest: number;
   seed_id: string;
   name: string;
-  season_name: string;
-  id: string;
+  season_name?: string;
+  id?: string;
   drop: number;
   spat_size: number;
   submersion: number;
   spacing: number;
   density: number;
   floats: number;
+  line_length: number;
 }
 
 const EditGroupModal: FC<IEditGroupModal> = ({ data, onConfirm, trigger }) => {
@@ -60,6 +61,7 @@ const EditGroupModal: FC<IEditGroupModal> = ({ data, onConfirm, trigger }) => {
     submersion: 0,
     spacing: 0,
     density: 0,
+    line_length: 0,
     floats: 0,
   });
 
@@ -83,6 +85,17 @@ const EditGroupModal: FC<IEditGroupModal> = ({ data, onConfirm, trigger }) => {
           isMessageModal: true,
           type: 'error',
           message: 'Date seeded cannot be greater than date harvested',
+        }),
+      );
+      return false;
+    }
+
+    if (Number(fieldData.line_length) === 0) {
+      dispatch(
+        showFeedback({
+          isMessageModal: true,
+          type: 'error',
+          message: 'Line length must be greater then 0',
         }),
       );
       return false;
@@ -128,6 +141,7 @@ const EditGroupModal: FC<IEditGroupModal> = ({ data, onConfirm, trigger }) => {
       drop: data?.drop,
       submersion: data?.submersion,
       spacing: data?.spacing,
+      line_length: data?.line_length,
       spat_size: data?.spat_size,
       density: data?.density,
       floats: data?.floats,
@@ -156,7 +170,7 @@ const EditGroupModal: FC<IEditGroupModal> = ({ data, onConfirm, trigger }) => {
         className='mb-16'
         type='text'
         onChange={handleChangeName}
-        value={fieldData.season_name}
+        value={fieldData.season_name!}
         label='Name'
         placeholder='Name'
         disabled
@@ -200,9 +214,25 @@ const EditGroupModal: FC<IEditGroupModal> = ({ data, onConfirm, trigger }) => {
         }}
         required
       />
+      <div className='mb-16'>
+        <Input
+          type='number'
+          value={fieldData.line_length.toString()}
+          label='Line Length'
+          dataType='line_length'
+          unit='m'
+          required
+          onChange={e =>
+            setFieldData(prev => ({
+              ...prev,
+              line_length: Number(e.target.value),
+            }))
+          }
+        />
+      </div>
       <Dropdown
         className='mb-16'
-        placeholder='seed Type'
+        placeholder='seed type'
         onChange={(value, event) => handleOnSelectType(value)}
         label='Seed Type'
         options={seedtypeData.map(

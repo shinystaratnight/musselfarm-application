@@ -161,7 +161,7 @@ const FarmLineTemplateDesktop: FC<IFarmLineTemplateDesktop> = ({
             Length
           </Subtitle>
           <Subtitle size={4} color='black' align='left' fontWeight={500}>
-            {currentGroup?.length} m
+            {`${currentGroup?.length} `}m
           </Subtitle>
           <Subtitle
             size={3}
