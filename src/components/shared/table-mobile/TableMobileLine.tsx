@@ -225,6 +225,125 @@ const TableMobileLine: FC<ITableMobileLine> = ({
             </Subtitle>
           </div>
         </div>
+
+        {column === 'isLine' && (
+          <>
+            <div className='d-flex pt-23 pb-23'>
+              <div className='flex-basis-50 '>
+                <Subtitle
+                  size={3}
+                  color='black-2'
+                  align='left'
+                  fontWeight={400}
+                >
+                  Drop
+                </Subtitle>
+                <Subtitle
+                  size={5}
+                  color='black-5'
+                  align='left'
+                  fontWeight={400}
+                >
+                  {data?.drop ? `${data.drop} m` : '-'}
+                </Subtitle>
+              </div>
+              <div className='flex-basis-50 ml-24'>
+                <Subtitle
+                  size={3}
+                  color='black-2'
+                  align='left'
+                  fontWeight={400}
+                >
+                  Spat Size
+                </Subtitle>
+                <Subtitle
+                  size={5}
+                  color='black-5'
+                  align='left'
+                  fontWeight={400}
+                >
+                  {data?.spat_size ? `${data.spat_size} mm` : '-'}
+                </Subtitle>
+              </div>
+            </div>
+            <div className='d-flex pb-23'>
+              <div className='flex-basis-50 '>
+                <Subtitle
+                  size={3}
+                  color='black-2'
+                  align='left'
+                  fontWeight={400}
+                >
+                  Submersion
+                </Subtitle>
+                <Subtitle
+                  size={5}
+                  color='black-5'
+                  align='left'
+                  fontWeight={400}
+                >
+                  {data?.submersion ? `${data.submersion} m` : '-'}
+                </Subtitle>
+              </div>
+              <div className='flex-basis-50 ml-24'>
+                <Subtitle
+                  size={3}
+                  color='black-2'
+                  align='left'
+                  fontWeight={400}
+                >
+                  Spacing
+                </Subtitle>
+                <Subtitle
+                  size={5}
+                  color='black-5'
+                  align='left'
+                  fontWeight={400}
+                >
+                  {data?.spacing ? `${data.spacing} mm` : '-'}
+                </Subtitle>
+              </div>
+            </div>
+            <div className='d-flex'>
+              <div className='flex-basis-50 '>
+                <Subtitle
+                  size={3}
+                  color='black-2'
+                  align='left'
+                  fontWeight={400}
+                >
+                  Density
+                </Subtitle>
+                <Subtitle
+                  size={5}
+                  color='black-5'
+                  align='left'
+                  fontWeight={400}
+                >
+                  {data?.density ? `${data.density}` : '-'}
+                </Subtitle>
+              </div>
+              <div className='flex-basis-50 ml-24'>
+                <Subtitle
+                  size={3}
+                  color='black-2'
+                  align='left'
+                  fontWeight={400}
+                >
+                  Floats
+                </Subtitle>
+                <Subtitle
+                  size={5}
+                  color='black-5'
+                  align='left'
+                  fontWeight={400}
+                >
+                  {data?.floats ? `${data.floats}` : '-'}
+                </Subtitle>
+              </div>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

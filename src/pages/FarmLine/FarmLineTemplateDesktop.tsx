@@ -163,6 +163,18 @@ const FarmLineTemplateDesktop: FC<IFarmLineTemplateDesktop> = ({
           <Subtitle size={4} color='black' align='left' fontWeight={500}>
             {currentGroup?.length} m
           </Subtitle>
+          <Subtitle
+            size={3}
+            color='black'
+            align='left'
+            fontWeight={400}
+            className='mb-4 mt-28'
+          >
+            Drop
+          </Subtitle>
+          <Subtitle size={4} color='black' align='left' fontWeight={500}>
+            {currentGroup?.drop ? `${currentGroup?.drop} m` : '-'}
+          </Subtitle>
         </div>
         <div>
           <Subtitle
@@ -180,6 +192,18 @@ const FarmLineTemplateDesktop: FC<IFarmLineTemplateDesktop> = ({
                   toggleSecondMillisecond(currentGroup?.planned_date),
                 ).format('DD.MM.YYYY')
               : '-'}
+          </Subtitle>
+          <Subtitle
+            size={3}
+            color='black'
+            align='left'
+            fontWeight={400}
+            className='mb-4 mt-28'
+          >
+            Spat Size
+          </Subtitle>
+          <Subtitle size={4} color='black' align='left' fontWeight={500}>
+            {currentGroup?.spat_size ? `${currentGroup?.spat_size} mm` : '-'}
           </Subtitle>
         </div>
         <div>
@@ -212,6 +236,18 @@ const FarmLineTemplateDesktop: FC<IFarmLineTemplateDesktop> = ({
               !currentGroup?.planned_date_harvest &&
               '-'}
           </Subtitle>
+          <Subtitle
+            size={3}
+            color='black'
+            align='left'
+            fontWeight={400}
+            className='mb-4 mt-28'
+          >
+            Submersion
+          </Subtitle>
+          <Subtitle size={4} color='black' align='left' fontWeight={500}>
+            {currentGroup?.submersion ? `${currentGroup?.submersion} m` : '-'}
+          </Subtitle>
         </div>
         <div>
           <Subtitle
@@ -225,6 +261,18 @@ const FarmLineTemplateDesktop: FC<IFarmLineTemplateDesktop> = ({
           </Subtitle>
           <Subtitle size={4} color='black' align='left' fontWeight={500}>
             {currentGroup?.seed ? currentGroup.seed : '-'}
+          </Subtitle>
+          <Subtitle
+            size={3}
+            color='black'
+            align='left'
+            fontWeight={400}
+            className='mb-4 mt-28'
+          >
+            Spacing
+          </Subtitle>
+          <Subtitle size={4} color='black' align='left' fontWeight={500}>
+            {currentGroup?.spacing ? `${currentGroup?.spacing} mm` : '-'}
           </Subtitle>
         </div>
         <div>
@@ -241,6 +289,18 @@ const FarmLineTemplateDesktop: FC<IFarmLineTemplateDesktop> = ({
             {currentGroup?.profit_per_meter
               ? currentGroup.profit_per_meter
               : '-'}
+          </Subtitle>
+          <Subtitle
+            size={3}
+            color='black'
+            align='left'
+            fontWeight={400}
+            className='mb-4 mt-28'
+          >
+            Density
+          </Subtitle>
+          <Subtitle size={4} color='black' align='left' fontWeight={500}>
+            {currentGroup?.density ? currentGroup?.density : '-'}
           </Subtitle>
         </div>
         <div>
@@ -260,6 +320,18 @@ const FarmLineTemplateDesktop: FC<IFarmLineTemplateDesktop> = ({
           ) : (
             '-'
           )}
+          <Subtitle
+            size={3}
+            color='black'
+            align='left'
+            fontWeight={400}
+            className='mb-4 mt-28'
+          >
+            Floats
+          </Subtitle>
+          <Subtitle size={4} color='black' align='left' fontWeight={500}>
+            {currentGroup?.floats ? currentGroup?.floats : '-'}
+          </Subtitle>
         </div>
         <div
           className={classNames({
