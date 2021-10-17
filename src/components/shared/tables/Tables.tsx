@@ -1,8 +1,10 @@
 import React, { FC, useRef, useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, useParams } from 'react-router-dom';
-import { Table } from 'antd';
+import { Table, Modal } from 'antd';
 import classNames from 'classnames';
+import ImageGallery from 'react-image-gallery';
+import 'react-image-gallery/styles/css/image-gallery.css';
 
 import { IUiState } from '../../../store/ui/ui.type';
 import { IRootState } from '../../../store/rootReducer';
@@ -40,6 +42,15 @@ interface ITables {
   hideDots?: boolean | undefined;
 }
 
+interface IImage {
+  photo: string;
+}
+
+interface IGalleryImage {
+  original: string;
+  thumbnail: string;
+}
+
 const Tables: FC<ITables> = ({
   data,
   column, // isFarms or isFarm or isLine
@@ -62,8 +73,11 @@ const Tables: FC<ITables> = ({
   const currentColumn = useColumns(column);
   const { redirectToFarm, redirectToLine } = useMenuHandler();
   const [infoModal, setInfoModal] = useState(false);
+  const [infoModalHeading, setInfoModalHeading] = useState('');
   const [editModal, setEditModal] = useState(false);
   const [editLineModal, setEditLineModal] = useState(false);
+  const [asPhotoModalVisible, setAsPhotoModalVisible] = useState(false);
+  const [assessPhotos, setAssessPhotos] = useState<Array<IGalleryImage>>([]);
 
   const profile = useSelector<IRootState, ProfileState['user']>(
     state => state.profile.user,
@@ -86,12 +100,13 @@ const Tables: FC<ITables> = ({
 
   const showInfoModal = (d: any, event: any): void => {
     event.stopPropagation();
-    if (!d) {
+    if (!d.comment) {
       infoModalData.current = 'No comments yet';
     } else {
-      infoModalData.current = d;
+      infoModalData.current = d.comment;
     }
 
+    setInfoModalHeading(d.heading);
     setInfoModal(!infoModal);
   };
 
@@ -216,11 +231,52 @@ const Tables: FC<ITables> = ({
       <div
         className='btn__modal'
         onKeyDown={() => undefined}
-        onClick={showInfoModal.bind(null, comment)}
+        onClick={showInfoModal.bind(null, { comment, heading: 'Comment' })}
       >
         View
       </div>
     ),
+  };
+
+  const photoField = {
+    title: 'Photo',
+    dataIndex: 'images',
+    key: 'images',
+    render: (images: Array<IImage>) => {
+      if (images.length === 0) {
+        return (
+          <div
+            className='btn__modal'
+            onKeyDown={() => undefined}
+            onClick={showInfoModal.bind(null, {
+              comment: 'No photos attached',
+              heading: 'Photo',
+            })}
+          >
+            View
+          </div>
+        );
+      }
+      return (
+        <div
+          className='btn__modal'
+          onKeyDown={() => undefined}
+          onClick={() => {
+            setAsPhotoModalVisible(true);
+            setAssessPhotos(
+              images.map(image => {
+                return {
+                  original: `${process.env.REACT_APP_API_URL}uploads/${image.photo}`,
+                  thumbnail: `${process.env.REACT_APP_API_URL}uploads/${image.photo}`,
+                };
+              }),
+            );
+          }}
+        >
+          View
+        </div>
+      );
+    },
   };
 
   const [triggerEdit, setTriggerEdit] = useState(false);
@@ -237,7 +293,7 @@ const Tables: FC<ITables> = ({
 
   const changeColumns = () => {
     if (column === 'isLine' || column === 'isBudgetLog') {
-      return [...currentColumn, viewField, dottedField];
+      return [...currentColumn, viewField, photoField, dottedField];
     }
     if (column === 'isUsers' && profile.role !== 'admin') {
       return [...currentColumn, dotMenuField];
@@ -276,7 +332,7 @@ const Tables: FC<ITables> = ({
             expandedRowRender: (d: any) => {
               return <Tables column='isFarm' data={d.lines} isTableChild />;
             },
-            expandIcon: ({ expanded, onExpand, record }) => (
+            expandIcon: ({ onExpand, record }) => (
               <div
                 className='pt-20 pb-20'
                 onKeyDown={() => undefined}
@@ -310,7 +366,7 @@ const Tables: FC<ITables> = ({
         visible={infoModal}
         onCancel={hideInfoModal}
         type=''
-        title='Comment'
+        title={infoModalHeading}
         text={infoModalData.current}
       />
       {editModal && (
@@ -329,7 +385,6 @@ const Tables: FC<ITables> = ({
           />
         </InputModal>
       )}
-
       {editLineModal && (
         <InputModal
           visible={editLineModal}
@@ -344,6 +399,18 @@ const Tables: FC<ITables> = ({
             trigger={triggerEdit}
           />
         </InputModal>
+      )}
+      {asPhotoModalVisible && (
+        <Modal
+          title='Assessment Photos'
+          centered
+          visible={asPhotoModalVisible}
+          onOk={() => setAsPhotoModalVisible(false)}
+          onCancel={() => setAsPhotoModalVisible(false)}
+          width={1000}
+        >
+          <ImageGallery items={assessPhotos} />
+        </Modal>
       )}
       <ModalComponent
         visible={uiModal.activeModal}

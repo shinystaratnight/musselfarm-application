@@ -1,8 +1,9 @@
-import React, { useState, FC } from 'react';
+import React, { useState, FC, useRef } from 'react';
 import moment from 'moment';
+import ImageGallery from 'react-image-gallery';
+import { Modal } from 'antd';
 
 import toggleSecondMillisecond from '../../../util/toggleSecondMillisecond';
-
 import ModalComponent from '../modal/Modal';
 import Subtitle from '../subtitle/Subtitle';
 
@@ -14,11 +15,35 @@ interface ITableMobileAssessment {
   hideDots?: boolean | undefined;
 }
 
+interface IImage {
+  photo: string;
+}
+
+interface IGalleryImage {
+  original: string;
+  thumbnail: string;
+}
+
 const TableMobileAssessment: FC<ITableMobileAssessment> = ({
   data,
   dotMenuField,
 }) => {
+  const infoModalData = useRef('');
+
   const [infoModal, setInfoModal] = useState(false);
+  const [asPhotoModalVisible, setAsPhotoModalVisible] = useState(false);
+  const [assessPhotos, setAssessPhotos] = useState<Array<IGalleryImage>>([]);
+
+  const showInfoModal = (d: any, event: any): void => {
+    event.stopPropagation();
+    if (!d) {
+      infoModalData.current = 'No comments yet';
+    } else {
+      infoModalData.current = d;
+    }
+
+    setInfoModal(!infoModal);
+  };
 
   return (
     <div className='table-mobile__card'>
@@ -106,7 +131,7 @@ const TableMobileAssessment: FC<ITableMobileAssessment> = ({
         </div>
       </div>
 
-      <div className='d-flex'>
+      <div className='d-flex pb-23'>
         <div className='flex-basis-50'>
           <Subtitle size={3} color='black-2' align='left' fontWeight={400}>
             Condition Score
@@ -130,6 +155,59 @@ const TableMobileAssessment: FC<ITableMobileAssessment> = ({
           </Subtitle>
         </div>
       </div>
+
+      <div className='d-flex'>
+        <div className='flex-basis-50'>
+          <Subtitle size={3} color='black-2' align='left' fontWeight={400}>
+            Photo
+          </Subtitle>
+          <Subtitle size={5} color='black-5' align='left' fontWeight={400}>
+            {data.images.length === 0 && (
+              <div
+                className='btn__modal'
+                onKeyDown={() => undefined}
+                onClick={showInfoModal.bind(null, {
+                  comment: 'No photos attached',
+                  heading: 'Photo',
+                })}
+              >
+                View
+              </div>
+            )}
+            {data.images.length !== 0 && (
+              <div
+                className='btn__modal'
+                onKeyDown={() => undefined}
+                onClick={() => {
+                  setAsPhotoModalVisible(true);
+                  setAssessPhotos(
+                    data.images.map((image: IImage) => {
+                      return {
+                        original: `${process.env.REACT_APP_API_URL}uploads/${image.photo}`,
+                        thumbnail: `${process.env.REACT_APP_API_URL}uploads/${image.photo}`,
+                      };
+                    }),
+                  );
+                }}
+              >
+                View
+              </div>
+            )}
+          </Subtitle>
+        </div>
+      </div>
+
+      {asPhotoModalVisible && (
+        <Modal
+          title='Assessment Photos'
+          visible={asPhotoModalVisible}
+          onCancel={() => setAsPhotoModalVisible(false)}
+          footer={null}
+          width={1000}
+        >
+          <ImageGallery items={assessPhotos} />
+        </Modal>
+      )}
 
       <ModalComponent
         visible={infoModal}
