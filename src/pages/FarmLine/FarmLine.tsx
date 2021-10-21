@@ -15,6 +15,7 @@ import {
   addAssessment,
   createSeedLine,
   harvestUpdate,
+  createCatchSpat,
 } from '../../store/farms/farms.actions';
 import { useWidth } from '../../util/useWidth';
 
@@ -28,6 +29,7 @@ import {
 import ModalLineForm from '../../components/farm-modals/ModalLineForm';
 import SeedLineModal from '../../components/farm-modals/SeedLineModal';
 import EditGroupModal from '../../components/farm-modals/EditGroupModal';
+import CatchSpatModal from '../../components/farm-modals/CatchSpatModal';
 import AssessmentModal from '../../components/farm-modals/AssessmentModal';
 import HarvestCompleteModal from '../../components/farm-modals/HarvestCompleteModal';
 import FarmLineTemplateDesktop from './FarmLineTemplateDesktop';
@@ -60,6 +62,7 @@ const FarmLine: FC = (): ReactElement => {
 
   const editModalData = useRef({});
   const [editModal, setEditModal] = useState(false);
+  const [catchSpatModal, setCatchSpatModal] = useState(false);
   const [seedModal, setSeedModal] = useState(false);
   const [editLineModal, setEditLineModal] = useState(false);
   const [triggerEdit, setTriggerEdit] = useState(false);
@@ -87,6 +90,10 @@ const FarmLine: FC = (): ReactElement => {
       id: '342',
     },
   ];
+
+  const hideCatchSpatModal = () => {
+    setCatchSpatModal(!catchSpatModal);
+  };
 
   const hideSeedModal = () => {
     setSeedModal(prev => !prev);
@@ -117,6 +124,11 @@ const FarmLine: FC = (): ReactElement => {
   const editGroupOnConfirm = (data: any): void => {
     showEditGoupModal();
     dispatch(harvestUpdate(data, lineData?.id, history));
+  };
+
+  const editCatchOnConfirm = (data: any): void => {
+    hideCatchSpatModal();
+    dispatch(createCatchSpat(data, lineData?.id, history));
   };
 
   // handlers
@@ -183,10 +195,6 @@ const FarmLine: FC = (): ReactElement => {
   const handleOnEdit = (d: any) => {
     editModalData.current = d;
     setEditLineModal(!editLineModal);
-  };
-
-  const confirmEditLineModalData = () => {
-    setTriggerEdit(!triggerEdit);
   };
 
   const handleClickPrevGroup = () => {
@@ -331,6 +339,7 @@ const FarmLine: FC = (): ReactElement => {
               isActiveHarvest={isActiveHarvest}
               permission={permission}
               hideSeedModal={hideSeedModal}
+              hideCatchSpatModal={hideCatchSpatModal}
             />
           ) : (
             <FarmLineTemplateDesktop
@@ -348,6 +357,7 @@ const FarmLine: FC = (): ReactElement => {
               hideSeedModal={hideSeedModal}
               breadcrumItems={breadcrumItems}
               handleOnEdit={handleOnEdit}
+              hideCatchSpatModal={hideCatchSpatModal}
             />
           )}
           <div className='width-100'>
@@ -403,14 +413,13 @@ const FarmLine: FC = (): ReactElement => {
           />
         </InputModal>
       )}
-
       {editLineModal && (
         <InputModal
           visible={editLineModal}
           onCancel={hideEditLineModalData}
           type='confirm'
           title='Edit line details'
-          onConfirm={confirmEditLineModalData}
+          onConfirm={() => setTriggerEdit(!triggerEdit)}
         >
           <ModalLineForm
             data={editModalData.current}
@@ -445,6 +454,21 @@ const FarmLine: FC = (): ReactElement => {
           <HarvestCompleteModal
             data={currentGroup}
             onConfirm={handleComplete}
+            trigger={triggerEdit}
+          />
+        </InputModal>
+      )}
+      {catchSpatModal && (
+        <InputModal
+          visible={catchSpatModal}
+          onCancel={hideCatchSpatModal}
+          title='Catch Spat'
+          type='confirm'
+          onConfirm={() => setTriggerEdit(!triggerEdit)}
+        >
+          <CatchSpatModal
+            data={currentGroup}
+            onConfirm={editCatchOnConfirm}
             trigger={triggerEdit}
           />
         </InputModal>

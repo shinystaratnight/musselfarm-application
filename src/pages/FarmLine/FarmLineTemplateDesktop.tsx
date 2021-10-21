@@ -31,6 +31,7 @@ interface IFarmLineTemplateDesktop {
   hideSeedModal: any;
   breadcrumItems: any;
   handleOnEdit: any;
+  hideCatchSpatModal: any;
 }
 
 const FarmLineTemplateDesktop: FC<IFarmLineTemplateDesktop> = ({
@@ -48,6 +49,7 @@ const FarmLineTemplateDesktop: FC<IFarmLineTemplateDesktop> = ({
   hideSeedModal,
   breadcrumItems,
   handleOnEdit,
+  hideCatchSpatModal,
 }) => {
   return (
     <div>
@@ -375,6 +377,17 @@ const FarmLineTemplateDesktop: FC<IFarmLineTemplateDesktop> = ({
                   {amountDays(lineData?.line_idle)}
                 </Subtitle>
               </div>
+              <Button
+                className='mr-8'
+                color='blue'
+                size={1}
+                width='small'
+                type='fill'
+                onClick={hideCatchSpatModal}
+                disabled={!permission?.isEdit}
+              >
+                Catch Spat
+              </Button>
               <Button
                 color='blue'
                 size={1}

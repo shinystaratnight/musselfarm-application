@@ -14,12 +14,9 @@ import { getUtilData } from '../../store/utils/utils.actions';
 import { ISeasonData, ISeasonState } from '../../store/seasons/seasons.type';
 import { getSeasonData } from '../../store/seasons/seasons.actions';
 import { AuthState } from '../../store/auth/auth.type';
-
 import { composeApi } from '../../apis/compose';
 import toggleSecondMillisecond from '../../util/toggleSecondMillisecond';
-
 import { IFieldData } from './EditGroupModal';
-
 import { Datepicker, Dropdown, Input, Feedback, RadioButton } from '../shared';
 
 interface ITablesModal {

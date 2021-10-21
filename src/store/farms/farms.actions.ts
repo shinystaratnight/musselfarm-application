@@ -493,6 +493,56 @@ export const createSeedLine = (
   };
 };
 
+export const createCatchSpat = (
+  data: any,
+  lineId: string | number | undefined,
+  history: any,
+) => {
+  return async (dispatch: IThunkType, getState: () => IRootState) => {
+    const responseData = await composeApi(
+      {
+        data: { ...data, line_id: lineId },
+        method: 'POST',
+        url: 'api/farm/line/catch-spat',
+        requireAuth: true,
+      },
+      dispatch,
+      getState().auth.auth,
+      history,
+    );
+
+    if (responseData?.status === 'Error') {
+      dispatch(
+        showFeedback({
+          isMessage: true,
+          type: 'error',
+          message: `${
+            responseData?.message
+              ? responseData?.message
+              : 'Catch Spat Line Failed'
+          }`,
+        }),
+      );
+
+      return;
+    }
+
+    if (responseData?.status === 'Success') {
+      dispatch(getLineData(lineId, history));
+
+      dispatch(getFarmsData(history));
+    } else {
+      dispatch(
+        showFeedback({
+          isMessage: true,
+          type: 'error',
+          message: 'Catch Spat Line Failed',
+        }),
+      );
+    }
+  };
+};
+
 export const addAssessment = (
   data: any,
   lineId: string | number | undefined,

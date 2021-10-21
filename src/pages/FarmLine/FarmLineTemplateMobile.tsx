@@ -22,6 +22,7 @@ interface IFarmLineTemplateMobile {
   showCompleteModal: any;
   hideEditModalData: any;
   hideSeedModal: any;
+  hideCatchSpatModal: any;
 }
 
 const FarmLineTemplateMobile: FC<IFarmLineTemplateMobile> = ({
@@ -37,6 +38,7 @@ const FarmLineTemplateMobile: FC<IFarmLineTemplateMobile> = ({
   showCompleteModal,
   hideEditModalData,
   hideSeedModal,
+  hideCatchSpatModal,
 }) => {
   return (
     <>
@@ -165,6 +167,17 @@ const FarmLineTemplateMobile: FC<IFarmLineTemplateMobile> = ({
               ) : (
                 <>
                   <Button
+                    color='blue'
+                    size={1}
+                    width='wide'
+                    type='fill'
+                    onClick={hideCatchSpatModal}
+                    disabled={!permission?.isEdit}
+                  >
+                    Catch Spat
+                  </Button>
+                  <Button
+                    className='mt-10'
                     color='blue'
                     size={1}
                     width='wide'
