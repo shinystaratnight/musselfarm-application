@@ -243,7 +243,6 @@ const Tables: FC<ITables> = ({
     dataIndex: 'images',
     key: 'images',
     render: (images: Array<IImage>) => {
-      console.log(images.length);
       if (images.length === 0) return <div />;
       return (
         <div
