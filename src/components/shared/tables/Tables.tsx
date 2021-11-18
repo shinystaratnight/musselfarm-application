@@ -243,20 +243,8 @@ const Tables: FC<ITables> = ({
     dataIndex: 'images',
     key: 'images',
     render: (images: Array<IImage>) => {
-      if (images.length === 0) {
-        return (
-          <div
-            className='btn__modal'
-            onKeyDown={() => undefined}
-            onClick={showInfoModal.bind(null, {
-              comment: 'No photos attached',
-              heading: 'Photo',
-            })}
-          >
-            View
-          </div>
-        );
-      }
+      console.log(images.length);
+      if (images.length === 0) return <div />;
       return (
         <div
           className='btn__modal'
