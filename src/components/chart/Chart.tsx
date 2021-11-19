@@ -51,7 +51,6 @@ const Chart: FC<IOwnProps> = ({ width, data }) => {
       item.values.forEach((d: any) => {
         // eslint-disable-next-line no-param-reassign
         if (typeof d.date === 'number') d.date = parseDate(d.date);
-        console.log('item', item);
         // eslint-disable-next-line no-param-reassign
         d.count = +d.count;
       });
