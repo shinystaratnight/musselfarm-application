@@ -51,6 +51,7 @@ const Chart: FC<IOwnProps> = ({ width, data }) => {
       item.values.forEach((d: any) => {
         // eslint-disable-next-line no-param-reassign
         if (typeof d.date === 'number') d.date = parseDate(d.date);
+        console.log('item', item);
         // eslint-disable-next-line no-param-reassign
         d.count = +d.count;
       });
@@ -63,12 +64,12 @@ const Chart: FC<IOwnProps> = ({ width, data }) => {
     });
 
     const maxValue: any[] = d3.extent(data[2].values, (d: any) => d.date);
-    const maxDate = maxValue[1].toString().replace('Dec 01', 'Dec 10');
+    // const maxDate = maxValue[1].toString().replace('Dec 01', 'Dec 30');
 
     /* Scale */
     const xScale = d3
       .scaleTime()
-      .domain([maxValue[0], new Date(maxDate)])
+      .domain(maxValue)
       .range([0, width - margin]);
 
     const maxYValue: any = d3.max(maxDataVelues);
@@ -88,12 +89,31 @@ const Chart: FC<IOwnProps> = ({ width, data }) => {
       .attr('transform', `translate(${margin}, ${margin})`);
 
     /* Add Axis into SVG */
-    const xAxis = d3
+    let xAxis = d3
       .axisBottom(xScale)
       .ticks(14)
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       .tickFormat(d3.timeFormat('%b'));
+
+    const getName = data[0]?.values[0]?.name;
+
+    if (getName === 'month') {
+      xAxis = d3
+        .axisBottom(xScale)
+        .ticks(30)
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        .tickFormat(d3.timeFormat('%d'));
+    } else if (getName === 'week') {
+      xAxis = d3
+        .axisBottom(xScale)
+        .ticks(7)
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        .tickFormat(d3.timeFormat('%a'));
+    }
+
     const yAxis = d3.axisLeft(yScale).ticks(10);
 
     svg
@@ -228,6 +248,7 @@ const Chart: FC<IOwnProps> = ({ width, data }) => {
           {
             year: 'numeric',
             month: 'short',
+            day: 'numeric',
           },
         );
 
@@ -338,10 +359,10 @@ const Chart: FC<IOwnProps> = ({ width, data }) => {
   ];
 
   return (
-    <div className='chart-card'>
+    <div>
       <div className='d-flex justify-content-between align-items-center'>
         <Subtitle size={1} color='black-3' align='left' fontWeight={500}>
-          Statistics
+          Planning
         </Subtitle>
         {windowWidth > 800 && (
           <div className='chart-card__labels'>

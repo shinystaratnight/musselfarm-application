@@ -37,8 +37,8 @@ const Overview: FC = () => {
   const [cardsData, setCardsData] = useState<IOverviewCard[]>([]);
   const [isCardsSpinner, setIsCardsSpinner] = useState(false);
   const [isChartSpinner, setIsChartSpinner] = useState(false);
-  const [filterType, setFilterType] = useState('all');
   const [chartData, setChartData] = useState<any>();
+  const [filterType, setFilterType] = useState('all');
   const [createTask, setCreateTask] = useState(false);
 
   const authStore = useSelector<IRootState, AuthState['auth']>(
@@ -100,17 +100,16 @@ const Overview: FC = () => {
           return { ...card };
         },
       );
-
       setCardsData(newCard);
     }
     setIsCardsSpinner(false);
   };
 
-  const getDataChart = async () => {
+  const getDataChart = async (type: string) => {
     setIsChartSpinner(true);
     const responseData = await composeApi(
       {
-        data: {},
+        data: { type },
         method: 'POST',
         url: 'api/overview/chart-info',
         requireAuth: true,
@@ -128,14 +127,16 @@ const Overview: FC = () => {
             } ${info?.lines?.join()}`;
           });
           let oneDateLine = valueLine.date;
-          if (line.name === 'harvest') {
-            oneDateLine += '01';
-          }
-          if (line.name === 'seedings') {
-            oneDateLine += '04';
-          }
-          if (line.name === 'assessments') {
-            oneDateLine += '07';
+          if (valueLine.name === 'year') {
+            if (line.name === 'harvest') {
+              oneDateLine += '01';
+            }
+            if (line.name === 'seedings') {
+              oneDateLine += '04';
+            }
+            if (line.name === 'assessments') {
+              oneDateLine += '07';
+            }
           }
           return {
             ...valueLine,
@@ -155,7 +156,7 @@ const Overview: FC = () => {
   };
 
   const getDatas = () => {
-    getDataChart();
+    getDataChart('year');
     getCards();
     getFarms();
   };
@@ -212,6 +213,39 @@ const Overview: FC = () => {
 
   const handleOnAddTask = () => {
     setCreateTask(false);
+  }
+
+  const callingYearRecord = async () => getDataChart('year');
+
+  const callingMonthRecord = async () => getDataChart('month');
+
+  const callingWeekRecord = async () => getDataChart('week');
+
+  const ChartButton = () => {
+    return (
+      <>
+        <div style={{ textAlign: 'right' }}>
+          <button
+            onClick={callingWeekRecord}
+            className='button button--blue'
+            style={{ marginRight: '10px' }}
+          >
+            Week
+          </button>
+
+          <button
+            onClick={callingMonthRecord}
+            className='button button--blue'
+            style={{ marginRight: '10px' }}
+          >
+            Month
+          </button>
+          <button onClick={callingYearRecord} className='button button--blue'>
+            Year
+          </button>
+        </div>
+      </>
+    );
   };
 
   return (
@@ -235,10 +269,13 @@ const Overview: FC = () => {
               {!isChartSpinner ? (
                 <>
                   {chartData?.length && (
-                    <Chart
-                      data={chartData}
-                      width={width < 600 ? 800 : width - 50}
-                    />
+                    <div className='chart-card'>
+                      <ChartButton />
+                      <Chart
+                        data={chartData}
+                        width={width < 600 ? 800 : width - 50}
+                      />
+                    </div>
                   )}
                 </>
               ) : (
@@ -248,6 +285,7 @@ const Overview: FC = () => {
               )}
             </div>
             <div className='overview__right-content'>
+              {console.log('card ', cardsData)}
               {!isCardsSpinner ? (
                 <>
                   {cardsData?.map((item, index) => (
