@@ -34,6 +34,7 @@ import { getInterest } from '../util/getInterest';
 import { IApiFarmCard, IFarmCard } from '../types/apiDataTypes';
 import { composeApi } from '../apis/compose';
 import { AuthState } from '../store/auth/auth.type';
+import { sendRequest } from '../apis';
 
 const Farm: FC = (): ReactElement => {
   const width = useWidth();
@@ -54,6 +55,151 @@ const Farm: FC = (): ReactElement => {
   const authStore = useSelector<IRootState, AuthState['auth']>(
     state => state.auth.auth,
   );
+
+  const [farmLines1, setFarmLines1] = useState<any>([]);
+
+  const isFarmData = (paramsId: { idFarm: string }, { farms }: any) => {
+    const newFarm = farms.farmsData.filter((farm: { id: string | number }) => {
+      return farm.id.toString() === paramsId.idFarm;
+    });
+
+    if (newFarm.length) {
+      currentFarm.current = { ...newFarm[0] };
+    }
+
+    if (newFarm.length && newFarm[0]?.lines) {
+      const lines = newFarm[0]?.lines?.sort(
+        (a: any, b: any) => Number(a.line_name) - Number(b.line_name),
+      );
+      return lines;
+    }
+
+    return [];
+  };
+
+  const farmLines = useSelector<IRootState, IFarmState['farmsData']>(
+    isFarmData.bind(null, params),
+  );
+
+  const doItAsc = (order: string, array: any, columnName: string) => {
+    const newArray = array;
+    // a-b = asc
+    // b-a = desc
+
+    if (order === 'ascend') {
+      // eslint-disable-next-line default-case
+      switch (columnName) {
+        case 'line_name':
+          newArray.sort(
+            (a: any, b: any) => a.line_name.length - b.line_name.length,
+          );
+          break;
+        case 'length':
+          newArray.sort((a: any, b: any) => a.length - b.length);
+          break;
+        case 'seeded_date':
+          newArray.sort((a: any, b: any) => a.seeded_date - b.seeded_date);
+          break;
+        case 'planned_date_harvest':
+          newArray.sort(
+            (a: any, b: any) =>
+              a?.group?.planned_date_harvest.length -
+              b?.group?.planned_date_harvest.length,
+          );
+          break;
+        case 'seed':
+          newArray.sort((a: any, b: any) => a.seed - b.seed);
+          break;
+        case 'profile_per_meter':
+          newArray.sort(
+            (a: any, b: any) =>
+              a.profit_per_meter.length - b.profit_per_meter.length,
+          );
+          break;
+        case 'condition':
+          newArray.sort((a: any, b: any) => a.condition - b.condition);
+          break;
+      }
+    } else if (order === 'descend') {
+      // eslint-disable-next-line default-case
+      switch (columnName) {
+        case 'line_name':
+          newArray.sort(
+            (a: any, b: any) => b.line_name.length - a.line_name.length,
+          );
+          break;
+        case 'length':
+          newArray.sort((a: any, b: any) => b.length - a.length);
+          break;
+        case 'seeded_date':
+          newArray.sort((a: any, b: any) => b.seeded_date - a.seeded_date);
+          break;
+        case 'planned_date_harvest':
+          newArray.sort(
+            (a: any, b: any) =>
+              b?.group?.planned_date_harvest.length -
+              a?.group?.planned_date_harvest.length,
+          );
+          break;
+        case 'seed':
+          newArray.sort((a: any, b: any) => b.seed - a.seed);
+          break;
+        case 'profile_per_meter':
+          newArray.sort(
+            (a: any, b: any) =>
+              b.profit_per_meter.length - a.profit_per_meter.length,
+          );
+          break;
+        case 'condition':
+          newArray.sort((a: any, b: any) => b.condition - a.condition);
+          break;
+      }
+    }
+
+    return newArray;
+  };
+
+  async function onChange(
+    pagination: any,
+    filters: any,
+    sorter: any,
+    extra: any,
+  ) {
+    if (farmLines.length) {
+      const columnKey: any = sorter?.columnKey;
+      const orders: any = sorter?.order;
+      const farmId: string = params?.idFarm;
+      const data = { columnKey, orders, farmId };
+      const res = await sendRequest(
+        data,
+        'POST',
+        'api/farm/line-sorting',
+        true,
+      );
+    }
+  }
+
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  useEffect(async () => {
+    if (farmLines.length) {
+      const farmId: string = params?.idFarm;
+      const data = { farmId };
+      const res = await sendRequest(
+        data,
+        'POST',
+        'api/farm/get-line-sorting',
+        true,
+      );
+      if (res.ack === 1) {
+        const columnName = res.data.column_name;
+        const columnOrder = res.data.column_order;
+        setFarmLines1(doItAsc(columnOrder, farmLines, columnName));
+      } else {
+        setFarmLines1(farmLines);
+      }
+    }
+  }, [farmLines]);
 
   const breadcrumItems: IBreadcrumb[] = [
     { link: '/', linkName: 'Overview', id: '456' },
@@ -117,31 +263,6 @@ const Farm: FC = (): ReactElement => {
         id: i + 1,
       };
     },
-  );
-
-  const isFarmData = (paramsId: { idFarm: string }, { farms }: any) => {
-    const newFarm = farms.farmsData.filter((farm: { id: string | number }) => {
-      return farm.id.toString() === paramsId.idFarm;
-    });
-
-    if (newFarm.length) {
-      currentFarm.current = { ...newFarm[0] };
-    }
-
-    if (newFarm.length && newFarm[0]?.lines) {
-      const lines = newFarm[0]?.lines?.sort(
-        (a: any, b: any) => Number(a.line_name) - Number(b.line_name),
-      );
-      return lines;
-    }
-
-    return [];
-  };
-
-  const farmLines = useSelector<IRootState, IFarmState['farmsData']>(
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    isFarmData.bind(null, params),
   );
 
   return (
@@ -285,7 +406,7 @@ const Farm: FC = (): ReactElement => {
           <div className='d-flex justify-content-between farms__main'>
             <div className='width-100'>
               {width > 768 ? (
-                <Tables column='isFarm' data={farmLines} />
+                <Tables onChange={onChange} column='isFarm' data={farmLines1} />
               ) : (
                 <TableMobile column='isFarm' data={farmLines} />
               )}

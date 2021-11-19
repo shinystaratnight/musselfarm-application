@@ -81,12 +81,16 @@ const useColumns = (column: string) => {
         title: 'Line',
         dataIndex: 'line_name',
         key: 'line_name',
+        defaultSortOrder: null,
+        sorter: (a: any, b: any) => a.line_name.length - b.line_name.length,
         render: (line: string) => <div data-line='line'>{line}</div>,
       },
       {
         title: 'Length',
         dataIndex: 'length',
         key: 'length',
+        defaultSortOrder: null,
+        sorter: (a: any, b: any) => a.length - b.length,
         render: (length: string) => (
           <>
             <span className='pr-6'>{length}</span>
@@ -98,6 +102,8 @@ const useColumns = (column: string) => {
         title: 'Date Seed',
         dataIndex: 'seeded_date',
         key: 'seeded_date',
+        defaultSortOrder: null,
+        sorter: (a: any, b: any) => a.seeded_date - b.seeded_date,
         render: (seededDate: number, data: any) => {
           const dateIdle = amountDays(data?.line_idle);
 
@@ -128,6 +134,8 @@ const useColumns = (column: string) => {
         title: 'Planned date harvested',
         dataIndex: 'planned_date',
         key: 'planned_date',
+        defaultSortOrder: null,
+        sorter: (a: any, b: any) => a.planned_date - b.planned_date,
         render: (plannedDate: number, data: any) => {
           return (
             <span>
@@ -149,6 +157,8 @@ const useColumns = (column: string) => {
       {
         title: 'Seed Type',
         dataIndex: 'seed',
+        defaultSortOrder: null,
+        sorter: (a: any, b: any) => a?.group?.seed - b?.group?.seed,
         key: 'seed',
         render: (seed: string, data: any) => (
           <span>
@@ -162,6 +172,9 @@ const useColumns = (column: string) => {
         title: 'Income per meter',
         dataIndex: 'profit_per_meter',
         key: 'profit_per_meter',
+        defaultSortOrder: null,
+        sorter: (a: any, b: any) =>
+          a?.group?.profit_per_meter - b?.group?.profit_per_meter,
         render: (profitMeter: number, data: any) => (
           <span>
             {data?.group !== null && data?.line_idle === null
@@ -174,6 +187,8 @@ const useColumns = (column: string) => {
         title: 'Condition',
         dataIndex: 'condition',
         key: 'condition',
+        defaultSortOrder: null,
+        sorter: (a: any, b: any) => a?.group?.condition - b?.group?.condition,
         render: (condition: string, data: any) =>
           data?.group !== null && data?.line_idle === null ? (
             <PositiveNegativeTitle isColor={data?.group?.color}>

@@ -37,7 +37,7 @@ interface ITables {
   onDeactivate?: (data: any) => void;
   onActivateUser?: (data: any) => void;
   isNotCursor?: boolean | undefined;
-  onChange?: (pagination: any) => void;
+  onChange?: (pagination: any, filters: any, sorter: any, extra: any) => void;
   pagination?: { current: number; pageSize: number; total: number };
   hideDots?: boolean | undefined;
 }
