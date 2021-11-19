@@ -87,31 +87,23 @@ const Chart: FC<IOwnProps> = ({ width, data }) => {
       .append('g')
       .attr('transform', `translate(${margin}, ${margin})`);
 
-    /* Add Axis into SVG */
-    let xAxis = d3
-      .axisBottom(xScale)
-      .ticks(14)
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      .tickFormat(d3.timeFormat('%b'));
+    let yearWeekMonth = '%b';
 
     const getName = data[0]?.values[0]?.name;
 
     if (getName === 'month') {
-      xAxis = d3
-        .axisBottom(xScale)
-        .ticks(30)
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        .tickFormat(d3.timeFormat('%d'));
+      yearWeekMonth = '%d';
     } else if (getName === 'week') {
-      xAxis = d3
-        .axisBottom(xScale)
-        .ticks(7)
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        .tickFormat(d3.timeFormat('%a'));
+      yearWeekMonth = '%a';
     }
+
+    /* Add Axis into SVG */
+    const xAxis = d3
+      .axisBottom(xScale)
+      .ticks(14)
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      .tickFormat(d3.timeFormat(yearWeekMonth));
 
     const yAxis = d3.axisLeft(yScale).ticks(10);
 
