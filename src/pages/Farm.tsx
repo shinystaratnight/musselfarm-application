@@ -35,6 +35,7 @@ import { IApiFarmCard, IFarmCard } from '../types/apiDataTypes';
 import { composeApi } from '../apis/compose';
 import { AuthState } from '../store/auth/auth.type';
 import { sendRequest } from '../apis';
+import TableLineSorting from './TableLineSorting';
 
 const Farm: FC = (): ReactElement => {
   const width = useWidth();
@@ -81,84 +82,6 @@ const Farm: FC = (): ReactElement => {
     isFarmData.bind(null, params),
   );
 
-  const doItAsc = (order: string, array: any, columnName: string) => {
-    const newArray = array;
-    // a-b = asc
-    // b-a = desc
-
-    if (order === 'ascend') {
-      // eslint-disable-next-line default-case
-      switch (columnName) {
-        case 'line_name':
-          newArray.sort(
-            (a: any, b: any) => a.line_name.length - b.line_name.length,
-          );
-          break;
-        case 'length':
-          newArray.sort((a: any, b: any) => a.length - b.length);
-          break;
-        case 'seeded_date':
-          newArray.sort((a: any, b: any) => a.seeded_date - b.seeded_date);
-          break;
-        case 'planned_date_harvest':
-          newArray.sort(
-            (a: any, b: any) =>
-              a?.group?.planned_date_harvest.length -
-              b?.group?.planned_date_harvest.length,
-          );
-          break;
-        case 'seed':
-          newArray.sort((a: any, b: any) => a.seed - b.seed);
-          break;
-        case 'profile_per_meter':
-          newArray.sort(
-            (a: any, b: any) =>
-              a.profit_per_meter.length - b.profit_per_meter.length,
-          );
-          break;
-        case 'condition':
-          newArray.sort((a: any, b: any) => a.condition - b.condition);
-          break;
-      }
-    } else if (order === 'descend') {
-      // eslint-disable-next-line default-case
-      switch (columnName) {
-        case 'line_name':
-          newArray.sort(
-            (a: any, b: any) => b.line_name.length - a.line_name.length,
-          );
-          break;
-        case 'length':
-          newArray.sort((a: any, b: any) => b.length - a.length);
-          break;
-        case 'seeded_date':
-          newArray.sort((a: any, b: any) => b.seeded_date - a.seeded_date);
-          break;
-        case 'planned_date_harvest':
-          newArray.sort(
-            (a: any, b: any) =>
-              b?.group?.planned_date_harvest.length -
-              a?.group?.planned_date_harvest.length,
-          );
-          break;
-        case 'seed':
-          newArray.sort((a: any, b: any) => b.seed - a.seed);
-          break;
-        case 'profile_per_meter':
-          newArray.sort(
-            (a: any, b: any) =>
-              b.profit_per_meter.length - a.profit_per_meter.length,
-          );
-          break;
-        case 'condition':
-          newArray.sort((a: any, b: any) => b.condition - a.condition);
-          break;
-      }
-    }
-
-    return newArray;
-  };
-
   async function onChange(
     pagination: any,
     filters: any,
@@ -194,7 +117,12 @@ const Farm: FC = (): ReactElement => {
       if (res.ack === 1) {
         const columnName = res.data.column_name;
         const columnOrder = res.data.column_order;
-        setFarmLines1(doItAsc(columnOrder, farmLines, columnName));
+        const tableLineSorting = TableLineSorting(
+          farmLines,
+          columnOrder,
+          columnName,
+        );
+        setFarmLines1(tableLineSorting);
       } else {
         setFarmLines1(farmLines);
       }
