@@ -213,7 +213,7 @@ const Overview: FC = () => {
 
   const handleOnAddTask = () => {
     setCreateTask(false);
-  }
+  };
 
   const callingYearRecord = async () => getDataChart('year');
 
@@ -285,7 +285,6 @@ const Overview: FC = () => {
               )}
             </div>
             <div className='overview__right-content'>
-              {console.log('card ', cardsData)}
               {!isCardsSpinner ? (
                 <>
                   {cardsData?.map((item, index) => (
