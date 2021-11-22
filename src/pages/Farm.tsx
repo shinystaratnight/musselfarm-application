@@ -34,6 +34,8 @@ import { getInterest } from '../util/getInterest';
 import { IApiFarmCard, IFarmCard } from '../types/apiDataTypes';
 import { composeApi } from '../apis/compose';
 import { AuthState } from '../store/auth/auth.type';
+import { sendRequest } from '../apis';
+import TableLineSorting from './TableLineSorting';
 
 const Farm: FC = (): ReactElement => {
   const width = useWidth();
@@ -54,6 +56,78 @@ const Farm: FC = (): ReactElement => {
   const authStore = useSelector<IRootState, AuthState['auth']>(
     state => state.auth.auth,
   );
+
+  const [farmLines1, setFarmLines1] = useState<any>([]);
+
+  const isFarmData = (paramsId: { idFarm: string }, { farms }: any) => {
+    const newFarm = farms.farmsData.filter((farm: { id: string | number }) => {
+      return farm.id.toString() === paramsId.idFarm;
+    });
+
+    if (newFarm.length) {
+      currentFarm.current = { ...newFarm[0] };
+    }
+
+    if (newFarm.length && newFarm[0]?.lines) {
+      const lines = newFarm[0]?.lines?.sort(
+        (a: any, b: any) => Number(a.line_name) - Number(b.line_name),
+      );
+      return lines;
+    }
+
+    return [];
+  };
+
+  const farmLines = useSelector<IRootState, IFarmState['farmsData']>(
+    isFarmData.bind(null, params),
+  );
+
+  async function onChange(
+    pagination: any,
+    filters: any,
+    sorter: any,
+    extra: any,
+  ) {
+    if (farmLines.length) {
+      const columnKey: any = sorter?.columnKey;
+      const orders: any = sorter?.order;
+      const farmId: string = params?.idFarm;
+      const data = { columnKey, orders, farmId };
+      const res = await sendRequest(
+        data,
+        'POST',
+        'api/farm/line-sorting',
+        true,
+      );
+    }
+  }
+
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  useEffect(async () => {
+    if (farmLines.length) {
+      const farmId: string = params?.idFarm;
+      const data = { farmId };
+      const res = await sendRequest(
+        data,
+        'POST',
+        'api/farm/get-line-sorting',
+        true,
+      );
+      if (res.ack === 1) {
+        const columnName = res.data.column_name;
+        const columnOrder = res.data.column_order;
+        const tableLineSorting = TableLineSorting(
+          farmLines,
+          columnOrder,
+          columnName,
+        );
+        setFarmLines1(tableLineSorting);
+      } else {
+        setFarmLines1(farmLines);
+      }
+    }
+  }, [farmLines]);
 
   const breadcrumItems: IBreadcrumb[] = [
     { link: '/', linkName: 'Overview', id: '456' },
@@ -117,31 +191,6 @@ const Farm: FC = (): ReactElement => {
         id: i + 1,
       };
     },
-  );
-
-  const isFarmData = (paramsId: { idFarm: string }, { farms }: any) => {
-    const newFarm = farms.farmsData.filter((farm: { id: string | number }) => {
-      return farm.id.toString() === paramsId.idFarm;
-    });
-
-    if (newFarm.length) {
-      currentFarm.current = { ...newFarm[0] };
-    }
-
-    if (newFarm.length && newFarm[0]?.lines) {
-      const lines = newFarm[0]?.lines?.sort(
-        (a: any, b: any) => Number(a.line_name) - Number(b.line_name),
-      );
-      return lines;
-    }
-
-    return [];
-  };
-
-  const farmLines = useSelector<IRootState, IFarmState['farmsData']>(
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    isFarmData.bind(null, params),
   );
 
   return (
@@ -285,7 +334,7 @@ const Farm: FC = (): ReactElement => {
           <div className='d-flex justify-content-between farms__main'>
             <div className='width-100'>
               {width > 768 ? (
-                <Tables column='isFarm' data={farmLines} />
+                <Tables onChange={onChange} column='isFarm' data={farmLines1} />
               ) : (
                 <TableMobile column='isFarm' data={farmLines} />
               )}
