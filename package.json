@@ -17,6 +17,7 @@
     "antd": "4.8.4",
     "antd-img-crop": "^3.13.2",
     "axios": "^0.21.0",
+    "caniuse-lite": "^1.0.30001282",
     "classnames": "^2.2.6",
     "d3": "^6.0.0",
     "eslint-loader": "^4.0.2",
