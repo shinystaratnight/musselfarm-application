@@ -77,7 +77,7 @@ const TableLineSorting = (array: any[], order: string, columnName: any) => {
           }
           return CompareDate(
             b?.group?.planned_date_harvest_origina,
-            b?.group?.planned_date_harvest_origina,
+            a?.group?.planned_date_harvest_origina,
           );
         });
         break;
