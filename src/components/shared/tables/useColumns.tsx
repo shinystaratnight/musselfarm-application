@@ -14,6 +14,8 @@ import NameWithPercent from '../name-with-percent/NameWithPercent';
 import TagComponent from '../tag/Tag';
 import InterestGrowth from '../tables-card/InterestGrowth';
 import Subtitle from '../subtitle/Subtitle';
+import CompareString from '../../../pages/FarmLine/CompareString';
+import CompareDate from '../../../pages/FarmLine/CompareDate';
 
 const useColumns = (column: string) => {
   const dataColumns = {
@@ -83,9 +85,7 @@ const useColumns = (column: string) => {
         key: 'line_name',
         defaultSortOrder: null,
         sorter: (a: any, b: any) => {
-          return b.line_name.localeCompare(a.line_name, 'en', {
-            numeric: true,
-          });
+          return CompareString(a.line_name, b.line_name);
         },
         render: (line: string) => <div data-line='line'>{line}</div>,
       },
@@ -109,9 +109,7 @@ const useColumns = (column: string) => {
         defaultSortOrder: null,
         sorter: (a: any, b: any) => {
           if (a?.group !== null && a?.line_idle === null) {
-            return (
-              Number(a?.group?.planned_date) - Number(b?.group?.planned_date)
-            );
+            return CompareDate(a?.group?.planned_date, b?.group?.planned_date);
           }
           return a?.line_idle.length - b?.line_idle.length;
         },
@@ -148,13 +146,11 @@ const useColumns = (column: string) => {
         defaultSortOrder: null,
         sorter: (a: any, b: any) => {
           if (a?.group !== null && a?.line_idle === null) {
-            return (
-              Number(a?.group?.planned_date) - Number(b?.group?.planned_date)
-            );
+            return CompareDate(a?.group?.planned_date, b?.group?.planned_date);
           }
-          return (
-            Number(a?.group?.planned_date_harvest_original) -
-            Number(b?.group?.planned_date_harvest_original)
+          return CompareDate(
+            a?.group?.planned_date_harvest_original,
+            b?.group?.planned_date_harvest_original,
           );
         },
         render: (plannedDate: number, data: any) => {
@@ -180,9 +176,7 @@ const useColumns = (column: string) => {
         dataIndex: 'seed',
         defaultSortOrder: null,
         sorter: (a: any, b: any) => {
-          return a?.group?.seed.localeCompare(b?.group?.seed, 'en', {
-            numeric: true,
-          });
+          return CompareString(a?.group?.seed, b?.group?.seed);
         },
         key: 'seed',
         render: (seed: string, data: any) => (

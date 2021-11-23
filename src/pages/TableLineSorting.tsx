@@ -1,22 +1,17 @@
 import React, { useEffect, useState, FC } from 'react';
-
-const dateToTimeStamp = (date: Date) => {
-  return new Date(date).getTime();
-};
+import CompareString from './FarmLine/CompareString';
+import CompareDate from './FarmLine/CompareDate';
 
 const TableLineSorting = (array: any[], order: string, columnName: any) => {
   const newArray = array;
   // a-b = asc
   // b-a = desc
-
   if (order === 'ascend') {
     // eslint-disable-next-line default-case
     switch (columnName) {
       case 'line_name':
         newArray.sort((a: any, b: any) => {
-          return a.line_name.localeCompare(b.line_name, 'en', {
-            numeric: true,
-          });
+          return CompareString(a.line_name, b.line_name);
         });
         break;
       case 'length':
@@ -24,29 +19,26 @@ const TableLineSorting = (array: any[], order: string, columnName: any) => {
         break;
       case 'seeded_date':
         newArray.sort((a: any, b: any) => {
-          return (
-            Number(a?.group?.planned_date) - Number(b?.group?.planned_date)
-          );
+          if (a?.group !== null && a?.line_idle === null) {
+            return CompareDate(a?.group?.planned_date, b?.group?.planned_date);
+          }
+          return a?.line_idle.length - b?.line_idle.length;
         });
         break;
       case 'planned_date':
         newArray.sort((a: any, b: any) => {
           if (a?.group !== null && a?.line_idle === null) {
-            return (
-              Number(a?.group?.planned_date) - Number(b?.group?.planned_date)
-            );
+            return CompareDate(a?.group?.planned_date, b?.group?.planned_date);
           }
-          return (
-            Number(a?.group?.planned_date_harvest_original) -
-            Number(b?.group?.planned_date_harvest_original)
+          return CompareDate(
+            a?.group?.planned_date_harvest_original,
+            b?.group?.planned_date_harvest_original,
           );
         });
         break;
       case 'seed':
         newArray.sort((a: any, b: any) => {
-          return a?.group?.seed.localeCompare(b?.group?.seed, 'en', {
-            numeric: true,
-          });
+          return CompareString(a?.group?.seed, b?.group?.seed);
         });
         break;
       case 'profile_per_meter':
@@ -64,9 +56,7 @@ const TableLineSorting = (array: any[], order: string, columnName: any) => {
     switch (columnName) {
       case 'line_name':
         newArray.sort((a: any, b: any) => {
-          return b.line_name.localeCompare(a.line_name, 'en', {
-            numeric: true,
-          });
+          return CompareString(a.line_name, b.line_name);
         });
         break;
       case 'length':
@@ -74,29 +64,26 @@ const TableLineSorting = (array: any[], order: string, columnName: any) => {
         break;
       case 'seeded_date':
         newArray.sort((a: any, b: any) => {
-          return (
-            Number(b?.group?.planned_date) - Number(a?.group?.planned_date)
-          );
+          if (b?.group !== null && b?.line_idle === null) {
+            return CompareDate(b?.group?.planned_date, a?.group?.planned_date);
+          }
+          return b?.line_idle.length - a?.line_idle.length;
         });
         break;
       case 'planned_date':
         newArray.sort((a: any, b: any) => {
           if (b?.group !== null && b?.line_idle === null) {
-            return (
-              Number(b?.group?.planned_date) - Number(a?.group?.planned_date)
-            );
+            return CompareDate(b?.group?.planned_date, a?.group?.planned_date);
           }
-          return (
-            Number(b?.group?.planned_date_harvest_original) -
-            Number(a?.group?.planned_date_harvest_original)
+          return CompareDate(
+            b?.group?.planned_date_harvest_origina,
+            b?.group?.planned_date_harvest_origina,
           );
         });
         break;
       case 'seed':
         newArray.sort((a: any, b: any) => {
-          return b?.group?.seed.localeCompare(a?.group?.seed, 'en', {
-            numeric: true,
-          });
+          return CompareString(b?.group?.seed, a?.group?.seed);
         });
         break;
       case 'profile_per_meter':
