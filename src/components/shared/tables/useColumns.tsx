@@ -82,7 +82,11 @@ const useColumns = (column: string) => {
         dataIndex: 'line_name',
         key: 'line_name',
         defaultSortOrder: null,
-        sorter: (a: any, b: any) => a.line_name.length - b.line_name.length,
+        sorter: (a: any, b: any) => {
+          return b.line_name.localeCompare(a.line_name, 'en', {
+            numeric: true,
+          });
+        },
         render: (line: string) => <div data-line='line'>{line}</div>,
       },
       {
@@ -103,7 +107,14 @@ const useColumns = (column: string) => {
         dataIndex: 'seeded_date',
         key: 'seeded_date',
         defaultSortOrder: null,
-        sorter: (a: any, b: any) => a.seeded_date - b.seeded_date,
+        sorter: (a: any, b: any) => {
+          if (a?.group !== null && a?.line_idle === null) {
+            return (
+              Number(a?.group?.planned_date) - Number(b?.group?.planned_date)
+            );
+          }
+          return a?.line_idle.length - b?.line_idle.length;
+        },
         render: (seededDate: number, data: any) => {
           const dateIdle = amountDays(data?.line_idle);
 
@@ -135,7 +146,17 @@ const useColumns = (column: string) => {
         dataIndex: 'planned_date',
         key: 'planned_date',
         defaultSortOrder: null,
-        sorter: (a: any, b: any) => a.planned_date - b.planned_date,
+        sorter: (a: any, b: any) => {
+          if (a?.group !== null && a?.line_idle === null) {
+            return (
+              Number(a?.group?.planned_date) - Number(b?.group?.planned_date)
+            );
+          }
+          return (
+            Number(a?.group?.planned_date_harvest_original) -
+            Number(b?.group?.planned_date_harvest_original)
+          );
+        },
         render: (plannedDate: number, data: any) => {
           return (
             <span>
@@ -158,7 +179,11 @@ const useColumns = (column: string) => {
         title: 'Seed Type',
         dataIndex: 'seed',
         defaultSortOrder: null,
-        sorter: (a: any, b: any) => a?.group?.seed - b?.group?.seed,
+        sorter: (a: any, b: any) => {
+          return a?.group?.seed.localeCompare(b?.group?.seed, 'en', {
+            numeric: true,
+          });
+        },
         key: 'seed',
         render: (seed: string, data: any) => (
           <span>
