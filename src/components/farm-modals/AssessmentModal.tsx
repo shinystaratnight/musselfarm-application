@@ -27,6 +27,7 @@ type IAssessmentModal = {
   onConfirm: (data: any) => void;
   trigger: boolean;
   dataLine?: any;
+  isAdding: boolean;
 };
 
 const AssessmentModal: FC<IAssessmentModal> = ({
@@ -34,6 +35,7 @@ const AssessmentModal: FC<IAssessmentModal> = ({
   onConfirm,
   trigger,
   dataLine,
+  isAdding,
 }) => {
   const history = useHistory();
   const dispatch = useDispatch();
@@ -382,11 +384,11 @@ const AssessmentModal: FC<IAssessmentModal> = ({
         onChange={handleChangeInput}
       />
 
-      <PicturesWall
+      {isAdding && <PicturesWall
         label='Images'
         fileList={state.images}
         handleChangeImages={handleChangeImages}
-      />
+      />}
     </div>
   );
 };

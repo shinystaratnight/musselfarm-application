@@ -405,6 +405,7 @@ const TableMobile: FC<ITableMobile> = memo(
               onConfirm={editOnConfirm}
               trigger={triggerEdit}
               dataLine={data}
+              isAdding={false}
             />
           </InputModal>
         )}

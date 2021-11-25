@@ -369,6 +369,7 @@ const Tables: FC<ITables> = ({
             onConfirm={editOnConfirm}
             trigger={triggerEdit}
             dataLine={data}
+            isAdding={false}
           />
         </InputModal>
       )}

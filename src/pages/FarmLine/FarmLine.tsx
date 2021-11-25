@@ -410,6 +410,7 @@ const FarmLine: FC = (): ReactElement => {
             onConfirm={editOnConfirm}
             trigger={triggerEdit}
             dataLine={currentGroup}
+            isAdding={true}
           />
         </InputModal>
       )}
