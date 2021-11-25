@@ -971,3 +971,19 @@ export const deleteItems = (history: any) => {
     dispatch(isModal({ activeModal: false }));
   };
 };
+
+export const addPhotoToAssessment = (data: any, history: any) => {
+  return async (dispatch: IThunkType, getState: () => IRootState) => {
+    const res = await composeApi(
+      {
+        data,
+        method: 'POST',
+        url: `api/farm/line/assessment/photos`,
+        requireAuth: true,
+      },
+      dispatch,
+      getState().auth.auth,
+      history,
+    );
+  };
+};

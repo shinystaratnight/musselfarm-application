@@ -20,6 +20,7 @@ import Feedback from '../shared/feedback/Feedback';
 import './styles.scss';
 import validationForZeroMinus from '../../util/validationForZeroMinus';
 import validationForMinus from '../../util/validationForMinus';
+import PicturesWall from '../shared/pictures-wall/PicturesWall';
 
 type IAssessmentModal = {
   data: any;
@@ -54,12 +55,19 @@ const AssessmentModal: FC<IAssessmentModal> = ({
     conditionScore: '',
     blues: '0',
     tones: '',
+    images: [],
     plannedDateHarvest: toggleSecondMillisecond(
       Number(dataLine?.planned_date_harvest),
     ),
     dateAssessment: moment().toDate().getTime(),
     comment: '',
   });
+
+  const handleChangeImages = (images: any) => {
+    setState((prev: any) => {
+      return { ...prev, images };
+    });
+  };
 
   const handleChangeInput = (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -213,6 +221,7 @@ const AssessmentModal: FC<IAssessmentModal> = ({
         blues,
         color,
         comment,
+        images,
         tones,
         id,
       } = data;
@@ -228,6 +237,7 @@ const AssessmentModal: FC<IAssessmentModal> = ({
         dateAssessment: toggleSecondMillisecond(date_assessment),
         plannedDateHarvest: toggleSecondMillisecond(planned_date_harvest),
         comment,
+        images,
         id,
       };
 
@@ -363,13 +373,19 @@ const AssessmentModal: FC<IAssessmentModal> = ({
         }}
       />
       <Input
-        className='mb-24'
+        className='mb-17'
         label='Comment'
         type='textarea'
         value={state.comment}
         placeholder='Type your comment...'
         dataType='comment'
         onChange={handleChangeInput}
+      />
+
+      <PicturesWall
+        label='Images'
+        fileList={state.images}
+        handleChangeImages={handleChangeImages}
       />
     </div>
   );
